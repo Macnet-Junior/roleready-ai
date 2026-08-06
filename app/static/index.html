@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RoleReady AI - Premium Job Matching, ATS Resume Optimization, Multi-Resume Benchmarking, and AI STAR Interview Simulator.">
+  <title>RoleReady AI | Executive Career Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="ambient-glow bg-glow-1"></div>
+  <div class="ambient-glow bg-glow-2"></div>
+
+  <!-- Executive Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-bolt-lightning"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">RoleReady <span class="brand-badge">AI 2.0</span></span>
+          <span class="brand-sub">Career Intelligence Suite</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="model-selector-wrapper">
+          <i class="fa-solid fa-microchip select-icon"></i>
+          <select id="model-select" class="glass-select" aria-label="Select AI Model">
+            <option value="models/gemini-2.5-flash">Gemini 2.5 Flash (Fast)</option>
+            <option value="models/gemini-2.5-pro">Gemini 2.5 Pro (Deep)</option>
+          </select>
+        </div>
+        <button id="btn-toggle-history" class="glass-btn icon-btn" title="View Saved History">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>History</span>
+          <span id="history-badge" class="badge">0</span>
+        </button>
+        <button id="btn-open-auth" class="glass-btn primary-btn" title="Sign In or Register">
+          <i class="fa-solid fa-user-circle"></i>
+          <span id="auth-btn-label">Sign In</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Auth Glassmorphic Modal -->
+  <div id="auth-modal" class="modal-overlay hidden">
+    <div class="glass-card modal-card">
+      <button type="button" class="modal-close" id="btn-close-auth">&times;</button>
+      
+      <div id="auth-guest-view">
+        <div class="form-header">
+          <h3><i class="fa-solid fa-lock text-indigo"></i> Member Portal</h3>
+          <p>Sign in to sync saved resumes, track score progress, and unlock Pro models.</p>
+        </div>
+
+        <div class="auth-toggle-tabs mb-3">
+          <button type="button" class="auth-tab active" id="tab-login">Login</button>
+          <button type="button" class="auth-tab" id="tab-register">Register</button>
+        </div>
+
+        <form id="auth-form">
+          <div id="register-name-group" class="form-group hidden">
+            <label for="auth-name">Full Name</label>
+            <input id="auth-name" placeholder="e.g. Jordan Lee" class="glass-input">
+          </div>
+          <div class="form-group">
+            <label for="auth-email">Email Address</label>
+            <input id="auth-email" type="email" required placeholder="name@company.com" class="glass-input">
+          </div>
+          <div class="form-group">
+            <label for="auth-password">Password</label>
+            <input id="auth-password" type="password" required placeholder="••••••••" class="glass-input">
+          </div>
+          <div id="auth-error" class="status-msg bad hidden"></div>
+          <button type="submit" id="auth-submit-btn" class="cta-button full-width mt-3">
+            <span>Sign In to Account</span>
+          </button>
+        </form>
+      </div>
+
+      <div id="auth-user-view" class="hidden">
+        <div class="user-profile-card">
+          <div class="user-avatar" id="user-avatar">EX</div>
+          <h3 id="user-display-name">Alex Morgan</h3>
+          <span class="user-tier" id="user-display-tier">Executive Pro Member</span>
+          <p id="user-display-email" class="text-muted">alex@executive.io</p>
+          <button type="button" id="btn-logout" class="glass-btn danger-btn mt-3"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Hero Section -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <span class="hero-tag"><i class="fa-solid fa-sparkles"></i> ATS RESUME OPTIMIZATION & AI BENCHMARKING</span>
+      <h1>Outperform the Competition with <br><span class="gradient-text">Precision AI Job Matching</span></h1>
+      <p>Analyze requirements, measure ATS keyword density, simulate STAR interviews, and bridge qualification gaps in seconds.</p>
+    </div>
+  </section>
+
+  <!-- Workspace Navigation Tabs -->
+  <div class="workspace-tabs-container">
+    <div class="nav-tabs" role="tablist">
+      <button type="button" class="nav-tab active" data-tab="single-analysis">
+        <i class="fa-solid fa-file-signature"></i> Single Resume Optimization
+      </button>
+      <button type="button" class="nav-tab" data-tab="multi-benchmark">
+        <i class="fa-solid fa-users-viewfinder"></i> Multi-Resume Benchmark
+      </button>
+      <button type="button" class="nav-tab" data-tab="history-view">
+        <i class="fa-solid fa-box-archive"></i> Saved Reports
+      </button>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <!-- TAB 1: Single Resume Analysis Form -->
+    <div id="tab-single-analysis" class="tab-page active">
+      <section class="glass-card workspace-card">
+        <form id="form">
+          <div class="form-header">
+            <h3><i class="fa-solid fa-user-gear"></i> Target Role & Candidate Details</h3>
+            <p>Upload candidate resume and target job description for multi-dimensional matching.</p>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="name">Candidate Name</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-user"></i>
+              <input id="name" maxlength="120" required placeholder="e.g. Alex Morgan" autocomplete="name" class="glass-input">
+            </div>
+          </div>
+
+          <div class="grid-2-col">
+            <!-- Left Column: Resume Input -->
+            <div class="input-card">
+              <div class="card-title-bar">
+                <label><i class="fa-solid fa-file-lines"></i> Candidate Experience / Resume</label>
+                <div class="source-tabs" role="tablist">
+                  <button type="button" class="source-tab active" data-mode="upload">Upload file</button>
+                  <button type="button" class="source-tab" data-mode="paste">Paste text</button>
+                </div>
+              </div>
+
+              <div id="upload-panel" class="dropzone-wrapper">
+                <label class="dropzone" id="dropzone">
+                  <input id="resume-file" type="file" accept=".pdf,.docx,.md,.markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown">
+                  <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                  <strong>Upload Resume Document</strong>
+                  <span>Drag & drop PDF, DOCX, or Markdown file</span>
+                  <small>Max 5 MB • Token-Optimized Parser</small>
+                </label>
+                <div id="upload-status" class="status-msg hidden"></div>
+              </div>
+
+              <div id="preview-wrap" class="review-preview">
+                <span id="preview-label" class="preview-heading">Extracted Resume Profile</span>
+                <textarea id="profile" minlength="100" maxlength="50000" required placeholder="Extracted resume text appears here. Review and edit before analysis..." class="glass-textarea"></textarea>
+                <div class="char-counter"><span id="pc">0</span> / 50,000</div>
+              </div>
+            </div>
+
+            <!-- Right Column: Job Description Input -->
+            <div class="input-card">
+              <div class="card-title-bar">
+                <label><i class="fa-solid fa-briefcase"></i> Target Job Description</label>
+                <div class="source-tabs" role="tablist">
+                  <button type="button" class="job-tab active" data-job-mode="paste">Paste Text</button>
+                  <button type="button" class="job-tab" data-job-mode="url">Public URL</button>
+                </div>
+              </div>
+
+              <div id="job-url-panel" class="job-url-wrapper hidden">
+                <div class="url-input-group">
+                  <input id="job-url" type="url" placeholder="https://company.com/careers/job-role" class="glass-input">
+                  <button type="button" id="fetch-job" class="glass-btn primary-btn"><i class="fa-solid fa-download"></i> Extract</button>
+                </div>
+                <div id="job-url-status" class="status-msg hidden"></div>
+              </div>
+
+              <div class="job-text-wrapper">
+                <textarea id="job-source" maxlength="50000" placeholder="Paste full job description including responsibilities and requirements..." class="glass-textarea"></textarea>
+                <div class="char-counter"><span id="jsc">0</span> / 50,000</div>
+              </div>
+
+              <div id="job-preview-wrap" class="review-preview">
+                <span class="preview-heading">Job Description Preview</span>
+                <textarea id="job" minlength="100" maxlength="50000" required placeholder="Verified job description text appears here..." class="glass-textarea"></textarea>
+                <div class="char-counter"><span id="jc">0</span> / 50,000</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional Candidate Updates -->
+          <div class="updates-box">
+            <label for="updates"><i class="fa-solid fa-plus-circle"></i> Additional Facts & Recent Skill Updates <span class="optional">(Optional)</span></label>
+            <textarea id="updates" maxlength="10000" placeholder="Add verified facts not yet on your resume (e.g. recently completed certification, new tool proficiency, project metric)." class="glass-textarea short-textarea"></textarea>
+            <div class="char-counter"><span id="uc">0</span> / 10,000</div>
+          </div>
+
+          <div class="form-actions">
+            <div class="privacy-note">
+              <i class="fa-solid fa-shield-halved"></i> Privacy Protected: Text processed in-memory and excluded from logs.
+            </div>
+            <button type="submit" id="submit" class="cta-button">
+              <span>Analyze Match & Optimize Resume</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <!-- TAB 2: Multi-Resume Benchmarking -->
+    <div id="tab-multi-benchmark" class="tab-page">
+      <section class="glass-card workspace-card">
+        <div class="form-header">
+          <h3><i class="fa-solid fa-users-rectangle"></i> Multi-Resume Candidate Benchmarking</h3>
+          <p>Compare up to 5 resumes side-by-side against a single job description to find the strongest match.</p>
+        </div>
+
+        <div class="multi-form">
+          <div class="input-card mb-4">
+            <label><i class="fa-solid fa-briefcase"></i> Job Description for Benchmark</label>
+            <textarea id="multi-job-desc" minlength="100" maxlength="50000" placeholder="Paste the job description here..." class="glass-textarea"></textarea>
+          </div>
+
+          <div class="candidates-container">
+            <h4><i class="fa-solid fa-users"></i> Candidate Resumes to Compare</h4>
+            <div id="candidates-list" class="candidates-list">
+              <!-- Candidate entries inserted dynamically -->
+            </div>
+            <button type="button" id="btn-add-candidate" class="glass-btn secondary-btn"><i class="fa-solid fa-plus"></i> Add Candidate</button>
+          </div>
+
+          <div class="form-actions mt-4">
+            <button type="button" id="btn-run-multi-benchmark" class="cta-button">
+              <span>Run Multi-Candidate Benchmark</span>
+              <i class="fa-solid fa-chart-simple"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="multi-results" class="results-container hidden"></div>
+      </section>
+    </div>
+
+    <!-- TAB 3: Saved History View -->
+    <div id="tab-history-view" class="tab-page">
+      <section class="glass-card workspace-card">
+        <div class="form-header flex-between">
+          <div>
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Persistent Analysis History</h3>
+            <p>Saved locally on your browser. Reload, export, or manage past reports anytime.</p>
+          </div>
+          <button id="btn-clear-history" class="glass-btn danger-btn"><i class="fa-solid fa-trash"></i> Clear All History</button>
+        </div>
+        <div id="history-list" class="history-grid"></div>
+      </section>
+    </div>
+
+    <!-- Loading State Overlay -->
+    <section id="loading" class="glass-card loading-card hidden">
+      <div class="loading-spinner-wrapper">
+        <div class="glow-spinner"></div>
+        <i class="fa-solid fa-brain-circuit spinner-center-icon"></i>
+      </div>
+      <h3 id="loading-title">Analyzing Application Match...</h3>
+      <p id="loading-desc">Calculating ATS scores, extracting required qualifications, and generating interview prep.</p>
+    </section>
+
+    <!-- Error State Overlay -->
+    <section id="error" class="glass-card error-card hidden" role="alert">
+      <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h2>Request Could Not Be Completed</h2>
+      <p id="error-message"></p>
+    </section>
+
+    <!-- Single Analysis Results Section -->
+    <section id="result" class="results-container hidden" aria-live="polite"></section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>RoleReady AI • Executive Career Intelligence Platform</p>
+    <p class="sub">Empowering candidate excellence with conservative, grounded AI matching.</p>
+  </footer>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
