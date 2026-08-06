@@ -15,7 +15,7 @@ from .models import OptimizeRequest, OptimizeResponse, MultiResumeRequest, Multi
 load_dotenv()
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 log = logging.getLogger("resume_optimizer")
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parent
 
 app = FastAPI(
     title="RoleReady AI - Job Matching & Resume Optimization",
