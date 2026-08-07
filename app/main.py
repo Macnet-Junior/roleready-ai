@@ -38,9 +38,15 @@ class ExtractedJob(BaseModel):
     text: str
     character_count: int
 
+from fastapi.responses import FileResponse, JSONResponse, Response
+
 @app.get("/", include_in_schema=False)
 def home():
     return FileResponse(ROOT / "static" / "index.html")
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return Response(status_code=204)
 
 @app.get("/health")
 def health():

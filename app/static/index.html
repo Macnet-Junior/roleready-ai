@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="RoleReady AI - Premium Job Matching, ATS Resume Optimization, Multi-Resume Benchmarking, and AI STAR Interview Simulator.">
   <title>RoleReady AI | Executive Career Intelligence Platform</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -143,7 +144,7 @@
             <!-- Left Column: Resume Input -->
             <div class="input-card">
               <div class="card-title-bar">
-                <label><i class="fa-solid fa-file-lines"></i> Candidate Experience / Resume</label>
+                <label for="profile"><i class="fa-solid fa-file-lines"></i> Candidate Experience / Resume</label>
                 <div class="source-tabs" role="tablist">
                   <button type="button" class="source-tab active" data-mode="upload">Upload file</button>
                   <button type="button" class="source-tab" data-mode="paste">Paste text</button>
@@ -151,7 +152,7 @@
               </div>
 
               <div id="upload-panel" class="dropzone-wrapper">
-                <label class="dropzone" id="dropzone">
+                <label class="dropzone" id="dropzone" for="resume-file">
                   <input id="resume-file" type="file" accept=".pdf,.docx,.md,.markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown">
                   <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
                   <strong>Upload Resume Document</strong>
@@ -171,7 +172,7 @@
             <!-- Right Column: Job Description Input -->
             <div class="input-card">
               <div class="card-title-bar">
-                <label><i class="fa-solid fa-briefcase"></i> Target Job Description</label>
+                <label for="job-source"><i class="fa-solid fa-briefcase"></i> Target Job Description</label>
                 <div class="source-tabs" role="tablist">
                   <button type="button" class="job-tab active" data-job-mode="paste">Paste Text</button>
                   <button type="button" class="job-tab" data-job-mode="url">Public URL</button>
@@ -180,6 +181,7 @@
 
               <div id="job-url-panel" class="job-url-wrapper hidden">
                 <div class="url-input-group">
+                  <label for="job-url" class="sr-only">Job Posting URL</label>
                   <input id="job-url" type="url" placeholder="https://company.com/careers/job-role" class="glass-input">
                   <button type="button" id="fetch-job" class="glass-btn primary-btn"><i class="fa-solid fa-download"></i> Extract</button>
                 </div>
@@ -205,6 +207,7 @@
             <textarea id="updates" maxlength="10000" placeholder="Add verified facts not yet on your resume (e.g. recently completed certification, new tool proficiency, project metric)." class="glass-textarea short-textarea"></textarea>
             <div class="char-counter"><span id="uc">0</span> / 10,000</div>
           </div>
+
 
           <div class="form-actions">
             <div class="privacy-note">
