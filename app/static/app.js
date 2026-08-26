@@ -264,13 +264,15 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     hideResultsAndErrors();
 
-    const candidateName = el.nameInput.value.trim();
+    const fn = document.getElementById("first-name")?.value.trim() || "";
+    const ln = document.getElementById("last-name")?.value.trim() || "";
+    const candidateName = `${fn} ${ln}`.trim() || "Candidate";
     const candidateProfile = el.profileTextarea.value.trim();
     const jobDescription = el.jobPreviewTextarea.value.trim();
     const candidateUpdates = el.updatesTextarea.value.trim();
 
-    if (!candidateName || !candidateProfile || !jobDescription) {
-      showError("Please complete candidate name, resume profile, and target job description.");
+    if (!fn || !candidateProfile || !jobDescription) {
+      showError("Please complete candidate first name, resume profile, and target job description.");
       return;
     }
 
@@ -483,13 +485,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function initMultiResumeForm() {
     renderCandidateInputFields();
 
-    el.btnAddCandidate?.addEventListener("click", () => {
-      if (state.multiCandidatesCount < 10) {
-        state.multiCandidatesCount++;
-        renderCandidateInputFields();
-      } else {
-        alert("Maximum candidate comparison limit reached (10 candidate slots).");
-      }
+    document.getElementById("multi-count-select")?.addEventListener("change", (e) => {
+      state.multiCandidatesCount = parseInt(e.target.value) || 2;
+      renderCandidateInputFields();
     });
 
     el.btnRunMultiBenchmark?.addEventListener("click", async () => {
@@ -501,10 +499,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const candidates = [];
       for (let i = 1; i <= state.multiCandidatesCount; i++) {
-        const name = document.getElementById(`multi-name-${i}`)?.value.trim();
+        const fn = document.getElementById(`multi-fn-${i}`)?.value.trim();
+        const ln = document.getElementById(`multi-ln-${i}`)?.value.trim();
         const profile = document.getElementById(`multi-profile-${i}`)?.value.trim();
-        if (name && profile) {
-          candidates.push({ candidate_name: name, candidate_profile: profile });
+        if ((fn || ln) && profile) {
+          candidates.push({ candidate_name: `${fn} ${ln}`.trim() || `Candidate #${i}`, candidate_profile: profile });
         }
       }
 
@@ -514,7 +513,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       el.multiResults.innerHTML = `<div class="loading-card"><div class="glow-spinner"></div><p>Benchmarking ${candidates.length} candidates in parallel...</p></div>`;
-      el.multiResults.classList.remove("hidden");
 
       try {
         const res = await fetch("/api/multi-compare", {
@@ -531,6 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!res.ok) throw new Error(data.detail || "Benchmark failed");
 
         renderMultiResults(data);
+        saveToHistory({ candidate_name: "Enterprise Comparison Batch", analysis: { job_title: data.job_title || "Enterprise Role", overall_score: 95, qualification_status: "QUALIFIED" }, is_enterprise: true, data: data });
       } catch (e) {
         el.multiResults.innerHTML = `<div class="status-msg bad">${escapeHtml(e.message)}</div>`;
       }
@@ -543,9 +542,12 @@ document.addEventListener("DOMContentLoaded", () => {
       html += `
         <div class="input-card mb-3">
           <div class="card-title-bar">
-            <label><i class="fa-solid fa-user"></i> Candidate #${i}</label>
+            <label><i class="fa-solid fa-user"></i> Candidate Slot #${i}</label>
           </div>
-          <input id="multi-name-${i}" placeholder="Candidate Name (e.g. Candidate #${i})" class="glass-input mb-2">
+          <div class="grid-2-col mb-2">
+            <input id="multi-fn-${i}" placeholder="First Name (e.g. Jordan)" class="glass-input">
+            <input id="multi-ln-${i}" placeholder="Last Name (e.g. Lee)" class="glass-input">
+          </div>
           <textarea id="multi-profile-${i}" placeholder="Paste candidate resume profile here..." class="glass-textarea short-textarea"></textarea>
         </div>
       `;
@@ -555,21 +557,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMultiResults(data) {
     let html = `
-      <div class="results-status-banner flex-between mt-4">
+      <div class="results-status-banner flex-between mt-2" style="padding:16px;">
         <div>
-          <h3>Enterprise Candidate Benchmark Ranking</h3>
-          <p>Top Match: <b class="text-indigo">${escapeHtml(data.top_matching_candidate)}</b></p>
+          <h4 style="margin:0;">Benchmark Rankings</h4>
+          <p class="text-muted mb-0" style="font-size:0.82rem;">Top Match: <b class="text-indigo">${escapeHtml(data.top_matching_candidate)}</b></p>
         </div>
-        <button type="button" id="btn-publish-leaderboard" class="glass-btn primary-btn"><i class="fa-solid fa-share-nodes"></i> Publish & Share Leaderboard</button>
+        <button type="button" id="btn-publish-leaderboard" class="glass-btn primary-btn" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-share-nodes"></i> Share</button>
       </div>
 
-      <div class="gap-cards-grid mt-3">
+      <div class="mt-3">
         ${data.results.map((c, idx) => `
-          <div class="glass-card" style="border-top: 3px solid ${idx === 0 ? 'var(--accent-emerald)' : idx === 1 ? 'var(--accent-indigo)' : 'var(--border-glass)'}">
-            <h4>#${idx + 1} ${escapeHtml(c.candidate_name)} ${idx === 0 ? '<span class="chip" style="background:var(--accent-emerald);color:#fff;">GOLD MATCH</span>' : idx === 1 ? '<span class="chip" style="background:var(--accent-indigo);color:#fff;">SILVER MATCH</span>' : ''}</h4>
-            <div style="font-size: 1.8rem; font-weight: 800; color: ${c.overall_score >= 80 ? 'var(--accent-emerald)' : 'var(--accent-amber)'}">${c.overall_score}% Match</div>
-            <p>${escapeHtml(c.qualification_summary)}</p>
-            <div class="char-counter">Matched: ${c.matched_count} | Missing: ${c.missing_count}</div>
+          <div class="glass-card mb-2" style="padding:14px; border-left: 4px solid ${idx === 0 ? 'var(--accent-emerald)' : idx === 1 ? 'var(--accent-indigo)' : 'var(--border-glass)'}">
+            <div class="flex-between">
+              <strong>#${idx + 1} ${escapeHtml(c.candidate_name)} ${idx === 0 ? '<span class="chip" style="background:var(--accent-emerald);color:#fff;">GOLD</span>' : idx === 1 ? '<span class="chip" style="background:var(--accent-indigo);color:#fff;">SILVER</span>' : ''}</strong>
+              <span style="font-weight:800; color: ${c.overall_score >= 80 ? 'var(--accent-emerald)' : 'var(--accent-amber)'}">${c.overall_score}%</span>
+            </div>
+            <p style="font-size:0.8rem; margin:4px 0;" class="text-muted">${escapeHtml(c.qualification_summary)}</p>
           </div>
         `).join('')}
       </div>
@@ -600,17 +603,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Feature Suite Handlers: Resume Theme Studio, Cover Letter, Salary Negotiator, Outreach, Voice Practice
   function initFeatureSuites() {
-    // Theme Studio Picker
+    // Live Resume Builder Content Sync
+    const updateResumePreview = () => {
+      const fn = document.getElementById("builder-fn")?.value || "Alex";
+      const ln = document.getElementById("builder-ln")?.value || "Morgan";
+      const title = document.getElementById("builder-title-input")?.value || "Senior Engineer";
+      const summary = document.getElementById("builder-summary-input")?.value || "";
+
+      document.getElementById("builder-name").textContent = `${fn} ${ln}`;
+      document.getElementById("builder-title").textContent = title;
+      document.getElementById("builder-summary").textContent = summary;
+    };
+
+    ["builder-fn", "builder-ln", "builder-title-input", "builder-summary-input"].forEach(id => {
+      document.getElementById(id)?.addEventListener("input", updateResumePreview);
+    });
+
+    // Headshot Photo Upload Reader
+    document.getElementById("headshot-upload")?.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const img = document.getElementById("headshot-preview-img");
+          const box = document.getElementById("headshot-preview-container");
+          if (img && box) {
+            img.src = evt.target.result;
+            box.classList.remove("hidden");
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Theme Studio Picker & Pro Teaser Modal
     document.querySelectorAll(".theme-card").forEach(card => {
       card.addEventListener("click", () => {
+        const isPro = card.classList.contains("pro-card");
+        if (isPro) {
+          document.getElementById("pro-teaser-modal")?.classList.remove("hidden");
+        }
         document.querySelectorAll(".theme-card").forEach(c => c.classList.remove("active"));
         card.classList.add("active");
         const theme = card.getAttribute("data-theme");
         const preview = document.getElementById("resume-document-preview");
         if (preview) {
-          preview.className = `resume-sheet theme-${theme}`;
+          preview.className = `resume-sheet a4-format theme-${theme}`;
         }
       });
+    });
+
+    document.getElementById("btn-close-pro-teaser")?.addEventListener("click", () => {
+      document.getElementById("pro-teaser-modal")?.classList.add("hidden");
+    });
+
+    document.getElementById("btn-unlock-pro-confirm")?.addEventListener("click", () => {
+      alert("Pro tier unlocked! You now have unrestricted access to Stanford Gold, Harvard Classic, and Cyber Neon Glass themes.");
+      document.getElementById("pro-teaser-modal")?.classList.add("hidden");
     });
 
     // Download PDF (Print)
@@ -619,10 +668,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Cover Letter Generator
-    document.getElementById("cover-letter-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const triggerCoverLetterGeneration = async () => {
       const btn = document.getElementById("btn-generate-cl");
-      const name = document.getElementById("cl-name").value.trim();
+      const fn = document.getElementById("cl-fn").value.trim();
+      const ln = document.getElementById("cl-ln").value.trim();
       const tone = document.getElementById("cl-tone").value;
       const profile = document.getElementById("cl-profile").value.trim();
       const job = document.getElementById("cl-job").value.trim();
@@ -636,12 +685,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("/api/generate-cover-letter", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ candidate_name: name, tone: tone, candidate_profile: profile, job_description: job, model_override: state.selectedModel })
+          body: JSON.stringify({ first_name: fn, last_name: ln, tone: tone, candidate_profile: profile, job_description: job, model_override: state.selectedModel })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Generation failed");
 
-        output.textContent = data.full_text;
+        output.value = data.full_text;
         wrap.classList.remove("hidden");
       } catch (err) {
         alert(err.message);
@@ -649,19 +698,26 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.disabled = false;
         btn.innerHTML = `<span>Generate Tailored Cover Letter</span><i class="fa-solid fa-wand-magic-sparkles"></i>`;
       }
+    };
+
+    document.getElementById("cover-letter-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      triggerCoverLetterGeneration();
     });
 
+    document.getElementById("btn-refresh-cl")?.addEventListener("click", triggerCoverLetterGeneration);
+
     document.getElementById("btn-copy-cl")?.addEventListener("click", () => {
-      const text = document.getElementById("cl-output-text")?.textContent || "";
+      const text = document.getElementById("cl-output-text")?.value || "";
       navigator.clipboard.writeText(text);
       alert("Cover letter copied to clipboard!");
     });
 
     // Salary Negotiator
-    document.getElementById("salary-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const triggerSalaryGeneration = async () => {
       const btn = document.getElementById("btn-generate-sal");
-      const name = document.getElementById("sal-name").value.trim();
+      const fn = document.getElementById("sal-fn").value.trim();
+      const ln = document.getElementById("sal-ln").value.trim();
       const title = document.getElementById("sal-title").value.trim();
       const exp = parseInt(document.getElementById("sal-exp").value) || 5;
       const offer = document.getElementById("sal-offer").value.trim();
@@ -675,16 +731,29 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("/api/generate-salary-strategy", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ candidate_name: name, job_title: title, years_experience: exp, current_offer_amount: offer, job_description: job, model_override: state.selectedModel })
+          body: JSON.stringify({ first_name: fn, last_name: ln, job_title: title, years_experience: exp, current_offer_amount: offer, job_description: job, model_override: state.selectedModel })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Generation failed");
 
         document.getElementById("sal-res-range").textContent = data.estimated_compensation_range;
         document.getElementById("sal-res-summary").textContent = data.market_alignment_summary;
+
+        // Render Real-Time Market Benchmark Sources
+        const sourcesWrap = document.getElementById("sal-market-sources-list");
+        if (sourcesWrap && data.market_sources) {
+          sourcesWrap.innerHTML = data.market_sources.map(src => `
+            <div class="gap-card">
+              <h4><i class="fa-solid fa-link"></i> ${escapeHtml(src.source_name)}</h4>
+              <p>Range: <b>${escapeHtml(src.sample_range)}</b></p>
+              <span class="gap-res">Confidence: ${escapeHtml(src.confidence)}</span>
+            </div>
+          `).join('');
+        }
+
         document.getElementById("sal-res-points").innerHTML = data.talking_points.map(p => `<li>${escapeHtml(p)}</li>`).join('');
-        document.getElementById("sal-res-script").textContent = data.counter_offer_script;
-        document.getElementById("sal-res-email").textContent = data.email_template;
+        document.getElementById("sal-res-script").value = data.counter_offer_script;
+        document.getElementById("sal-res-email").value = data.email_template;
 
         wrap.classList.remove("hidden");
       } catch (err) {
@@ -693,16 +762,24 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.disabled = false;
         btn.innerHTML = `<span>Generate Negotiation Strategy</span><i class="fa-solid fa-chart-line"></i>`;
       }
+    };
+
+    document.getElementById("salary-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      triggerSalaryGeneration();
     });
 
+    document.getElementById("btn-refresh-sal")?.addEventListener("click", triggerSalaryGeneration);
+
     // Recruiter Outreach Drafts
-    document.getElementById("outreach-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const triggerOutreachGeneration = async () => {
       const btn = document.getElementById("btn-generate-out");
-      const name = document.getElementById("out-name").value.trim();
+      const fn = document.getElementById("out-fn").value.trim();
+      const ln = document.getElementById("out-ln").value.trim();
       const company = document.getElementById("out-company").value.trim();
       const role = document.getElementById("out-role").value.trim();
       const highlights = document.getElementById("out-highlights").value.trim();
+      const client = document.getElementById("out-mail-client").value;
       const wrap = document.getElementById("out-result-wrap");
 
       btn.disabled = true;
@@ -712,24 +789,88 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("/api/generate-outreach", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ candidate_name: name, target_company: company, target_role: role, key_highlights: highlights, model_override: state.selectedModel })
+          body: JSON.stringify({ first_name: fn, last_name: ln, target_company: company, target_role: role, key_highlights: highlights, mail_client: client, model_override: state.selectedModel })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Generation failed");
 
-        document.getElementById("out-res-linkedin").textContent = data.linkedin_connection_note;
-        document.getElementById("out-res-email").textContent = data.recruiter_cold_email;
+        document.getElementById("out-res-linkedin").value = data.linkedin_connection_note;
+        document.getElementById("out-res-email").value = data.recruiter_cold_email;
 
         wrap.classList.remove("hidden");
+
+        if (client === "gmail" || client === "outlook") {
+          const mailto = `mailto:recruiter@${company.toLowerCase().replace(/\s+/g, '')}.com?subject=Application%20for%20${encodeURIComponent(role)}&body=${encodeURIComponent(data.recruiter_cold_email)}`;
+          window.open(mailto, '_blank');
+        }
       } catch (err) {
         alert(err.message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<span>Generate Outreach Messages</span><i class="fa-solid fa-paper-plane"></i>`;
       }
+    };
+
+    document.getElementById("outreach-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      triggerOutreachGeneration();
     });
 
-    // Voice Practice Speech Synthesis
+    document.getElementById("btn-refresh-out")?.addEventListener("click", triggerOutreachGeneration);
+
+    // Round Orbit Voice Practice & Assessment Engine
+    let currentQuestions = [];
+    let currentQIndex = 0;
+
+    document.getElementById("voice-intake-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fn = document.getElementById("v-fn").value.trim();
+      const ln = document.getElementById("v-ln").value.trim();
+      const role = document.getElementById("v-role").value.trim();
+      const timeline = document.getElementById("v-timeline").value;
+      const stage = document.getElementById("v-stage").value;
+
+      try {
+        const res = await fetch("/api/voice-interview/questions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ first_name: fn, last_name: ln, target_role: role, interview_timeline: timeline, career_stage: stage, model_override: state.selectedModel })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Failed to start voice intake");
+
+        currentQuestions = data;
+        currentQIndex = 0;
+        displayVoiceQuestion(0);
+
+        document.getElementById("voice-orbit-stage")?.classList.remove("hidden");
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    function displayVoiceQuestion(idx) {
+      if (!currentQuestions || idx >= currentQuestions.length) return;
+      const q = currentQuestions[idx];
+      document.getElementById("voice-q-focus").textContent = `QUESTION ${q.id} OF ${currentQuestions.length} • FOCUS: ${q.star_focus || 'STAR'}`;
+      document.getElementById("voice-question-text").textContent = `"${q.question}"`;
+      document.getElementById("voice-question-hint").textContent = `Recommended Talking Point: ${q.recommended_talking_point}`;
+    }
+
+    document.getElementById("btn-next-question")?.addEventListener("click", () => {
+      if (currentQIndex < currentQuestions.length - 1) {
+        currentQIndex++;
+        displayVoiceQuestion(currentQIndex);
+      } else {
+        alert("You have reached the final STAR interview question!");
+      }
+    });
+
+    document.getElementById("orbit-core-btn")?.addEventListener("click", () => {
+      const core = document.getElementById("orbit-core-btn");
+      core.classList.toggle("pulse-live");
+    });
+
     document.getElementById("btn-speak-question")?.addEventListener("click", () => {
       const q = document.getElementById("voice-question-text")?.textContent || "";
       if ('speechSynthesis' in window) {
@@ -742,8 +883,41 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    document.getElementById("btn-mic-practice")?.addEventListener("click", () => {
-      alert("Mic Practice active! Record your response out loud following the Situation -> Task -> Action -> Result framework.");
+    document.getElementById("btn-complete-voice-session")?.addEventListener("click", async () => {
+      const fn = document.getElementById("v-fn").value.trim();
+      const ln = document.getElementById("v-ln").value.trim();
+      const role = document.getElementById("v-role").value.trim();
+      const stage = document.getElementById("v-stage").value;
+
+      try {
+        const res = await fetch("/api/voice-interview/report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ first_name: fn, last_name: ln, target_role: role, career_stage: stage, model_override: state.selectedModel })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Failed to generate evaluation");
+
+        document.getElementById("v-rep-rating").textContent = data.overall_rating;
+        document.getElementById("v-rep-strong").innerHTML = data.strong_points.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+        document.getElementById("v-rep-weak").innerHTML = data.weaknesses.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+        document.getElementById("v-rep-actions").innerHTML = data.areas_to_review.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+        document.getElementById("v-rep-summary").value = data.downloadable_summary;
+
+        document.getElementById("voice-report-card")?.classList.remove("hidden");
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    document.getElementById("btn-download-voice-report")?.addEventListener("click", () => {
+      const text = document.getElementById("v-rep-summary")?.value || "STAR Assessment Summary";
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "RoleReady_STAR_Assessment_Review.txt";
+      a.click();
     });
   }
 

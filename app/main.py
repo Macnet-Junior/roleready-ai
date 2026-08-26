@@ -12,12 +12,14 @@ from .job_fetch import JobFetchError, fetch_job_description
 from .gemini_service import (
     ConfigurationError, OptimizationError, configured_api_version, configured_model,
     optimize_resume, compare_multiple_resumes, generate_cover_letter, generate_salary_strategy,
-    generate_outreach_drafts, probe_model, _client, _supports_generate
+    generate_outreach_drafts, generate_voice_interview_questions, generate_voice_interview_report,
+    probe_model, _client, _supports_generate
 )
 from .models import (
     OptimizeRequest, OptimizeResponse, MultiResumeRequest, MultiResumeResponse,
     CoverLetterRequest, CoverLetterResponse, SalaryNegotiationRequest, SalaryNegotiationResponse,
-    OutreachDraftRequest, OutreachDraftResponse, PublishLeaderboardRequest, PublishLeaderboardResponse
+    OutreachDraftRequest, OutreachDraftResponse, PublishLeaderboardRequest, PublishLeaderboardResponse,
+    VoiceInterviewIntake, VoiceInterviewQuestion, VoiceInterviewReport
 )
 
 load_dotenv()
@@ -235,6 +237,24 @@ def publish_leaderboard(payload: PublishLeaderboardRequest):
         candidates_count=payload.candidates_count,
         top_candidate=top
     )
+
+@app.post("/api/voice-interview/questions", response_model=list[VoiceInterviewQuestion])
+def voice_interview_questions(payload: VoiceInterviewIntake):
+    try:
+        return generate_voice_interview_questions(payload)
+    except ConfigurationError:
+        raise HTTPException(503, "The optimization service is not configured")
+    except OptimizationError as exc:
+        raise HTTPException(exc.status_code, exc.user_message)
+
+@app.post("/api/voice-interview/report", response_model=VoiceInterviewReport)
+def voice_interview_report(payload: VoiceInterviewIntake):
+    try:
+        return generate_voice_interview_report(payload)
+    except ConfigurationError:
+        raise HTTPException(503, "The optimization service is not configured")
+    except OptimizationError as exc:
+        raise HTTPException(exc.status_code, exc.user_message)
 
 @app.exception_handler(RequestValidationError)
 async def validation_error(_: Request, exc: RequestValidationError):

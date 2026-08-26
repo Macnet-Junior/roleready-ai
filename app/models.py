@@ -165,12 +165,22 @@ class AuthResponse(BaseModel):
     token: str
     user: UserProfile
 
+# Market Benchmark Data Source
+class MarketDataSource(BaseModel):
+    source_name: str
+    url: str = ""
+    sample_range: str
+    confidence: str = "High"
+
 # Cover Letter Generator Models
 class CoverLetterRequest(BaseModel):
-    candidate_name: str = Field(min_length=1, max_length=120)
+    first_name: str = Field(default="Alex", min_length=1, max_length=60)
+    last_name: str = Field(default="Morgan", min_length=1, max_length=60)
+    candidate_name: str = Field(default="Alex Morgan", min_length=1, max_length=120)
     candidate_profile: str = Field(min_length=50, max_length=50_000)
-    job_description: str = Field(min_length=100, max_length=50_000)
+    job_description: str = Field(min_length=50, max_length=50_000)
     tone: Literal["professional", "executive", "bold", "creative"] = "executive"
+    headshot_url: str | None = None
     model_override: str | None = Field(default=None, max_length=120)
 
 class CoverLetterResponse(BaseModel):
@@ -182,7 +192,9 @@ class CoverLetterResponse(BaseModel):
 
 # Salary & Compensation Negotiator Models
 class SalaryNegotiationRequest(BaseModel):
-    candidate_name: str = Field(min_length=1, max_length=120)
+    first_name: str = Field(default="Alex", min_length=1, max_length=60)
+    last_name: str = Field(default="Morgan", min_length=1, max_length=60)
+    candidate_name: str = Field(default="Alex Morgan", min_length=1, max_length=120)
     job_title: str = Field(min_length=2, max_length=200)
     job_description: str = Field(min_length=50, max_length=50_000)
     years_experience: int = Field(default=5, ge=0, le=50)
@@ -196,19 +208,46 @@ class SalaryNegotiationResponse(BaseModel):
     talking_points: list[str]
     counter_offer_script: str
     email_template: str
+    market_sources: list[MarketDataSource] = Field(default_factory=list)
 
 # Recruiter Outreach Drafts Models
 class OutreachDraftRequest(BaseModel):
-    candidate_name: str = Field(min_length=1, max_length=120)
+    first_name: str = Field(default="Alex", min_length=1, max_length=60)
+    last_name: str = Field(default="Morgan", min_length=1, max_length=60)
+    candidate_name: str = Field(default="Alex Morgan", min_length=1, max_length=120)
     target_company: str = Field(min_length=1, max_length=120)
     target_role: str = Field(min_length=1, max_length=120)
     key_highlights: str = Field(default="", max_length=5000)
+    mail_client: Literal["gmail", "outlook", "apple_mail", "copy"] = "gmail"
     model_override: str | None = Field(default=None, max_length=120)
 
 class OutreachDraftResponse(BaseModel):
     linkedin_connection_note: str
     recruiter_cold_email: str
     hiring_manager_followup: str
+
+# Voice Interview Intake & Assessment Models
+class VoiceInterviewIntake(BaseModel):
+    first_name: str = Field(default="Candidate", min_length=1, max_length=60)
+    last_name: str = Field(default="User", min_length=1, max_length=60)
+    target_role: str = Field(min_length=2, max_length=120)
+    interview_timeline: Literal["tomorrow", "this_week", "in_2_weeks", "exploring"] = "this_week"
+    years_experience: int = Field(default=5, ge=0, le=50)
+    career_stage: Literal["early_career", "mid_level", "senior", "executive"] = "mid_level"
+    model_override: str | None = Field(default=None, max_length=120)
+
+class VoiceInterviewQuestion(BaseModel):
+    id: int
+    question: str
+    star_focus: str
+    recommended_talking_point: str
+
+class VoiceInterviewReport(BaseModel):
+    overall_rating: str
+    strong_points: list[str]
+    weaknesses: list[str]
+    areas_to_review: list[str]
+    downloadable_summary: str
 
 # Publish Leaderboard Models
 class PublishLeaderboardRequest(BaseModel):
@@ -244,20 +283,23 @@ class ResumeProjectItem(BaseModel):
     tech_stack: list[str]
 
 class ResumeBuilderData(BaseModel):
-    candidate_name: str
-    email: str
-    phone: str
-    location: str
+    first_name: str = "Alex"
+    last_name: str = "Morgan"
+    email: str = "alex@executive.io"
+    phone: str = "(555) 019-2834"
+    location: str = "San Francisco, CA"
     linkedin_url: str = ""
     github_url: str = ""
-    professional_title: str
-    summary: str
-    skills: list[str]
-    experiences: list[ResumeExperienceItem]
-    education: list[ResumeEducationItem]
+    headshot_photo_data: str | None = None
+    professional_title: str = "Senior Engineer"
+    summary: str = ""
+    skills: list[str] = Field(default_factory=list)
+    experiences: list[ResumeExperienceItem] = Field(default_factory=list)
+    education: list[ResumeEducationItem] = Field(default_factory=list)
     projects: list[ResumeProjectItem] = Field(default_factory=list)
     certifications: list[str] = Field(default_factory=list)
     selected_theme: str = "modern_executive"
+    is_pro_unlocked: bool = False
 
 
 

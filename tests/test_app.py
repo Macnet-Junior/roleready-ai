@@ -319,8 +319,25 @@ def test_new_ai_generators_endpoints(monkeypatch):
  assert sal_res.status_code == 200
  assert sal_res.json()["estimated_compensation_range"] == "$180k - $210k"
 
- out_res = client.post("/api/generate-outreach", json={"candidate_name": "Alex", "target_company": "Stripe", "target_role": "Engineer"})
+ out_res = client.post("/api/generate-outreach", json={"first_name": "Alex", "last_name": "Morgan", "target_company": "Stripe", "target_role": "Engineer"})
  assert out_res.status_code == 200
  assert "linkedin_connection_note" in out_res.json()
 
+def test_voice_interview_endpoints(monkeypatch):
+  from app import main
+  from app.models import VoiceInterviewQuestion, VoiceInterviewReport
 
+  monkeypatch.setattr(main, "generate_voice_interview_questions", lambda req: [
+    VoiceInterviewQuestion(id=1, question="Tell me about a production outage.", star_focus="Situation", recommended_talking_point="Root cause analysis")
+  ])
+  monkeypatch.setattr(main, "generate_voice_interview_report", lambda req: VoiceInterviewReport(
+    overall_rating="Strong Hire — 92/100", strong_points=["Great metric quantification"], weaknesses=["Could elaborate on team dynamics"], areas_to_review=["System architecture design"], downloadable_summary="Excellent overall performance."
+  ))
+
+  q_res = client.post("/api/voice-interview/questions", json={"first_name": "Alex", "last_name": "Morgan", "target_role": "Senior Engineer", "interview_timeline": "this_week", "career_stage": "senior"})
+  assert q_res.status_code == 200
+  assert len(q_res.json()) == 1
+
+  rep_res = client.post("/api/voice-interview/report", json={"first_name": "Alex", "last_name": "Morgan", "target_role": "Senior Engineer", "career_stage": "senior"})
+  assert rep_res.status_code == 200
+  assert rep_res.json()["overall_rating"].startswith("Strong Hire")
