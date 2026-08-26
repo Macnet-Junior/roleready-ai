@@ -272,12 +272,13 @@ Generate:
 
 def generate_voice_interview_questions(intake: VoiceInterviewIntake) -> list[VoiceInterviewQuestion]:
     name = f"{intake.first_name} {intake.last_name}".strip()
-    prompt = f"""You are an elite executive STAR interviewer. Generate a tailored 5-question interview session for {name}.
+    count = min(max(intake.questions_count, 1), 10)
+    prompt = f"""You are an elite executive STAR interviewer. Generate a tailored {count}-question interview session for {name}.
 Target Role: {intake.target_role}
 Timeline: {intake.interview_timeline}
 Years Experience: {intake.years_experience}
 Career Stage: {intake.career_stage}
-Generate 5 structured VoiceInterviewQuestion objects with id (1-5), question, star_focus (Situation, Task, Action, or Result), and recommended_talking_point."""
+Generate exactly {count} structured VoiceInterviewQuestion objects with id (1 to {count}), question, star_focus (Situation, Task, Action, or Result), and recommended_talking_point."""
 
     class QuestionsWrapper(BaseModel):
         questions: list[VoiceInterviewQuestion]

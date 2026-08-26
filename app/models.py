@@ -234,6 +234,8 @@ class VoiceInterviewIntake(BaseModel):
     interview_timeline: Literal["tomorrow", "this_week", "in_2_weeks", "exploring"] = "this_week"
     years_experience: int = Field(default=5, ge=0, le=50)
     career_stage: Literal["early_career", "mid_level", "senior", "executive"] = "mid_level"
+    questions_count: int = Field(default=5, ge=1, le=10)
+    voice_profile: str = Field(default="soft_executive", max_length=60)
     model_override: str | None = Field(default=None, max_length=120)
 
 class VoiceInterviewQuestion(BaseModel):

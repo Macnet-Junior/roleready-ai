@@ -821,6 +821,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Round Orbit Voice Practice & Assessment Engine
     let currentQuestions = [];
     let currentQIndex = 0;
+    let availableVoices = [];
+
+    if ('speechSynthesis' in window) {
+      const loadVoices = () => {
+        availableVoices = window.speechSynthesis.getVoices();
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
 
     document.getElementById("voice-intake-form")?.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -829,12 +838,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const role = document.getElementById("v-role").value.trim();
       const timeline = document.getElementById("v-timeline").value;
       const stage = document.getElementById("v-stage").value;
+      const qCount = parseInt(document.getElementById("v-questions-count")?.value) || 5;
+      const voiceProfile = document.getElementById("v-voice-select")?.value || "soft_executive";
 
       try {
         const res = await fetch("/api/voice-interview/questions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ first_name: fn, last_name: ln, target_role: role, interview_timeline: timeline, career_stage: stage, model_override: state.selectedModel })
+          body: JSON.stringify({ first_name: fn, last_name: ln, target_role: role, interview_timeline: timeline, career_stage: stage, questions_count: qCount, voice_profile: voiceProfile, model_override: state.selectedModel })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Failed to start voice intake");
@@ -850,12 +861,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function displayVoiceQuestion(idx) {
-      if (!currentQuestions || idx >= currentQuestions.length) return;
+      if (!currentQuestions || idx < 0 || idx >= currentQuestions.length) return;
       const q = currentQuestions[idx];
-      document.getElementById("voice-q-focus").textContent = `QUESTION ${q.id} OF ${currentQuestions.length} • FOCUS: ${q.star_focus || 'STAR'}`;
+      document.getElementById("voice-q-focus").textContent = `QUESTION ${q.id || (idx + 1)} OF ${currentQuestions.length} • FOCUS: ${q.star_focus || 'STAR'}`;
       document.getElementById("voice-question-text").textContent = `"${q.question}"`;
       document.getElementById("voice-question-hint").textContent = `Recommended Talking Point: ${q.recommended_talking_point}`;
     }
+
+    document.getElementById("btn-prev-question")?.addEventListener("click", () => {
+      if (currentQIndex > 0) {
+        currentQIndex--;
+        displayVoiceQuestion(currentQIndex);
+      } else {
+        alert("You are on the first question.");
+      }
+    });
+
+    document.getElementById("btn-skip-question")?.addEventListener("click", () => {
+      if (currentQIndex < currentQuestions.length - 1) {
+        currentQIndex++;
+        displayVoiceQuestion(currentQIndex);
+      } else {
+        alert("You are on the final question.");
+      }
+    });
 
     document.getElementById("btn-next-question")?.addEventListener("click", () => {
       if (currentQIndex < currentQuestions.length - 1) {
@@ -868,7 +897,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("orbit-core-btn")?.addEventListener("click", () => {
       const core = document.getElementById("orbit-core-btn");
-      core.classList.toggle("pulse-live");
+      const badge = document.getElementById("orbit-mic-status-badge");
+      const isLive = core.classList.toggle("pulse-live");
+      
+      if (badge) {
+        if (isLive) {
+          badge.className = "mic-status-badge active mb-3";
+          badge.innerHTML = `<i class="fa-solid fa-microphone me-1"></i> Mic Active (Listening...)`;
+        } else {
+          badge.className = "mic-status-badge muted mb-3";
+          badge.innerHTML = `<i class="fa-solid fa-microphone-slash me-1"></i> Mic Muted (Click Orb to Speak)`;
+        }
+      }
     });
 
     document.getElementById("btn-speak-question")?.addEventListener("click", () => {
@@ -876,7 +916,22 @@ document.addEventListener("DOMContentLoaded", () => {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(q);
-        utterance.rate = 0.95;
+        utterance.rate = 0.92; // Natural, unhurried cadence
+        utterance.pitch = 1.05; // Gentle, warm tone
+
+        const profile = document.getElementById("v-voice-select")?.value;
+        if (availableVoices.length > 0) {
+          let chosen = null;
+          if (profile === "british_accent") {
+            chosen = availableVoices.find(v => v.lang.includes("en-GB") || v.name.includes("UK") || v.name.includes("Daniel"));
+          } else if (profile === "warm_recruiter") {
+            chosen = availableVoices.find(v => v.name.includes("Samantha") || v.name.includes("Karen") || v.name.includes("Google US English"));
+          } else {
+            chosen = availableVoices.find(v => v.lang.includes("en") && (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Samantha")));
+          }
+          if (chosen) utterance.voice = chosen;
+        }
+
         window.speechSynthesis.speak(utterance);
       } else {
         alert("Speech synthesis is not supported on this browser.");

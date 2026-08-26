@@ -684,6 +684,15 @@
               <label for="v-role">Target Role Type / Title</label>
               <input id="v-role" required placeholder="Senior AI Platform Engineer" class="glass-input">
             </div>
+            <div class="form-group">
+              <label for="v-voice-select"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Voice Profile (Natural & Soft Speech)</label>
+              <select id="v-voice-select" class="glass-select full-width">
+                <option value="soft_executive">🎙️ Executive Coach (Soft & Professional)</option>
+                <option value="warm_recruiter">🎙️ Warm Recruiter (Friendly & Natural)</option>
+                <option value="hiring_manager">🎙️ Senior Hiring Manager (Clear & Articulate)</option>
+                <option value="british_accent">🎙️ British Accent (Polished)</option>
+              </select>
+            </div>
           </div>
 
           <div class="input-card">
@@ -692,7 +701,7 @@
                 <label for="v-timeline">How Soon is Interview?</label>
                 <select id="v-timeline" class="glass-select full-width">
                   <option value="tomorrow">Tomorrow</option>
-                  <option value="this_week">This Week</option>
+                  <option value="this_week" selected>This Week</option>
                   <option value="in_2_weeks">In 2 Weeks</option>
                   <option value="exploring">Exploring Roles</option>
                 </select>
@@ -707,6 +716,15 @@
                 </select>
               </div>
             </div>
+            <div class="form-group mb-3">
+              <label for="v-questions-count"><i class="fa-solid fa-list-ol"></i> Session Questions Count (Max 10)</label>
+              <select id="v-questions-count" class="glass-select full-width">
+                <option value="3">3 Questions (Quick Practice)</option>
+                <option value="5" selected>5 Questions (Standard Practice)</option>
+                <option value="7">7 Questions (In-Depth Practice)</option>
+                <option value="10">10 Questions (Full Mock Assessment)</option>
+              </select>
+            </div>
             <button type="submit" id="btn-start-voice-session" class="cta-button full-width mt-3">
               <span>Activate Round Orbit AI Interviewer</span>
               <i class="fa-solid fa-circle-play"></i>
@@ -716,6 +734,11 @@
 
         <!-- Round Orbit Voice UI Stage (Activates on request) -->
         <div id="voice-orbit-stage" class="voice-stage text-center hidden">
+          <!-- Live Mic Status Badge Pop-Up -->
+          <div id="orbit-mic-status-badge" class="mic-status-badge muted mb-3">
+            <i class="fa-solid fa-microphone-slash me-1"></i> Mic Muted (Click Orb to Speak)
+          </div>
+
           <!-- Futuristic Round Orbit Container -->
           <div class="orbit-container">
             <div class="orbit-ring ring-1"></div>
@@ -731,10 +754,12 @@
             <p id="voice-question-hint" class="text-muted mt-2">Recommended Talking Point: Quantify the downtime saved and outline your incident response.</p>
           </div>
 
-          <div class="voice-controls mt-4">
+          <div class="voice-controls mt-4 flex-between" style="gap:10px; max-width:680px; margin:20px auto 0;">
+            <button type="button" id="btn-prev-question" class="glass-btn secondary-btn"><i class="fa-solid fa-backward"></i> Previous (Retake)</button>
             <button type="button" id="btn-speak-question" class="glass-btn primary-btn"><i class="fa-solid fa-volume-high"></i> Speak Out Loud</button>
-            <button type="button" id="btn-next-question" class="glass-btn secondary-btn ms-2"><i class="fa-solid fa-forward"></i> Next Question</button>
-            <button type="button" id="btn-complete-voice-session" class="glass-btn danger-btn ms-2"><i class="fa-solid fa-flag-checkered"></i> Finish & Generate Assessment</button>
+            <button type="button" id="btn-skip-question" class="glass-btn secondary-btn"><i class="fa-solid fa-forward-step"></i> Skip Question</button>
+            <button type="button" id="btn-next-question" class="glass-btn secondary-btn"><i class="fa-solid fa-forward"></i> Next</button>
+            <button type="button" id="btn-complete-voice-session" class="glass-btn danger-btn"><i class="fa-solid fa-flag-checkered"></i> Finish</button>
           </div>
         </div>
 
