@@ -114,7 +114,22 @@
         <i class="fa-solid fa-file-signature"></i> <span>Single Resume</span>
       </button>
       <button type="button" class="nav-tab" data-tab="multi-benchmark">
-        <i class="fa-solid fa-users-viewfinder"></i> <span>Multi-Compare</span>
+        <i class="fa-solid fa-users-viewfinder"></i> <span>Multi-Compare (10)</span>
+      </button>
+      <button type="button" class="nav-tab" data-tab="resume-builder">
+        <i class="fa-solid fa-palette"></i> <span>Resume Studio</span>
+      </button>
+      <button type="button" class="nav-tab" data-tab="cover-letter">
+        <i class="fa-solid fa-envelope-open-text"></i> <span>Cover Letter</span>
+      </button>
+      <button type="button" class="nav-tab" data-tab="salary-negotiator">
+        <i class="fa-solid fa-hand-holding-dollar"></i> <span>Salary Strategy</span>
+      </button>
+      <button type="button" class="nav-tab" data-tab="recruiter-outreach">
+        <i class="fa-solid fa-paper-plane"></i> <span>Outreach Drafts</span>
+      </button>
+      <button type="button" class="nav-tab" data-tab="voice-interview">
+        <i class="fa-solid fa-microphone-lines"></i> <span>Voice STAR Practice</span>
       </button>
       <button type="button" class="nav-tab" data-tab="history-view">
         <i class="fa-solid fa-box-archive"></i> <span>Saved Reports</span>
@@ -208,7 +223,6 @@
             <div class="char-counter"><span id="uc">0</span> / 10,000</div>
           </div>
 
-
           <div class="form-actions">
             <div class="privacy-note">
               <i class="fa-solid fa-shield-halved"></i> Privacy Protected: Text processed in-memory and excluded from logs.
@@ -222,26 +236,26 @@
       </section>
     </div>
 
-    <!-- TAB 2: Multi-Resume Benchmarking -->
+    <!-- TAB 2: Multi-Resume Benchmarking (Up to 10 Candidates) -->
     <div id="tab-multi-benchmark" class="tab-page">
       <section class="glass-card workspace-card">
         <div class="form-header">
-          <h3><i class="fa-solid fa-users-rectangle"></i> Multi-Resume Candidate Benchmarking</h3>
-          <p>Compare up to 5 resumes side-by-side against a single job description to find the strongest match.</p>
+          <h3><i class="fa-solid fa-users-rectangle"></i> Enterprise Multi-Resume Benchmarking</h3>
+          <p>Compare up to <b>10 candidate resumes</b> side-by-side against a single job description to rank top talent for large recruiting seasons.</p>
         </div>
 
         <div class="multi-form">
           <div class="input-card mb-4">
-            <label><i class="fa-solid fa-briefcase"></i> Job Description for Benchmark</label>
+            <label for="multi-job-desc"><i class="fa-solid fa-briefcase"></i> Job Description for Benchmark</label>
             <textarea id="multi-job-desc" minlength="100" maxlength="50000" placeholder="Paste the job description here..." class="glass-textarea"></textarea>
           </div>
 
           <div class="candidates-container">
-            <h4><i class="fa-solid fa-users"></i> Candidate Resumes to Compare</h4>
+            <h4><i class="fa-solid fa-users"></i> Candidate Resumes to Compare (Up to 10)</h4>
             <div id="candidates-list" class="candidates-list">
-              <!-- Candidate entries inserted dynamically -->
+              <!-- Candidate entries inserted dynamically up to 10 -->
             </div>
-            <button type="button" id="btn-add-candidate" class="glass-btn secondary-btn"><i class="fa-solid fa-plus"></i> Add Candidate</button>
+            <button type="button" id="btn-add-candidate" class="glass-btn secondary-btn"><i class="fa-solid fa-plus"></i> Add Candidate Slot</button>
           </div>
 
           <div class="form-actions mt-4">
@@ -253,6 +267,308 @@
         </div>
 
         <div id="multi-results" class="results-container hidden"></div>
+      </section>
+    </div>
+
+    <!-- TAB 3: Resume Studio & Theme Builder -->
+    <div id="tab-resume-builder" class="tab-page">
+      <section class="glass-card workspace-card">
+        <div class="form-header flex-between">
+          <div>
+            <h3><i class="fa-solid fa-palette"></i> Resume Theme Studio & Builder</h3>
+            <p>Select a modern theme and generate a polished, job-ready, styled resume in seconds.</p>
+          </div>
+          <button id="btn-print-resume" class="glass-btn primary-btn"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+        </div>
+
+        <!-- Theme Picker Gallery -->
+        <div class="theme-gallery-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Select Resume Theme</div>
+        <div class="theme-picker-grid">
+          <div class="theme-card active" data-theme="modern_executive">
+            <span class="theme-badge free">Free</span>
+            <div class="theme-preview-box theme-exec"></div>
+            <strong>Modern Executive</strong>
+            <small>Deep navy headers & bold metrics</small>
+          </div>
+          <div class="theme-card" data-theme="minimalist_slate">
+            <span class="theme-badge free">Free</span>
+            <div class="theme-preview-box theme-slate"></div>
+            <strong>Minimalist Slate</strong>
+            <small>Clean monochrome & elegant grid</small>
+          </div>
+          <div class="theme-card" data-theme="clean_tech">
+            <span class="theme-badge free">Free</span>
+            <div class="theme-preview-box theme-tech"></div>
+            <strong>Clean Tech</strong>
+            <small>Emerald highlights & modern sans</small>
+          </div>
+          <div class="theme-card" data-theme="stanford_gold">
+            <span class="theme-badge pro">Pro 👑</span>
+            <div class="theme-preview-box theme-gold"></div>
+            <strong>Stanford Gold</strong>
+            <small>Ivy League gold accents & serif</small>
+          </div>
+          <div class="theme-card" data-theme="harvard_classic">
+            <span class="theme-badge pro">Pro 👑</span>
+            <div class="theme-preview-box theme-harvard"></div>
+            <strong>Harvard Classic</strong>
+            <small>Timeless crimson & serif titles</small>
+          </div>
+          <div class="theme-card" data-theme="cyber_neon">
+            <span class="theme-badge pro">Pro 👑</span>
+            <div class="theme-preview-box theme-cyber"></div>
+            <strong>Cyber Neon Glass</strong>
+            <small>Futuristic violet glow & tech badges</small>
+          </div>
+        </div>
+
+        <!-- Live Styled Resume Document Preview -->
+        <div class="builder-stage mt-4">
+          <div id="resume-document-preview" class="resume-sheet theme-modern_executive">
+            <header class="resume-header">
+              <h1 id="builder-name">Alex Morgan</h1>
+              <p id="builder-title" class="resume-subtitle">Senior Software Engineer & AI Architect</p>
+              <div id="builder-contact" class="resume-contact">
+                alex.morgan@executive.io • (555) 019-2834 • San Francisco, CA • linkedin.com/in/alexmorgan
+              </div>
+            </header>
+
+            <section class="resume-section">
+              <h2>Professional Summary</h2>
+              <p id="builder-summary">Results-driven Senior Engineer with 8+ years optimizing high-scale distributed systems and enterprise AI solutions. Proven track record boosting throughput by 40% and reducing infrastructure token cost.</p>
+            </section>
+
+            <section class="resume-section">
+              <h2>Core Technical Proficiencies</h2>
+              <div id="builder-skills" class="resume-tags">
+                <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Docker</span><span class="tag">Gemini API</span><span class="tag">PostgreSQL</span><span class="tag">React</span><span class="tag">System Design</span>
+              </div>
+            </section>
+
+            <section class="resume-section">
+              <h2>Professional Experience</h2>
+              <div id="builder-experience" class="experience-list">
+                <div class="exp-item">
+                  <div class="exp-header">
+                    <strong>Lead AI Systems Architect</strong> — <span>TechCorp Global</span>
+                    <span class="exp-dates">2022 – Present</span>
+                  </div>
+                  <ul>
+                    <li>Architected LLM caching pipeline reducing API cost by 35% across 200,000 monthly active users.</li>
+                    <li>Led cross-functional team of 6 engineers launching real-time analytics dashboard.</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="resume-section">
+              <h2>Education & Credentials</h2>
+              <div id="builder-education" class="education-list">
+                <p><strong>B.S. in Computer Science</strong> — Stanford University (2018)</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 4: Cover Letter Studio -->
+    <div id="tab-cover-letter" class="tab-page">
+      <section class="glass-card workspace-card">
+        <div class="form-header">
+          <h3><i class="fa-solid fa-envelope-open-text"></i> AI Cover Letter Generator</h3>
+          <p>Generate a customized, persuasive cover letter targeted to specific job requirements.</p>
+        </div>
+
+        <form id="cover-letter-form" class="grid-2-col">
+          <div class="input-card">
+            <div class="form-group mb-3">
+              <label for="cl-name">Candidate Name</label>
+              <input id="cl-name" required placeholder="Alex Morgan" class="glass-input">
+            </div>
+            <div class="form-group mb-3">
+              <label for="cl-tone">Cover Letter Tone</label>
+              <select id="cl-tone" class="glass-select full-width">
+                <option value="executive">Executive & Leadership</option>
+                <option value="professional">Professional & Direct</option>
+                <option value="bold">Bold & High-Impact</option>
+                <option value="creative">Creative & Engaging</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cl-profile">Candidate Experience / Resume Profile</label>
+              <textarea id="cl-profile" minlength="50" required placeholder="Paste resume text or profile..." class="glass-textarea short-textarea"></textarea>
+            </div>
+          </div>
+
+          <div class="input-card">
+            <div class="form-group mb-3">
+              <label for="cl-job">Target Job Description</label>
+              <textarea id="cl-job" minlength="50" required placeholder="Paste job description here..." class="glass-textarea"></textarea>
+            </div>
+            <button type="submit" id="btn-generate-cl" class="cta-button full-width">
+              <span>Generate Tailored Cover Letter</span>
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
+          </div>
+        </form>
+
+        <div id="cl-result-wrap" class="review-preview hidden mt-4">
+          <div class="flex-between mb-2">
+            <span class="preview-heading">Generated Cover Letter</span>
+            <button type="button" id="btn-copy-cl" class="glass-btn secondary-btn"><i class="fa-solid fa-copy"></i> Copy Letter</button>
+          </div>
+          <div id="cl-output-text" class="glass-textarea" style="height:auto; min-height:250px; white-space:pre-wrap;"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 5: Salary Negotiator -->
+    <div id="tab-salary-negotiator" class="tab-page">
+      <section class="glass-card workspace-card">
+        <div class="form-header">
+          <h3><i class="fa-solid fa-hand-holding-dollar"></i> AI Salary & Compensation Negotiator</h3>
+          <p>Estimate market compensation, review strategic talking points, and draft counter-offer emails.</p>
+        </div>
+
+        <form id="salary-form" class="grid-2-col">
+          <div class="input-card">
+            <div class="form-group mb-3">
+              <label for="sal-name">Candidate Name</label>
+              <input id="sal-name" required placeholder="Alex Morgan" class="glass-input">
+            </div>
+            <div class="form-group mb-3">
+              <label for="sal-title">Target Job Title</label>
+              <input id="sal-title" required placeholder="Senior Software Engineer" class="glass-input">
+            </div>
+            <div class="form-group mb-3">
+              <label for="sal-exp">Years of Relevant Experience</label>
+              <input id="sal-exp" type="number" min="0" max="50" value="6" class="glass-input">
+            </div>
+            <div class="form-group">
+              <label for="sal-offer">Current Offer Amount (Optional)</label>
+              <input id="sal-offer" placeholder="e.g. $165,000 + 10% bonus" class="glass-input">
+            </div>
+          </div>
+
+          <div class="input-card">
+            <div class="form-group mb-3">
+              <label for="sal-job">Job Description / Requirements Summary</label>
+              <textarea id="sal-job" minlength="50" required placeholder="Paste job description or key responsibilities..." class="glass-textarea"></textarea>
+            </div>
+            <button type="submit" id="btn-generate-sal" class="cta-button full-width">
+              <span>Generate Negotiation Strategy</span>
+              <i class="fa-solid fa-chart-line"></i>
+            </button>
+          </div>
+        </form>
+
+        <div id="sal-result-wrap" class="hidden mt-4">
+          <div class="glass-card mb-3">
+            <div class="results-status-banner">
+              <div>
+                <span class="hero-tag">COMPENSATION ANALYSIS</span>
+                <h2 id="sal-res-range">$175,000 – $210,000 Base</h2>
+                <p id="sal-res-summary" class="text-muted"></p>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <h4><i class="fa-solid fa-comments"></i> Strategic Talking Points</h4>
+              <ul id="sal-res-points" class="mt-2"></ul>
+            </div>
+
+            <div class="mt-3">
+              <h4><i class="fa-solid fa-file-contract"></i> Counter-Offer Script</h4>
+              <div id="sal-res-script" class="glass-textarea mt-1" style="height:auto; min-height:100px; white-space:pre-wrap;"></div>
+            </div>
+
+            <div class="mt-3">
+              <h4><i class="fa-solid fa-paper-plane"></i> Negotiation Email Template</h4>
+              <div id="sal-res-email" class="glass-textarea mt-1" style="height:auto; min-height:120px; white-space:pre-wrap;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 6: Recruiter Outreach Drafts -->
+    <div id="tab-recruiter-outreach" class="tab-page">
+      <section class="glass-card workspace-card">
+        <div class="form-header">
+          <h3><i class="fa-solid fa-paper-plane"></i> Recruiter & Hiring Manager Outreach Hub</h3>
+          <p>Generate tailored LinkedIn connection notes, cold recruiter emails, and follow-ups.</p>
+        </div>
+
+        <form id="outreach-form" class="grid-2-col">
+          <div class="input-card">
+            <div class="form-group mb-3">
+              <label for="out-name">Candidate Name</label>
+              <input id="out-name" required placeholder="Alex Morgan" class="glass-input">
+            </div>
+            <div class="form-group mb-3">
+              <label for="out-company">Target Company</label>
+              <input id="out-company" required placeholder="Stripe / Google / OpenAI" class="glass-input">
+            </div>
+            <div class="form-group">
+              <label for="out-role">Target Role Title</label>
+              <input id="out-role" required placeholder="Staff AI Infrastructure Engineer" class="glass-input">
+            </div>
+          </div>
+
+          <div class="input-card">
+            <div class="form-group mb-3">
+              <label for="out-highlights">Key Background Highlights (Optional)</label>
+              <textarea id="out-highlights" placeholder="e.g. 7 years experience in distributed Python services, reduced cloud infrastructure cost by 30%..." class="glass-textarea short-textarea"></textarea>
+            </div>
+            <button type="submit" id="btn-generate-out" class="cta-button full-width">
+              <span>Generate Outreach Messages</span>
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </form>
+
+        <div id="out-result-wrap" class="hidden mt-4 grid-2-col">
+          <div class="glass-card">
+            <h4><i class="fa-brands fa-linkedin text-cyan"></i> LinkedIn Connection Note (<300 Chars)</h4>
+            <div id="out-res-linkedin" class="glass-textarea mt-2" style="height:auto; min-height:80px;"></div>
+          </div>
+          <div class="glass-card">
+            <h4><i class="fa-solid fa-envelope text-indigo"></i> Recruiter Cold Email</h4>
+            <div id="out-res-email" class="glass-textarea mt-2" style="height:auto; min-height:160px; white-space:pre-wrap;"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 7: Voice STAR Practice -->
+    <div id="tab-voice-interview" class="tab-page">
+      <section class="glass-card workspace-card">
+        <div class="form-header">
+          <h3><i class="fa-solid fa-microphone-lines"></i> Interactive Voice STAR Interview Practice</h3>
+          <p>Practice answering STAR interview questions out loud with speech synthesis and live audio visualization.</p>
+        </div>
+
+        <div class="voice-stage text-center">
+          <div class="voice-wave-container">
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+          </div>
+
+          <div class="star-question-card mt-3">
+            <span class="hero-tag">STAR PRACTICE QUESTION</span>
+            <h3 id="voice-question-text">"Tell me about a time you resolved a critical production system failure under intense pressure."</h3>
+            <p id="voice-question-hint" class="text-muted mt-2">Highlight: Situation $\rightarrow$ Task $\rightarrow$ Action $\rightarrow$ Result (Quantifiable outcome).</p>
+          </div>
+
+          <div class="voice-controls mt-4">
+            <button type="button" id="btn-speak-question" class="glass-btn primary-btn"><i class="fa-solid fa-volume-high"></i> Speak Question Out Loud</button>
+            <button type="button" id="btn-mic-practice" class="glass-btn danger-btn ms-2"><i class="fa-solid fa-microphone"></i> Start Mic Practice</button>
+          </div>
+        </div>
       </section>
     </div>
 

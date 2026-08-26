@@ -9,8 +9,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from .extraction import ResumeExtractionError, extract_resume
 from .job_fetch import JobFetchError, fetch_job_description
-from .gemini_service import ConfigurationError, OptimizationError, configured_api_version, configured_model, optimize_resume, compare_multiple_resumes, probe_model, _client, _supports_generate
-from .models import OptimizeRequest, OptimizeResponse, MultiResumeRequest, MultiResumeResponse
+from .gemini_service import (
+    ConfigurationError, OptimizationError, configured_api_version, configured_model,
+    optimize_resume, compare_multiple_resumes, generate_cover_letter, generate_salary_strategy,
+    generate_outreach_drafts, probe_model, _client, _supports_generate
+)
+from .models import (
+    OptimizeRequest, OptimizeResponse, MultiResumeRequest, MultiResumeResponse,
+    CoverLetterRequest, CoverLetterResponse, SalaryNegotiationRequest, SalaryNegotiationResponse,
+    OutreachDraftRequest, OutreachDraftResponse, PublishLeaderboardRequest, PublishLeaderboardResponse
+)
 
 load_dotenv()
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
@@ -186,6 +194,47 @@ def multi_compare(payload: MultiResumeRequest):
         raise HTTPException(exc.status_code, exc.user_message)
     log.info("Multi-resume comparison completed")
     return result
+
+@app.post("/api/generate-cover-letter", response_model=CoverLetterResponse)
+def api_generate_cover_letter(payload: CoverLetterRequest):
+    try:
+        return generate_cover_letter(payload)
+    except ConfigurationError:
+        raise HTTPException(503, "The optimization service is not configured")
+    except OptimizationError as exc:
+        raise HTTPException(exc.status_code, exc.user_message)
+
+@app.post("/api/generate-salary-strategy", response_model=SalaryNegotiationResponse)
+def api_generate_salary_strategy(payload: SalaryNegotiationRequest):
+    try:
+        return generate_salary_strategy(payload)
+    except ConfigurationError:
+        raise HTTPException(503, "The optimization service is not configured")
+    except OptimizationError as exc:
+        raise HTTPException(exc.status_code, exc.user_message)
+
+@app.post("/api/generate-outreach", response_model=OutreachDraftResponse)
+def api_generate_outreach(payload: OutreachDraftRequest):
+    try:
+        return generate_outreach_drafts(payload)
+    except ConfigurationError:
+        raise HTTPException(503, "The optimization service is not configured")
+    except OptimizationError as exc:
+        raise HTTPException(exc.status_code, exc.user_message)
+
+@app.post("/api/publish-leaderboard", response_model=PublishLeaderboardResponse)
+def publish_leaderboard(payload: PublishLeaderboardRequest):
+    import uuid
+    token = str(uuid.uuid4())[:8]
+    top = payload.results[0].candidate_name if payload.results else "N/A"
+    return PublishLeaderboardResponse(
+        share_token=token,
+        published_url=f"/#share={token}",
+        job_title=payload.job_title,
+        company_name=payload.company_name or "Enterprise Role",
+        candidates_count=payload.candidates_count,
+        top_candidate=top
+    )
 
 @app.exception_handler(RequestValidationError)
 async def validation_error(_: Request, exc: RequestValidationError):

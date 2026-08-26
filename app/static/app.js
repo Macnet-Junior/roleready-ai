@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCharCounters();
   initDropzone();
   initMultiResumeForm();
+  initFeatureSuites();
   renderHistoryView();
 
   // Fetch Available Models
@@ -483,9 +484,11 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCandidateInputFields();
 
     el.btnAddCandidate?.addEventListener("click", () => {
-      if (state.multiCandidatesCount < 5) {
+      if (state.multiCandidatesCount < 10) {
         state.multiCandidatesCount++;
         renderCandidateInputFields();
+      } else {
+        alert("Maximum candidate comparison limit reached (10 candidate slots).");
       }
     });
 
@@ -542,8 +545,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="card-title-bar">
             <label><i class="fa-solid fa-user"></i> Candidate #${i}</label>
           </div>
-          <input id="multi-name-${i}" placeholder="Candidate Name (e.g. Jordan Lee)" class="glass-input mb-2">
-          <textarea id="multi-profile-${i}" placeholder="Paste resume profile here..." class="glass-textarea short-textarea"></textarea>
+          <input id="multi-name-${i}" placeholder="Candidate Name (e.g. Candidate #${i})" class="glass-input mb-2">
+          <textarea id="multi-profile-${i}" placeholder="Paste candidate resume profile here..." class="glass-textarea short-textarea"></textarea>
         </div>
       `;
     }
@@ -552,17 +555,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMultiResults(data) {
     let html = `
-      <div class="results-status-banner mt-4">
+      <div class="results-status-banner flex-between mt-4">
         <div>
-          <h3>Multi-Candidate Benchmark Ranking</h3>
+          <h3>Enterprise Candidate Benchmark Ranking</h3>
           <p>Top Match: <b class="text-indigo">${escapeHtml(data.top_matching_candidate)}</b></p>
         </div>
+        <button type="button" id="btn-publish-leaderboard" class="glass-btn primary-btn"><i class="fa-solid fa-share-nodes"></i> Publish & Share Leaderboard</button>
       </div>
 
       <div class="gap-cards-grid mt-3">
         ${data.results.map((c, idx) => `
-          <div class="glass-card" style="border-top: 3px solid ${idx === 0 ? 'var(--accent-emerald)' : 'var(--border-glass)'}">
-            <h4>#${idx + 1} ${escapeHtml(c.candidate_name)} ${idx === 0 ? '<span class="chip" style="background:var(--accent-emerald);color:#fff;">TOP MATCH</span>' : ''}</h4>
+          <div class="glass-card" style="border-top: 3px solid ${idx === 0 ? 'var(--accent-emerald)' : idx === 1 ? 'var(--accent-indigo)' : 'var(--border-glass)'}">
+            <h4>#${idx + 1} ${escapeHtml(c.candidate_name)} ${idx === 0 ? '<span class="chip" style="background:var(--accent-emerald);color:#fff;">GOLD MATCH</span>' : idx === 1 ? '<span class="chip" style="background:var(--accent-indigo);color:#fff;">SILVER MATCH</span>' : ''}</h4>
             <div style="font-size: 1.8rem; font-weight: 800; color: ${c.overall_score >= 80 ? 'var(--accent-emerald)' : 'var(--accent-amber)'}">${c.overall_score}% Match</div>
             <p>${escapeHtml(c.qualification_summary)}</p>
             <div class="char-counter">Matched: ${c.matched_count} | Missing: ${c.missing_count}</div>
@@ -571,6 +575,176 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
     el.multiResults.innerHTML = html;
+
+    document.getElementById("btn-publish-leaderboard")?.addEventListener("click", async () => {
+      try {
+        const res = await fetch("/api/publish-leaderboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            job_title: data.job_title || "Enterprise Role",
+            company_name: "Enterprise Recruiting",
+            candidates_count: data.results.length,
+            results: data.results
+          })
+        });
+        const pub = await res.json();
+        const fullUrl = `${window.location.origin}${pub.published_url}`;
+        navigator.clipboard.writeText(fullUrl);
+        alert(`Leaderboard Published Successfully!\n\nShareable URL copied to clipboard:\n${fullUrl}`);
+      } catch (err) {
+        alert("Could not publish leaderboard.");
+      }
+    });
+  }
+
+  // Feature Suite Handlers: Resume Theme Studio, Cover Letter, Salary Negotiator, Outreach, Voice Practice
+  function initFeatureSuites() {
+    // Theme Studio Picker
+    document.querySelectorAll(".theme-card").forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".theme-card").forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+        const theme = card.getAttribute("data-theme");
+        const preview = document.getElementById("resume-document-preview");
+        if (preview) {
+          preview.className = `resume-sheet theme-${theme}`;
+        }
+      });
+    });
+
+    // Download PDF (Print)
+    document.getElementById("btn-print-resume")?.addEventListener("click", () => {
+      window.print();
+    });
+
+    // Cover Letter Generator
+    document.getElementById("cover-letter-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-generate-cl");
+      const name = document.getElementById("cl-name").value.trim();
+      const tone = document.getElementById("cl-tone").value;
+      const profile = document.getElementById("cl-profile").value.trim();
+      const job = document.getElementById("cl-job").value.trim();
+      const wrap = document.getElementById("cl-result-wrap");
+      const output = document.getElementById("cl-output-text");
+
+      btn.disabled = true;
+      btn.innerHTML = `<span>Generating Cover Letter...</span>`;
+
+      try {
+        const res = await fetch("/api/generate-cover-letter", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ candidate_name: name, tone: tone, candidate_profile: profile, job_description: job, model_override: state.selectedModel })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Generation failed");
+
+        output.textContent = data.full_text;
+        wrap.classList.remove("hidden");
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Generate Tailored Cover Letter</span><i class="fa-solid fa-wand-magic-sparkles"></i>`;
+      }
+    });
+
+    document.getElementById("btn-copy-cl")?.addEventListener("click", () => {
+      const text = document.getElementById("cl-output-text")?.textContent || "";
+      navigator.clipboard.writeText(text);
+      alert("Cover letter copied to clipboard!");
+    });
+
+    // Salary Negotiator
+    document.getElementById("salary-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-generate-sal");
+      const name = document.getElementById("sal-name").value.trim();
+      const title = document.getElementById("sal-title").value.trim();
+      const exp = parseInt(document.getElementById("sal-exp").value) || 5;
+      const offer = document.getElementById("sal-offer").value.trim();
+      const job = document.getElementById("sal-job").value.trim();
+      const wrap = document.getElementById("sal-result-wrap");
+
+      btn.disabled = true;
+      btn.innerHTML = `<span>Generating Negotiation Strategy...</span>`;
+
+      try {
+        const res = await fetch("/api/generate-salary-strategy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ candidate_name: name, job_title: title, years_experience: exp, current_offer_amount: offer, job_description: job, model_override: state.selectedModel })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Generation failed");
+
+        document.getElementById("sal-res-range").textContent = data.estimated_compensation_range;
+        document.getElementById("sal-res-summary").textContent = data.market_alignment_summary;
+        document.getElementById("sal-res-points").innerHTML = data.talking_points.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+        document.getElementById("sal-res-script").textContent = data.counter_offer_script;
+        document.getElementById("sal-res-email").textContent = data.email_template;
+
+        wrap.classList.remove("hidden");
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Generate Negotiation Strategy</span><i class="fa-solid fa-chart-line"></i>`;
+      }
+    });
+
+    // Recruiter Outreach Drafts
+    document.getElementById("outreach-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-generate-out");
+      const name = document.getElementById("out-name").value.trim();
+      const company = document.getElementById("out-company").value.trim();
+      const role = document.getElementById("out-role").value.trim();
+      const highlights = document.getElementById("out-highlights").value.trim();
+      const wrap = document.getElementById("out-result-wrap");
+
+      btn.disabled = true;
+      btn.innerHTML = `<span>Generating Outreach...</span>`;
+
+      try {
+        const res = await fetch("/api/generate-outreach", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ candidate_name: name, target_company: company, target_role: role, key_highlights: highlights, model_override: state.selectedModel })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Generation failed");
+
+        document.getElementById("out-res-linkedin").textContent = data.linkedin_connection_note;
+        document.getElementById("out-res-email").textContent = data.recruiter_cold_email;
+
+        wrap.classList.remove("hidden");
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Generate Outreach Messages</span><i class="fa-solid fa-paper-plane"></i>`;
+      }
+    });
+
+    // Voice Practice Speech Synthesis
+    document.getElementById("btn-speak-question")?.addEventListener("click", () => {
+      const q = document.getElementById("voice-question-text")?.textContent || "";
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(q);
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("Speech synthesis is not supported on this browser.");
+      }
+    });
+
+    document.getElementById("btn-mic-practice")?.addEventListener("click", () => {
+      alert("Mic Practice active! Record your response out loud following the Situation -> Task -> Action -> Result framework.");
+    });
   }
 
   // LocalStorage History Engine

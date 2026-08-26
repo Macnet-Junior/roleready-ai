@@ -126,7 +126,7 @@ class MultiResumeCandidate(BaseModel):
 
 class MultiResumeRequest(BaseModel):
     job_description: str = Field(min_length=100, max_length=50_000)
-    candidates: list[MultiResumeCandidate] = Field(min_length=2, max_length=5)
+    candidates: list[MultiResumeCandidate] = Field(min_length=2, max_length=10)
     model_override: str | None = Field(default=None, max_length=120)
 
 class MultiCandidateResult(BaseModel):
@@ -164,5 +164,100 @@ class UserProfile(BaseModel):
 class AuthResponse(BaseModel):
     token: str
     user: UserProfile
+
+# Cover Letter Generator Models
+class CoverLetterRequest(BaseModel):
+    candidate_name: str = Field(min_length=1, max_length=120)
+    candidate_profile: str = Field(min_length=50, max_length=50_000)
+    job_description: str = Field(min_length=100, max_length=50_000)
+    tone: Literal["professional", "executive", "bold", "creative"] = "executive"
+    model_override: str | None = Field(default=None, max_length=120)
+
+class CoverLetterResponse(BaseModel):
+    salutation: str
+    opening_hook: str
+    body_paragraphs: list[str]
+    closing_call_to_action: str
+    full_text: str
+
+# Salary & Compensation Negotiator Models
+class SalaryNegotiationRequest(BaseModel):
+    candidate_name: str = Field(min_length=1, max_length=120)
+    job_title: str = Field(min_length=2, max_length=200)
+    job_description: str = Field(min_length=50, max_length=50_000)
+    years_experience: int = Field(default=5, ge=0, le=50)
+    current_offer_amount: str = Field(default="", max_length=100)
+    model_override: str | None = Field(default=None, max_length=120)
+
+class SalaryNegotiationResponse(BaseModel):
+    target_title: str
+    estimated_compensation_range: str
+    market_alignment_summary: str
+    talking_points: list[str]
+    counter_offer_script: str
+    email_template: str
+
+# Recruiter Outreach Drafts Models
+class OutreachDraftRequest(BaseModel):
+    candidate_name: str = Field(min_length=1, max_length=120)
+    target_company: str = Field(min_length=1, max_length=120)
+    target_role: str = Field(min_length=1, max_length=120)
+    key_highlights: str = Field(default="", max_length=5000)
+    model_override: str | None = Field(default=None, max_length=120)
+
+class OutreachDraftResponse(BaseModel):
+    linkedin_connection_note: str
+    recruiter_cold_email: str
+    hiring_manager_followup: str
+
+# Publish Leaderboard Models
+class PublishLeaderboardRequest(BaseModel):
+    job_title: str
+    company_name: str
+    candidates_count: int
+    results: list[MultiCandidateResult]
+
+class PublishLeaderboardResponse(BaseModel):
+    share_token: str
+    published_url: str
+    job_title: str
+    company_name: str
+    candidates_count: int
+    top_candidate: str
+
+# Resume Builder & Theme Studio Models
+class ResumeExperienceItem(BaseModel):
+    company: str
+    role: str
+    dates: str
+    location: str = ""
+    bullet_points: list[str]
+
+class ResumeEducationItem(BaseModel):
+    institution: str
+    degree: str
+    graduation_year: str
+
+class ResumeProjectItem(BaseModel):
+    name: str
+    description: str
+    tech_stack: list[str]
+
+class ResumeBuilderData(BaseModel):
+    candidate_name: str
+    email: str
+    phone: str
+    location: str
+    linkedin_url: str = ""
+    github_url: str = ""
+    professional_title: str
+    summary: str
+    skills: list[str]
+    experiences: list[ResumeExperienceItem]
+    education: list[ResumeEducationItem]
+    projects: list[ResumeProjectItem] = Field(default_factory=list)
+    certifications: list[str] = Field(default_factory=list)
+    selected_theme: str = "modern_executive"
+
 
 

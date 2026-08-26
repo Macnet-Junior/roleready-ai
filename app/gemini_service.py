@@ -218,6 +218,39 @@ def compare_multiple_resumes(req: MultiResumeRequest) -> MultiResumeResponse:
         results=results
     )
 
+def generate_cover_letter(req: CoverLetterRequest) -> CoverLetterResponse:
+    prompt = f"""You are an elite executive career strategist. Write a highly persuasive, customized cover letter for candidate {req.candidate_name} using an '{req.tone}' tone.
+<job_description>{req.job_description}</job_description>
+<candidate_profile>{req.candidate_profile}</candidate_profile>
+Return salutation, opening_hook, 2-3 body_paragraphs highlighting relevant achievements, closing_call_to_action, and full_text combining them cleanly."""
+    
+    if req.model_override:
+        return _generate(prompt, CoverLetterResponse, model_override=req.model_override)
+    return _generate(prompt, CoverLetterResponse)
+
+def generate_salary_strategy(req: SalaryNegotiationRequest) -> SalaryNegotiationResponse:
+    prompt = f"""You are a master executive compensation consultant. Provide a comprehensive salary & compensation negotiation strategy for candidate {req.candidate_name} for the role '{req.job_title}'.
+Years of Experience: {req.years_experience}
+Current Offer Amount: {req.current_offer_amount or "Not specified"}
+<job_description>{req.job_description}</job_description>
+Provide realistic target_title, estimated_compensation_range, market_alignment_summary, 4 actionable talking_points, counter_offer_script, and email_template."""
+
+    if req.model_override:
+        return _generate(prompt, SalaryNegotiationResponse, model_override=req.model_override)
+    return _generate(prompt, SalaryNegotiationResponse)
+
+def generate_outreach_drafts(req: OutreachDraftRequest) -> OutreachDraftResponse:
+    prompt = f"""You are a top executive recruiter and networking coach. Write 3 highly effective candidate outreach messages for {req.candidate_name} targeting '{req.target_role}' at '{req.target_company}'.
+Highlights: {req.key_highlights or "Strong background matching target role."}
+Generate:
+1. linkedin_connection_note (Under 300 chars, concise & engaging)
+2. recruiter_cold_email (3 short paragraphs with impact metrics)
+3. hiring_manager_followup (Direct, value-focused follow-up)"""
+
+    if req.model_override:
+        return _generate(prompt, OutreachDraftResponse, model_override=req.model_override)
+    return _generate(prompt, OutreachDraftResponse)
+
 def _safe_exception(exc):
     name = type(exc).__name__
     message = " ".join(str(exc).split())

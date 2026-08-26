@@ -265,3 +265,62 @@ def test_scores_and_interview_prep():
  assert analysis.interview_prep.elevator_pitch.startswith("Proven platform")
  assert len(analysis.career_growth_plan.skill_gaps) == 1
 
+def test_10_candidate_multi_compare(monkeypatch):
+ from app import gemini_service
+ a1 = JobAnalysis(job_title="Engineer", required_qualifications=["Python"], preferred_qualifications=[], responsibilities=[], ats_keywords=[], qualification_status="QUALIFIED", matched_requirements=["Python"], missing_required_qualifications=[], qualification_summary="Match", overall_score=85)
+ r1 = OptimizeResponse(candidate_name="Cand", analysis=a1)
+ monkeypatch.setattr(gemini_service, "optimize_resume", lambda q: r1)
+
+ candidates = [{"candidate_name": f"Candidate {i}", "candidate_profile": "Python developer profile text. "*5} for i in range(1, 11)]
+ payload = {
+  "job_description": "Seeking Python engineer for platform team. "*10,
+  "candidates": candidates
+ }
+ res = client.post("/api/multi-compare", json=payload)
+ assert res.status_code == 200
+ data = res.json()
+ assert len(data["results"]) == 10
+
+def test_publish_leaderboard_endpoint():
+ payload = {
+  "job_title": "Senior AI Architect",
+  "company_name": "TechCorp",
+  "candidates_count": 3,
+  "results": [
+   {"candidate_name": "Alex", "overall_score": 95, "qualification_status": "QUALIFIED", "hard_skills_score": 90, "experience_match_score": 95, "matched_count": 5, "missing_count": 0, "qualification_summary": "Top Match"}
+  ]
+ }
+ res = client.post("/api/publish-leaderboard", json=payload)
+ assert res.status_code == 200
+ data = res.json()
+ assert "share_token" in data
+ assert "published_url" in data
+ assert data["top_candidate"] == "Alex"
+
+def test_new_ai_generators_endpoints(monkeypatch):
+ from app import main
+ from app.models import CoverLetterResponse, SalaryNegotiationResponse, OutreachDraftResponse
+
+ monkeypatch.setattr(main, "generate_cover_letter", lambda req: CoverLetterResponse(
+  salutation="Dear Hiring Manager,", opening_hook="I am excited to apply...", body_paragraphs=["Key achievement 1"], closing_call_to_action="Sincerely,", full_text="Dear Hiring Manager,\n\nI am excited..."
+ ))
+ monkeypatch.setattr(main, "generate_salary_strategy", lambda req: SalaryNegotiationResponse(
+  target_title="Senior Engineer", estimated_compensation_range="$180k - $210k", market_alignment_summary="Strong alignment", talking_points=["Point 1"], counter_offer_script="Script", email_template="Email"
+ ))
+ monkeypatch.setattr(main, "generate_outreach_drafts", lambda req: OutreachDraftResponse(
+  linkedin_connection_note="Hi, excited about your team...", recruiter_cold_email="Cold email...", hiring_manager_followup="Followup..."
+ ))
+
+ cl_res = client.post("/api/generate-cover-letter", json={"candidate_name": "Alex", "candidate_profile": "Profile text sample. "*10, "job_description": "Job description text sample. "*15})
+ assert cl_res.status_code == 200
+ assert cl_res.json()["salutation"] == "Dear Hiring Manager,"
+
+ sal_res = client.post("/api/generate-salary-strategy", json={"candidate_name": "Alex", "job_title": "Senior Engineer", "job_description": "Job description text sample. "*10})
+ assert sal_res.status_code == 200
+ assert sal_res.json()["estimated_compensation_range"] == "$180k - $210k"
+
+ out_res = client.post("/api/generate-outreach", json={"candidate_name": "Alex", "target_company": "Stripe", "target_role": "Engineer"})
+ assert out_res.status_code == 200
+ assert "linkedin_connection_note" in out_res.json()
+
+
