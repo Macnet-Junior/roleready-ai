@@ -104,6 +104,8 @@ def diagnostic_gemini(request: Request):
     except ConfigurationError:
         raise HTTPException(503, "GEMINI_API_KEY is not configured")
 
+from .extraction import ResumeExtractionError, extract_resume, extract_zip_archive, MAX_FILE_BYTES
+
 @app.post("/api/extract-resume", response_model=ExtractedResume)
 async def extract(file: UploadFile = File(...)):
     log.info("Resume extraction request received")
@@ -113,6 +115,21 @@ async def extract(file: UploadFile = File(...)):
         raise HTTPException(400, str(exc))
     log.info("Resume extraction completed")
     return ExtractedResume(filename=filename, text=text, character_count=len(text))
+
+@app.post("/api/extract-multi-zip")
+async def extract_multi_zip(file: UploadFile = File(...)):
+    log.info("Multi-resume ZIP extraction request received")
+    if not file.filename.lower().endswith(".zip"):
+        raise HTTPException(400, "Upload a valid .zip archive file.")
+    data = await file.read(MAX_FILE_BYTES + 1)
+    await file.close()
+    try:
+        results = extract_zip_archive(data)
+    except ResumeExtractionError as exc:
+        raise HTTPException(400, str(exc))
+    
+    candidates = [{"candidate_name": name, "candidate_profile": text} for name, text in results]
+    return {"filename": file.filename, "candidates": candidates, "count": len(candidates)}
 
 @app.post("/api/extract-job-url", response_model=ExtractedJob)
 async def extract_job_url(payload: JobUrlRequest):

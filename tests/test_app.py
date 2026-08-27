@@ -31,15 +31,32 @@ def test_docx_extraction():
 def test_disallowed_upload():
  r=client.post("/api/extract-resume",files={"file":("resume.exe",b"x"*200,"application/octet-stream")})
  assert r.status_code==400
- assert r.json()["detail"]=="Upload a PDF, DOCX, or Markdown file."
+ assert "Upload a PDF, DOCX, Markdown, TXT, or ZIP file." in r.json()["detail"]
 def test_spoofed_pdf():
  r=client.post("/api/extract-resume",files={"file":("resume.pdf",b"not a pdf"*30,"application/pdf")})
  assert r.status_code==400
  assert "not a valid PDF" in r.json()["detail"]
 def test_oversize_upload():
- r=client.post("/api/extract-resume",files={"file":("resume.md",b"x"*(5*1024*1024+1),"text/markdown")})
+ r=client.post("/api/extract-resume",files={"file":("resume.md",b"x"*(10*1024*1024+1),"text/markdown")})
  assert r.status_code==400
- assert "5 MB" in r.json()["detail"]
+ assert "10 MB" in r.json()["detail"]
+
+def test_zip_extraction_endpoint():
+ import io, zipfile
+ zip_buf = io.BytesIO()
+ with zipfile.ZipFile(zip_buf, 'w') as z:
+  z.writestr("jordan_lee_resume.md", "# Jordan Lee\nSenior Software Engineer with 8 years experience building cloud platform APIs.\n"*5)
+  z.writestr("alex_morgan_resume.txt", "Alex Morgan\nAI Systems Architect with expertise in FastAPI, PyTorch, and LLMs.\n"*5)
+ zip_bytes = zip_buf.getvalue()
+
+ r_single = client.post("/api/extract-resume", files={"file": ("batch.zip", zip_bytes, "application/zip")})
+ assert r_single.status_code == 200
+ assert "Jordan Lee" in r_single.json()["text"]
+
+ r_multi = client.post("/api/extract-multi-zip", files={"file": ("batch.zip", zip_bytes, "application/zip")})
+ assert r_multi.status_code == 200
+ assert r_multi.json()["count"] == 2
+ assert len(r_multi.json()["candidates"]) == 2
 
 
 def test_gemini_uses_json_schema(monkeypatch):

@@ -177,11 +177,11 @@
 
               <div id="upload-panel" class="dropzone-wrapper">
                 <label class="dropzone" id="dropzone" for="resume-file">
-                  <input id="resume-file" type="file" accept=".pdf,.docx,.md,.markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown">
+                  <input id="resume-file" type="file" accept=".pdf,.docx,.md,.markdown,.txt,.zip,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain,application/zip,application/x-zip-compressed">
                   <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                  <strong>Upload Resume Document</strong>
-                  <span>Drag & drop PDF, DOCX, or Markdown file</span>
-                  <small>Max 5 MB • Token-Optimized Parser</small>
+                  <strong>Upload Resume Document or ZIP Archive</strong>
+                  <span>Drag & drop PDF, DOCX, Markdown, TXT, or ZIP archive file</span>
+                  <small>Max 10 MB • Token-Optimized Parser</small>
                 </label>
                 <div id="upload-status" class="status-msg hidden"></div>
               </div>
@@ -285,7 +285,14 @@
             </div>
 
             <div class="candidates-container">
-              <h4><i class="fa-solid fa-users"></i> Candidate Resumes to Compare</h4>
+              <div class="flex-between mb-3">
+                <h4 style="margin:0;"><i class="fa-solid fa-users"></i> Candidate Resumes to Compare</h4>
+                <label for="multi-zip-file" class="glass-btn secondary-btn" style="padding:4px 10px; font-size:0.78rem; cursor:pointer;">
+                  <i class="fa-solid fa-file-zipper"></i> Upload ZIP Batch
+                  <input type="file" id="multi-zip-file" accept=".zip,application/zip,application/x-zip-compressed" style="display:none;">
+                </label>
+              </div>
+              <div id="multi-zip-status" class="status-msg hidden mb-3"></div>
               <div id="candidates-list" class="candidates-list">
                 <!-- Candidate entries inserted dynamically -->
               </div>

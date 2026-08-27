@@ -490,6 +490,60 @@ document.addEventListener("DOMContentLoaded", () => {
       renderCandidateInputFields();
     });
 
+    document.getElementById("multi-zip-file")?.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const status = document.getElementById("multi-zip-status");
+      if (status) {
+        status.className = "status-msg";
+        status.textContent = `Unpacking ZIP batch archive (${file.name})...`;
+        status.classList.remove("hidden");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/extract-multi-zip", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "ZIP extraction failed");
+
+        state.multiCandidatesCount = Math.min(Math.max(data.candidates.length, 2), 10);
+        const sel = document.getElementById("multi-count-select");
+        if (sel) sel.value = String(state.multiCandidatesCount);
+
+        renderCandidateInputFields();
+
+        data.candidates.forEach((cand, idx) => {
+          if (idx < state.multiCandidatesCount) {
+            const i = idx + 1;
+            const parts = cand.candidate_name.split(" ");
+            const fnInput = document.getElementById(`multi-fn-${i}`);
+            const lnInput = document.getElementById(`multi-ln-${i}`);
+            const profileInput = document.getElementById(`multi-profile-${i}`);
+
+            if (fnInput) fnInput.value = parts[0] || cand.candidate_name;
+            if (lnInput) lnInput.value = parts.slice(1).join(" ") || "";
+            if (profileInput) profileInput.value = cand.candidate_profile;
+          }
+        });
+
+        if (status) {
+          status.className = "status-msg good";
+          status.textContent = `Successfully unpacked ${data.count} candidate resumes into benchmarking slots!`;
+        }
+      } catch (err) {
+        if (status) {
+          status.className = "status-msg bad";
+          status.textContent = err.message;
+        }
+      }
+    });
+
     el.btnRunMultiBenchmark?.addEventListener("click", async () => {
       const jobDesc = el.multiJobDesc.value.trim();
       if (!jobDesc) {
