@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initOutreach();
   initSettings();
   initUserProfile();
+  initEmployerFeatures();
   attachGlobalHelpers();
 });
 
@@ -1377,6 +1378,150 @@ function applyAppThemeCSS(theme, showToastMsg = false) {
   root.style.setProperty('--font-heading', `'${t.headingFont}', sans-serif`);
   root.style.setProperty('--font-body', `'${t.bodyFont}', sans-serif`);
   root.style.setProperty('--radius-base', theme.border_radius === 'sharp' ? '4px' : theme.border_radius === 'rounded' ? '12px' : '9999px');
+}
+
+// ─── Employer Platform Features ───────────────────────────────────────────────
+
+function initEmployerFeatures() {
+  // 1. Bulk Resume Screening & Ranking
+  const btnRunBulk = document.getElementById('btn-run-bulk-screening');
+  btnRunBulk?.addEventListener('click', () => {
+    requireAuth(async () => {
+      const jobDesc = (document.getElementById('bulk-job-desc')?.value || '').trim();
+      const area = document.getElementById('bulk-results-area');
+      const tbody = document.getElementById('bulk-leaderboard-tbody');
+
+      if (!jobDesc) {
+        document.getElementById('bulk-job-desc').value = SEED_JOB;
+        showToast('Auto-loaded target job requisition — screening candidates now.', 'info');
+      }
+
+      btnRunBulk.disabled = true;
+      btnRunBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Screening Candidates...';
+
+      setTimeout(() => {
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td><span class="match-pill high" style="font-weight:700;">#1</span></td>
+              <td><div class="candidate-name-cell"><div class="candidate-avatar-sm">AM</div><div><strong>Alex Morgan</strong><br><span style="font-size:11.5px;color:var(--gray-500);">alex.morgan@executive.io</span></div></div></td>
+              <td><span class="match-pill high" style="font-weight:700;">94%</span></td>
+              <td><span class="match-pill high">Qualified</span></td>
+              <td style="font-size:12.5px;">7+ yrs PM, scaled SaaS to $18M ARR, 32% latency reduction, SQL/Looker</td>
+              <td><span class="match-pill high" style="background:rgba(16,185,129,0.15);color:var(--emerald-dark);"><i class="fa-solid fa-check"></i> Recommend Offer</span></td>
+            </tr>
+            <tr>
+              <td><span class="match-pill high" style="font-weight:700;">#2</span></td>
+              <td><div class="candidate-name-cell"><div class="candidate-avatar-sm" style="background:linear-gradient(135deg,var(--blue-primary),var(--violet));">JS</div><div><strong>Jordan Smith</strong><br><span style="font-size:11.5px;color:var(--gray-500);">jordan.smith@tech.io</span></div></div></td>
+              <td><span class="match-pill high" style="font-weight:700;">87%</span></td>
+              <td><span class="match-pill high">Qualified</span></td>
+              <td style="font-size:12.5px;">6 yrs PM, developer platform experience, GraphQL APIs</td>
+              <td><span class="match-pill med" style="background:rgba(37,99,235,0.15);color:var(--blue-primary);"><i class="fa-solid fa-user-check"></i> Recommend Final Interview</span></td>
+            </tr>
+            <tr>
+              <td><span class="match-pill med" style="font-weight:700;">#3</span></td>
+              <td><div class="candidate-name-cell"><div class="candidate-avatar-sm" style="background:linear-gradient(135deg,var(--amber),var(--rose));">TG</div><div><strong>Taylor Green</strong><br><span style="font-size:11.5px;color:var(--gray-500);">taylor.green@design.io</span></div></div></td>
+              <td><span class="match-pill med" style="font-weight:700;">72%</span></td>
+              <td><span class="match-pill med">Partially Qualified</span></td>
+              <td style="font-size:12.5px;">4.5 yrs Agile Lead, strong Figma/UX, missing deep SQL analytics</td>
+              <td><span class="match-pill low" style="background:rgba(245,158,11,0.15);color:var(--amber-dark);"><i class="fa-solid fa-pause"></i> Hold / Secondary Pool</span></td>
+            </tr>
+          `;
+        }
+        if (area) area.style.display = 'block';
+        btnRunBulk.disabled = false;
+        btnRunBulk.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Benchmark Candidates';
+        playUiSound('success');
+        showToast('Bulk screening complete! 3 candidates ranked against job criteria.', 'success');
+      }, 1000);
+    });
+  });
+
+  // 2. Add Bulk Candidate Chip
+  document.getElementById('btn-add-bulk-candidate')?.addEventListener('click', () => {
+    const name = (document.getElementById('bulk-cand-name')?.value || '').trim();
+    const skills = (document.getElementById('bulk-cand-skills')?.value || '').trim();
+    if (!name) { showToast('Please enter candidate name.', 'error'); return; }
+    const list = document.getElementById('bulk-candidates-list');
+    if (list) {
+      const chip = document.createElement('span');
+      chip.className = 'skill-chip matched';
+      chip.innerHTML = `${name} (${skills || 'Candidate'}) <i class="fa-solid fa-xmark remove-chip" onclick="this.parentElement.remove()"></i>`;
+      list.appendChild(chip);
+      document.getElementById('bulk-cand-name').value = '';
+      document.getElementById('bulk-cand-skills').value = '';
+      playUiSound('click');
+      showToast(`Added ${name} to bulk candidate pool.`, 'info');
+    }
+  });
+
+  // 3. Human Recruiter Decision Authority Sign-off
+  document.getElementById('btn-submit-recruiter-decision')?.addEventListener('click', () => {
+    requireAuth(() => {
+      const selected = document.getElementById('recruiter-cand-select')?.value || 'Alex Morgan';
+      const notes = document.getElementById('recruiter-notes-input')?.value.trim() || 'Verified metrics & approved for offer.';
+      playUiSound('success');
+      showToast(`Decision signed off for ${selected}: ${notes}`, 'success');
+    });
+  });
+
+  // 4. Scoring Rubric Weight Sliders
+  document.querySelectorAll('#view-emp-scoring-rubrics input[type="range"]').forEach(input => {
+    input.addEventListener('input', () => {
+      const pctSpan = input.nextElementSibling;
+      if (pctSpan) pctSpan.textContent = `${input.value}%`;
+    });
+  });
+
+  // Expose email template helper globally
+  window.loadEmailTemplate = function(type) {
+    const body = document.getElementById('email-template-body');
+    if (!body) return;
+    if (type === 'invite') {
+      body.value = `Dear {{Candidate_Name}},\n\nThank you for your interest in the {{Role_Title}} position at {{Company_Name}}.\n\nOur hiring team was thoroughly impressed by your background and evidence-backed performance metrics. We would love to invite you to a 45-minute video conversation with our Lead Hiring Manager.\n\nPlease select a convenient time block using this link: {{Scheduling_Link}}\n\nBest regards,\nTalent Acquisition Team\n{{Company_Name}}`;
+      showToast('Loaded Interview Invitation template.', 'info');
+    } else if (type === 'offer') {
+      body.value = `Dear {{Candidate_Name}},\n\nOn behalf of {{Company_Name}}, I am thrilled to formally extend an offer for the position of {{Role_Title}}!\n\nWe were deeply impressed by your strategic vision, leadership track record, and technical execution. Attached is your formal offer documentation detailing your starting compensation package, equity allocation, and health benefits.\n\nPlease review and let us know if you have any questions before {{Offer_Deadline}}.\n\nWarm regards,\nHead of People & Talent\n{{Company_Name}}`;
+      showToast('Loaded Offer Letter template.', 'info');
+    } else if (type === 'reject') {
+      body.value = `Dear {{Candidate_Name}},\n\nThank you for taking the time to interview for the {{Role_Title}} role at {{Company_Name}}.\n\nWhile our team was impressed by your experience, we have decided to advance another candidate whose specific background more closely matches our immediate technical roadmap requirements for this requisition.\n\nWe sincerely appreciate your time and would love to stay connected for future leadership requisitions.\n\nBest wishes,\nTalent Acquisition Team\n{{Company_Name}}`;
+      showToast('Loaded Constructive Rejection template.', 'info');
+    }
+    playUiSound('click');
+  };
+
+  // Render dashboard vacancies table on load
+  const renderEmpVacancies = () => {
+    const tbody = document.getElementById('emp-vacancies-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = `
+      <tr>
+        <td><strong>Senior Product Manager — AI Platform</strong><br><span style="font-size:11.5px;color:var(--gray-500);">Product • San Francisco (Hybrid)</span></td>
+        <td>42 Candidates</td>
+        <td><span class="match-pill high">88% Avg</span></td>
+        <td><strong>Alex Morgan</strong> (94%)</td>
+        <td><span class="match-pill high">Active</span></td>
+        <td><button type="button" class="btn-primary" style="padding:4px 10px;font-size:11.5px;" onclick="switchView('emp-bulk-screening')">Screen Pool</button></td>
+      </tr>
+      <tr>
+        <td><strong>Staff Full-Stack Engineer</strong><br><span style="font-size:11.5px;color:var(--gray-500);">Engineering • Remote (US)</span></td>
+        <td>68 Candidates</td>
+        <td><span class="match-pill high">85% Avg</span></td>
+        <td><strong>Jordan Smith</strong> (87%)</td>
+        <td><span class="match-pill high">Active</span></td>
+        <td><button type="button" class="btn-primary" style="padding:4px 10px;font-size:11.5px;" onclick="switchView('emp-bulk-screening')">Screen Pool</button></td>
+      </tr>
+      <tr>
+        <td><strong>Lead Product Designer</strong><br><span style="font-size:11.5px;color:var(--gray-500);">Design • New York, NY</span></td>
+        <td>19 Candidates</td>
+        <td><span class="match-pill med">74% Avg</span></td>
+        <td><strong>Taylor Green</strong> (72%)</td>
+        <td><span class="match-pill med">Interviewing</span></td>
+        <td><button type="button" class="btn-primary" style="padding:4px 10px;font-size:11.5px;" onclick="switchView('emp-candidate-comparison')">View Matrix</button></td>
+      </tr>
+    `;
+  };
+  renderEmpVacancies();
 }
 
 // ─── Global Helpers ───────────────────────────────────────────────────────────
