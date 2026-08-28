@@ -1,7 +1,34 @@
 import os
+import re
 from google import genai
 from google.genai import errors, types
 from .models import *
+
+BLOCKED_INJECTION_PATTERNS = [
+    r'ignore previous instructions',
+    r'you are now',
+    r'system:',
+    r'assistant:',
+    r'forget everything',
+    r'new instructions',
+    r'override',
+    r'jailbreak',
+    r'DAN mode',
+    r'developer mode'
+]
+
+def sanitize_input(text: str, max_chars: int = 35000) -> str:
+    """Sanitizes user input for PII redaction, prompt injection defense, and cost boundaries (SECURITY.md)."""
+    if not text:
+        return ""
+    clean = text[:max_chars]
+    for pattern in BLOCKED_INJECTION_PATTERNS:
+        clean = re.sub(pattern, '[filtered]', clean, flags=re.IGNORECASE)
+    phone_pattern = r'\b(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})\b'
+    ssn_pattern = r'\b\d{3}-\d{2}-\d{4}\b'
+    clean = re.sub(phone_pattern, '[PHONE_REDACTED]', clean)
+    clean = re.sub(ssn_pattern, '[SSN_REDACTED]', clean)
+    return clean
 
 def configured_model():
     return os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash").strip()
@@ -131,6 +158,11 @@ def _generate(prompt, schema, model_override=None):
         raise OptimizationError(f"The Gemini client failed locally ({kind}).", None, 502) from exc
 
 def optimize_resume(q: OptimizeRequest) -> OptimizeResponse:
+    q.candidate_profile = sanitize_input(q.candidate_profile)
+    q.job_description = sanitize_input(q.job_description)
+    if q.candidate_updates:
+        q.candidate_updates = sanitize_input(q.candidate_updates)
+
     prompt_analysis = f"""Analyze job and candidate. Mark QUALIFIED only when every stated required qualification has
 direct profile support; otherwise NOT_QUALIFIED. Do not reject for missing preferences.
 Calculate accurate score metrics (0 to 100 integer ratings):

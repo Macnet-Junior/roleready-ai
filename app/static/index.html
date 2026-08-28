@@ -38,10 +38,10 @@
         <div class="dot" id="ob-dot-4"></div>
       </div>
 
-      <!-- STEP 1: AUTHENTICATION & PATH SELECTION -->
+      <!-- STEP 1: PATH SELECTION (FREEMIUM EXPLORATION vs VERIFIED ENTERPRISE) -->
       <div class="ob-step" id="ob-step-1">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <svg viewBox="0 0 200 200" width="56" height="56" style="margin-bottom: 8px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <svg viewBox="0 0 200 200" width="58" height="58" style="margin-bottom: 8px;">
             <defs>
               <linearGradient id="obShield" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style="stop-color:#2563EB"/>
@@ -55,192 +55,50 @@
             <path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#obShield)"/>
             <path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#obCheck)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <h1 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 2px;">RoleReady Platform</h1>
-          <p style="font-size: 13px; color: var(--gray-400);">From application to offer — personalized career & talent intelligence.</p>
+          <h1 style="font-family: var(--font-heading); font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 4px;">Welcome to RoleReady AI</h1>
+          <p style="font-size: 13.5px; color: var(--gray-400);">From application to offer — select your workspace path.</p>
         </div>
 
-        <!-- Auth Mode Tabs (Sign In vs Create Account) -->
-        <div class="auth-nav-tabs">
-          <button type="button" class="auth-nav-tab active" id="tab-auth-signup">Create Account</button>
-          <button type="button" class="auth-nav-tab" id="tab-auth-signin">Sign In</button>
-        </div>
-
-        <!-- SIGN UP FORM -->
-        <div id="auth-signup-form">
-          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-            <div>
-              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Your Full Name</label>
-              <input type="text" id="auth-reg-name" class="form-input" placeholder="e.g. Alex Morgan" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="Alex Morgan">
-            </div>
-            <div>
-              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Work or Personal Email</label>
-              <input type="email" id="auth-reg-email" class="form-input" placeholder="e.g. alex@morgan.io" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="alex.morgan@executive.io">
-            </div>
-            <div>
-              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Target Role Title</label>
-              <input type="text" id="auth-reg-title" class="form-input" placeholder="e.g. Senior Product Manager / Lead Engineer" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="Senior Product Manager">
-            </div>
-          </div>
-
-          <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 6px;">Select Your Workspace Account Type</label>
-          <div class="path-choice-card selected" id="choice-path-candidate" data-path="candidate">
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+          <!-- Candidate Choice -->
+          <div class="path-choice-card selected" id="choice-path-candidate" data-path="candidate" style="padding: 18px;">
             <div class="path-choice-icon" style="background: rgba(37,99,235,0.2); color: #60A5FA;">
               <i class="fa-solid fa-user-graduate"></i>
             </div>
-            <div>
-              <h3 style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Job Searching (Candidate)</h3>
-              <p style="font-size: 12px; color: var(--gray-400); line-height: 1.35;">ATS resume scoring, truth protection, STAR voice coach, application tracker.</p>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Job Searching (Candidate)</h3>
+                <span class="match-pill high" style="font-size: 11px; padding: 2px 8px;">Free Access</span>
+              </div>
+              <p style="font-size: 12.5px; color: var(--gray-400); line-height: 1.4;">Explore 6 resume themes, test ATS job matching, practice STAR voice questions, and inspect salary strategy.</p>
+              <button type="button" class="btn-primary" id="btn-gateway-explore-candidate" style="margin-top: 10px; width: 100%; justify-content: center; padding: 10px; font-size: 13.5px;">
+                Explore Candidate Platform Free &rarr;
+              </button>
             </div>
           </div>
 
-          <div class="path-choice-card employer" id="choice-path-employer" data-path="employer">
+          <!-- Enterprise Choice -->
+          <div class="path-choice-card employer" id="choice-path-employer" data-path="employer" style="padding: 18px;">
             <div class="path-choice-icon" style="background: rgba(139,92,246,0.2); color: #C084FC;">
               <i class="fa-solid fa-building-user"></i>
             </div>
-            <div>
-              <h3 style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Hiring / Recruiting (Enterprise)</h3>
-              <p style="font-size: 12px; color: var(--gray-400); line-height: 1.35;">Bulk resume screening, custom rubrics, candidate matrix, recruiter authority.</p>
-            </div>
-          </div>
-
-          <button type="button" class="btn-primary" id="btn-auth-signup-submit" style="width: 100%; justify-content: center; margin-top: 14px; padding: 13px; font-size: 14.5px;">
-            Create Account & Continue &rarr;
-          </button>
-        </div>
-
-        <!-- SIGN IN FORM -->
-        <div id="auth-signin-form" style="display: none;">
-          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-            <div>
-              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Email Address</label>
-              <input type="email" id="auth-login-email" class="form-input" placeholder="alex.morgan@executive.io" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="alex.morgan@executive.io">
-            </div>
-            <div>
-              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Password</label>
-              <input type="password" id="auth-login-pwd" class="form-input" value="••••••••••••" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;">
-            </div>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
-            <button type="button" class="btn-primary" id="btn-auth-login-candidate" style="justify-content: center; padding: 12px;">
-              <i class="fa-solid fa-user-graduate"></i> Sign In as Candidate (Alex Morgan)
-            </button>
-            <button type="button" class="btn-secondary" id="btn-auth-login-employer" style="justify-content: center; padding: 12px; border-color: var(--violet); color: #C084FC;">
-              <i class="fa-solid fa-building-user"></i> Sign In as Enterprise Recruiter (Talent Team)
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 2: DYNAMIC GOALS -->
-      <div class="ob-step" id="ob-step-2" style="display: none;">
-        <div style="font-size: 11px; font-weight: 700; color: var(--blue-light); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;" id="ob-step2-badge">Step 2 of 4</div>
-        <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 6px;" id="ob-step2-title">What are your primary goals?</h2>
-        <p style="font-size: 13px; color: var(--gray-400); margin-bottom: 18px;" id="ob-step2-desc">Select your key objectives to configure your workspace.</p>
-
-        <!-- Candidate Goals List -->
-        <div id="ob-candidate-goals-list">
-          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
-            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
-            <div>
-              <strong style="font-size: 13px; color: #fff; display: block;">📄 Resume Optimization & Truth Gating</strong>
-              <span style="font-size: 11.5px; color: var(--gray-400);">AI alignment to target job requirements with zero hallucinations</span>
-            </div>
-          </div>
-          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
-            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
-            <div>
-              <strong style="font-size: 13px; color: #fff; display: block;">🎤 STAR Voice Behavioral Coaching</strong>
-              <span style="font-size: 11.5px; color: var(--gray-400);">Real-time interview simulator scoring Situation, Task, Action & Result</span>
-            </div>
-          </div>
-          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
-            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
-            <div>
-              <strong style="font-size: 13px; color: #fff; display: block;">📊 Application Kanban Tracker</strong>
-              <span style="font-size: 11.5px; color: var(--gray-400);">Manage active pipeline across Wishlist, Applied, Interview, Offer stages</span>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Hiring / Recruiting (Enterprise)</h3>
+                <span class="match-pill med" style="font-size: 11px; padding: 2px 8px; background: rgba(139,92,246,0.2); color: #C084FC;">Business Verification</span>
+              </div>
+              <p style="font-size: 12.5px; color: var(--gray-400); line-height: 1.4;">Bulk candidate screening, candidate comparison matrix, scoring rubrics, and recruiter sign-off workflows.</p>
+              <button type="button" class="btn-secondary" id="btn-gateway-verify-enterprise" style="margin-top: 10px; width: 100%; justify-content: center; padding: 10px; font-size: 13.5px; border-color: var(--violet); color: #C084FC;">
+                Verify Business & Access Portal &rarr;
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Enterprise Goals List -->
-        <div id="ob-employer-goals-list" style="display: none;">
-          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
-            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
-            <div>
-              <strong style="font-size: 13px; color: #fff; display: block;">👥 Bulk Resume Screening & Ranking</strong>
-              <span style="font-size: 11.5px; color: var(--gray-400);">Benchmark and score multiple candidate resumes simultaneously</span>
-            </div>
-          </div>
-          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
-            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
-            <div>
-              <strong style="font-size: 13px; color: #fff; display: block;">⚖️ Custom Requisition Scoring Rubrics</strong>
-              <span style="font-size: 11.5px; color: var(--gray-400);">Configure weights for mandatory skills, experience & evidence</span>
-            </div>
-          </div>
-          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
-            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
-            <div>
-              <strong style="font-size: 13px; color: #fff; display: block;">🛡️ Human Recruiter Decision Authority</strong>
-              <span style="font-size: 11.5px; color: var(--gray-400);">AI recommends, human hiring managers make final decisions</span>
-            </div>
-          </div>
+        <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+          <span style="font-size: 12.5px; color: var(--gray-400);">Already have an account? </span>
+          <button type="button" class="btn-ghost" id="btn-gateway-quick-login" style="color: var(--blue-light); font-size: 12.5px; padding: 0; font-weight: 600;">Sign In Here</button>
         </div>
-
-        <div style="display: flex; justify-content: space-between; gap: 12px; margin-top: 20px;">
-          <button type="button" class="btn-secondary" id="btn-ob-step2-back" style="flex: 1; justify-content: center;">&larr; Back</button>
-          <button type="button" class="btn-primary" id="btn-ob-step2-next" style="flex: 2; justify-content: center;">Continue &rarr;</button>
-        </div>
-      </div>
-
-      <!-- STEP 3: SETUP & SEED DATA -->
-      <div class="ob-step" id="ob-step-3" style="display: none;">
-        <div style="font-size: 11px; font-weight: 700; color: var(--blue-light); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 3 of 4</div>
-        <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 6px;" id="ob-step3-title">Load Profile Data</h2>
-        <p style="font-size: 13px; color: var(--gray-400); margin-bottom: 16px;" id="ob-step3-desc">Upload your profile or load verified seed data.</p>
-
-        <!-- Candidate Step 3 -->
-        <div id="ob-candidate-setup">
-          <div class="dropzone" style="background: rgba(255,255,255,0.03); border: 2px dashed rgba(255,255,255,0.2); margin-bottom: 14px; padding: 22px 16px;">
-            <div class="icon" style="font-size: 26px; color: #60A5FA;"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-            <strong style="color: #fff;">Upload Candidate Resume (PDF, DOCX)</strong>
-            <span style="color: var(--gray-400);">or load verified pre-populated profile below</span>
-          </div>
-          <button type="button" class="btn-secondary" id="btn-ob-load-cand-seed" style="width: 100%; justify-content: center; font-size: 13px; padding: 11px;">
-            <i class="fa-solid fa-sparkles" style="color: #60A5FA;"></i> Pre-load Alex Morgan Executive Seed Profile
-          </button>
-        </div>
-
-        <!-- Enterprise Step 3 -->
-        <div id="ob-employer-setup" style="display: none;">
-          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
-            <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Initial Requisition</label>
-            <input type="text" id="ob-req-title" class="form-input" value="Senior Product Manager — Requisition #REQ-409" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;">
-          </div>
-          <button type="button" class="btn-secondary" id="btn-ob-load-emp-seed" style="width: 100%; justify-content: center; font-size: 13px; padding: 11px;">
-            <i class="fa-solid fa-sparkles" style="color: #C084FC;"></i> Pre-load Candidate Benchmarking Queue (3 Candidates)
-          </button>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; gap: 12px; margin-top: 20px;">
-          <button type="button" class="btn-secondary" id="btn-ob-step3-back" style="flex: 1; justify-content: center;">&larr; Back</button>
-          <button type="button" class="btn-primary" id="btn-ob-step3-next" style="flex: 2; justify-content: center;">Continue &rarr;</button>
-        </div>
-      </div>
-
-      <!-- STEP 4: WORKSPACE READY -->
-      <div class="ob-step" id="ob-step-4" style="display: none; text-align: center; padding: 10px 0;">
-        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(16,185,129,0.2); color: #34D399; font-size: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-          <i class="fa-solid fa-circle-check"></i>
-        </div>
-        <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px;" id="ob-ready-title">Workspace Ready!</h2>
-        <p style="font-size: 13.5px; color: var(--gray-400); margin-bottom: 22px; line-height: 1.5;" id="ob-ready-desc">
-          Your Candidate Career intelligence workspace is initialized with truth-verified AI models, ATS score rings, and active application tracking.
-        </p>
-        <button type="button" class="btn-primary" id="btn-ob-launch" style="width: 100%; justify-content: center; padding: 14px; font-size: 15.5px;">
-          Launch Workspace 🚀
-        </button>
       </div>
     </div>
   </div>
@@ -303,11 +161,20 @@
         </div>
 
         <div class="nav-section">
-          <div class="nav-section-title">Apply</div>
+          <div class="nav-section-title">Apply & Match</div>
+          <button type="button" class="nav-item" data-view="cand-job-match">
+            <span class="icon"><i class="fa-solid fa-bullseye"></i></span>
+            <span>Job Match</span>
+            <span class="badge blue">ATS</span>
+          </button>
           <button type="button" class="nav-item" data-view="cand-tracker">
             <span class="icon"><i class="fa-solid fa-table-columns"></i></span>
             <span>Application Tracker</span>
-            <span class="badge" id="tracker-count-badge">5</span>
+            <span class="badge" id="tracker-count-badge">6</span>
+          </button>
+          <button type="button" class="nav-item" data-view="cand-linkedin-sync">
+            <span class="icon"><i class="fa-brands fa-linkedin"></i></span>
+            <span>LinkedIn Sync</span>
           </button>
           <button type="button" class="nav-item" data-view="cand-outreach">
             <span class="icon"><i class="fa-solid fa-paper-plane"></i></span>
@@ -723,7 +590,92 @@
         </section>
 
         <!-- ====================================================================
-             VIEW 3: APPLICATION KANBAN TRACKER
+             VIEW 3: JOB MATCH & ATS SKILL ALIGNMENT (11-job-match.html)
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-job-match">
+          <div class="match-input-card" style="background: linear-gradient(135deg, #2563EB, #1E40AF); border-radius: 16px; padding: 28px; color: #fff; margin-bottom: 24px;">
+            <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 6px;">Target Job Match & Gap Analyzer</h2>
+            <p style="font-size: 13.5px; opacity: 0.9; margin-bottom: 16px;">Paste a job description or URL to benchmark your resume and get immediate gap analysis.</p>
+            <div style="display: flex; gap: 12px;">
+              <input type="text" id="job-match-quick-input" placeholder="e.g. Senior Product Manager at Stripe or paste job URL..." class="form-input" style="flex: 1; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff;">
+              <button type="button" class="btn-primary" id="btn-run-job-match" style="background: #fff; color: #2563EB; font-weight: 700; padding: 0 24px;">
+                <i class="fa-solid fa-bullseye"></i> Analyze Match
+              </button>
+            </div>
+          </div>
+
+          <div class="two-col-layout">
+            <!-- Left: Match Score Ring & Skills Breakdown -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-circle-notch" style="color: var(--blue-primary);"></i> Match Overview</h2>
+                <span class="match-pill high">78% Match</span>
+              </div>
+              <div class="section-body" style="text-align: center; padding: 24px;">
+                <div class="score-ring-wrap" style="width: 130px; height: 130px; margin: 0 auto 14px; position: relative;">
+                  <svg viewBox="0 0 120 120" width="130" height="130" style="transform: rotate(-90deg);">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--gray-200)" stroke-width="10"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--blue-primary)" stroke-width="10" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="74"/>
+                  </svg>
+                  <div class="score-value" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--navy-900);">78%</div>
+                </div>
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--navy-900); margin-bottom: 2px;">Senior Product Manager</h3>
+                <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 20px;">Stripe • San Francisco, CA (Hybrid)</p>
+
+                <div style="text-align: left;">
+                  <h4 style="font-size: 13px; font-weight: 600; color: var(--emerald-dark); margin-bottom: 8px;"><i class="fa-solid fa-circle-check"></i> Matched Skills (14 of 18)</h4>
+                  <div class="skill-chips" style="margin-bottom: 16px;">
+                    <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Product Strategy</span>
+                    <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Agile/Scrum</span>
+                    <span class="skill-chip matched"><i class="fa-solid fa-check"></i> PRD Authoring</span>
+                    <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Telemetry & SQL</span>
+                    <span class="skill-chip matched"><i class="fa-solid fa-check"></i> User Onboarding</span>
+                    <span class="skill-chip matched"><i class="fa-solid fa-check"></i> B2B SaaS Growth</span>
+                  </div>
+
+                  <h4 style="font-size: 13px; font-weight: 600; color: var(--rose-dark); margin-bottom: 8px;"><i class="fa-solid fa-circle-xmark"></i> Identified Gaps (4 of 18)</h4>
+                  <div class="skill-chips">
+                    <span class="skill-chip missing"><i class="fa-solid fa-xmark"></i> GraphQL Endpoints</span>
+                    <span class="skill-chip missing"><i class="fa-solid fa-xmark"></i> Enterprise Pricing Model</span>
+                    <span class="skill-chip missing"><i class="fa-solid fa-xmark"></i> Python Automation</span>
+                    <span class="skill-chip missing"><i class="fa-solid fa-xmark"></i> Multi-Tenant RBAC</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Actionable Gaps & Recommendations -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-list-check" style="color: var(--violet);"></i> Gap Priority & Recommended Fixes</h2>
+              </div>
+              <div class="section-body">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div style="padding: 14px; background: rgba(244,63,94,0.06); border-left: 3px solid var(--rose); border-radius: 0 8px 8px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                      <strong style="font-size: 13.5px; color: var(--navy-900);">GraphQL API Architecture</strong>
+                      <span class="match-pill low" style="font-size: 10.5px;">Critical Requirement</span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;">Stripe's developer platform requires experience with unified GraphQL schemas.</p>
+                    <div style="font-size: 12px; color: var(--blue-primary); font-weight: 600;">Recommendation: Add explicit bullet referencing GraphQL telemetry endpoints from Apex Cloud.</div>
+                  </div>
+
+                  <div style="padding: 14px; background: rgba(245,158,11,0.06); border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                      <strong style="font-size: 13.5px; color: var(--navy-900);">Enterprise Tier Pricing Sprints</strong>
+                      <span class="match-pill med" style="font-size: 10.5px;">Preferred Qualification</span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;">Job calls for packaging self-serve to enterprise sales tiers.</p>
+                    <div style="font-size: 12px; color: var(--blue-primary); font-weight: 600;">Recommendation: Frame your $18M ARR growth story around the enterprise tier migration.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 4: APPLICATION KANBAN TRACKER
              ==================================================================== -->
         <section class="view-page" id="view-cand-tracker">
           <div class="kanban-toolbar">
@@ -1017,6 +969,66 @@ Alex Morgan</div>
               </div>
             </div>
           </div>
+        <!-- ====================================================================
+             VIEW 6: LINKEDIN SYNC & PROFILE ALIGNMENT (17-linkedin-sync.html)
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-linkedin-sync">
+          <div style="background: linear-gradient(135deg, #0A72DA, #004182); border-radius: 16px; padding: 24px 28px; color: #fff; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h2 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; margin-bottom: 4px;"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile Connected</h2>
+              <p style="font-size: 13px; opacity: 0.85;">Ensures your resume and public LinkedIn profile tell an aligned, high-impact story.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #34D399; display: inline-block;"></span>
+              <span>Synced · Profile Imported</span>
+            </div>
+          </div>
+
+          <div class="two-col-layout">
+            <!-- Headline Alignment Card -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-heading" style="color: var(--blue-primary);"></i> Headline Alignment</h2>
+                <span class="match-pill med" style="color: var(--amber-dark);">Partial Alignment</span>
+              </div>
+              <div class="section-body">
+                <div style="margin-bottom: 12px;">
+                  <span style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Resume Title:</span>
+                  <div style="font-size: 13px; padding: 8px 12px; background: var(--gray-50); border-left: 3px solid var(--emerald); border-radius: 4px; margin-top: 4px;">
+                    Senior Product Manager — SaaS & AI Platform Lead
+                  </div>
+                </div>
+                <div style="margin-bottom: 16px;">
+                  <span style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Current LinkedIn Headline:</span>
+                  <div style="font-size: 13px; padding: 8px 12px; background: var(--gray-50); border-left: 3px solid var(--amber); border-radius: 4px; margin-top: 4px;">
+                    Product Lead | Building SaaS products
+                  </div>
+                </div>
+                <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="showToast('Suggested headline copied to clipboard! Paste into LinkedIn.', 'success');">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Copy Optimized Headline Fix
+                </button>
+              </div>
+            </div>
+
+            <!-- Summary & Skills Alignment Card -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-list-check" style="color: var(--emerald);"></i> Core Skills Overlap</h2>
+                <span class="match-pill high">92% Match</span>
+              </div>
+              <div class="section-body">
+                <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 12px;">We identified 3 high-impact keywords on your resume that should be added to your LinkedIn Skills section:</p>
+                <div class="skill-chips" style="margin-bottom: 16px;">
+                  <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Enterprise SaaS Growth</span>
+                  <span class="skill-chip matched"><i class="fa-solid fa-check"></i> SQL & Data Telemetry</span>
+                  <span class="skill-chip missing"><i class="fa-solid fa-plus"></i> Truth-Gated Validation</span>
+                </div>
+                <button type="button" class="btn-primary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="showToast('Syncing skill recommendations to LinkedIn draft...', 'info'); setTimeout(() => showToast('LinkedIn profile alignment updated!', 'success'), 600);">
+                  <i class="fa-brands fa-linkedin"></i> Apply Suggested Skill Updates
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- ====================================================================
@@ -1039,9 +1051,12 @@ Alex Morgan</div>
                     Click the orb to record your answer or generate custom STAR interview questions.
                   </p>
 
-                  <div style="display: flex; justify-content: center; gap: 10px;">
+                  <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
                     <button type="button" class="btn-secondary" id="btn-fetch-interview-questions">
                       <i class="fa-solid fa-shuffle"></i> New Question
+                    </button>
+                    <button type="button" class="btn-secondary" id="btn-tts-listen-question">
+                      <i class="fa-solid fa-volume-high"></i> Read Aloud
                     </button>
                     <button type="button" class="btn-primary" id="btn-analyze-voice-response">
                       <i class="fa-solid fa-brain"></i> Evaluate Answer
@@ -1693,10 +1708,99 @@ Talent Acquisition Team
     </div>
   </div>
 
+  <!-- Modal: Candidate Action Auth Gate (Freemium Gating on Generate) -->
+  <div class="modal-overlay hidden" id="modal-action-auth-gate">
+    <div class="modal-content" style="max-width: 480px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="user-avatar" style="width: 32px; height: 32px; font-size: 13px; background: var(--blue-primary);"><i class="fa-solid fa-sparkles"></i></div>
+          <h3>Unlock AI Analysis & Truth-Protection</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-auth-gate">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <p style="font-size: 13.5px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.5;">
+          Create a free account or sign in to run your personalized ATS optimization report, calculate readiness scores, and save your progress.
+        </p>
+
+        <form id="form-auth-gate-signup">
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Full Name</label>
+              <input type="text" id="gate-auth-name" class="form-input" placeholder="e.g. Alex Morgan" required value="Alex Morgan">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Email Address</label>
+              <input type="email" id="gate-auth-email" class="form-input" placeholder="e.g. alex@morgan.io" required value="alex.morgan@executive.io">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Password</label>
+              <input type="password" id="gate-auth-pwd" class="form-input" value="••••••••••••" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; margin-bottom: 10px;">
+            Create Free Account & Run Analysis &rarr;
+          </button>
+        </form>
+
+        <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 13px;" id="btn-gate-demo-login">
+          <i class="fa-solid fa-bolt" style="color: var(--blue-primary);"></i> Quick Sign In as Verified Candidate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Enterprise Business Verification (Strict Domain & Requirement Check) -->
+  <div class="modal-overlay hidden" id="modal-enterprise-verification">
+    <div class="modal-content" style="max-width: 500px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="user-avatar" style="width: 32px; height: 32px; font-size: 13px; background: var(--violet);"><i class="fa-solid fa-building-shield"></i></div>
+          <h3>Enterprise Business Verification</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-emp-verify-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 18px; line-height: 1.5;">
+          Enterprise accounts provide multi-candidate screening and matrix comparisons. Corporate work email verification is required.
+        </p>
+
+        <form id="form-enterprise-verify">
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Corporate Work Email</label>
+              <input type="email" id="emp-verify-email" class="form-input" placeholder="recruiter@company.com" required value="sarah.jenkins@talent-corp.io">
+              <span style="font-size: 11px; color: var(--gray-400); display: block; margin-top: 2px;">Public domains (@gmail, @yahoo) are restricted from Enterprise tools.</span>
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Company Name</label>
+              <input type="text" id="emp-verify-company" class="form-input" placeholder="e.g. Stripe, Datadog, Snowflake" required value="Tech Innovators Inc.">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Your Recruiting / Talent Role</label>
+              <input type="text" id="emp-verify-title" class="form-input" placeholder="e.g. Head of Talent / Lead Recruiter" required value="Lead Technical Recruiter">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Annual Hiring Volume</label>
+              <select id="emp-verify-volume" class="form-input">
+                <option value="10-50">10 – 50 Requisitions / Year</option>
+                <option value="50-200" selected>50 – 200 Requisitions / Year</option>
+                <option value="200+">200+ Enterprise Requisitions / Year</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 13px; font-size: 14px; background: var(--violet); border-color: var(--violet);">
+            Verify Credentials & Launch Talent Portal &rarr;
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.0.5"></script>
+  <script src="/static/app.js?v=2.0.6"></script>
 </body>
 </html>
