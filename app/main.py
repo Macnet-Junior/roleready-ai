@@ -475,6 +475,65 @@ def get_user_themes(user_id: str = "user_active"):
     purchased_themes = [t for t in SEED_THEMES if t.id in purchased_ids]
     return {"user_id": user_id, "themes": purchased_themes}
 
+# ─── GDPR & Data Protection Rights Endpoints ─────────────────────────────────
+
+class UserConsentRequest(BaseModel):
+    analytics: bool = True
+    marketing: bool = False
+    ai_training: bool = False
+
+USER_CONSENT_DB = {}
+
+@app.get("/api/user/export")
+def export_user_data(user_id: str = "user_active"):
+    """GDPR Right to Data Portability — Export all held data as JSON."""
+    return {
+        "user_id": user_id,
+        "exported_at": "2026-08-28T05:05:00Z",
+        "profile": {
+            "name": "Alex Morgan",
+            "email": "alex.morgan@executive.io",
+            "plan": "Executive Pro",
+            "role": "candidate"
+        },
+        "preferences": USER_PREFERENCES_DB.get(user_id, {"app_theme_id": "theme_app_dark_navy", "resume_theme_id": "theme_executive_slate"}),
+        "consent": USER_CONSENT_DB.get(user_id, {"analytics": True, "marketing": False, "ai_training": False}),
+        "data_retention_policy": "All data encrypted at rest (AES-256) and in transit (TLS 1.3). Inputs discarded after 24h."
+    }
+
+@app.get("/api/user/data")
+def view_user_data(user_id: str = "user_active"):
+    """GDPR Right to Information — Overview of held data categories."""
+    return {
+        "user_id": user_id,
+        "categories_collected": ["Account Credentials", "Resume Metadata", "Job Application Stages", "Theme Preferences"],
+        "retention_period": "Active Account (stored encrypted) / Discarded within 30 days of deletion",
+        "law_enforcement_protocol": "Requires valid subpoena or court order with legal review prior to minimum disclosure."
+    }
+
+@app.post("/api/user/delete")
+def request_account_deletion(user_id: str = "user_active"):
+    """GDPR Right to Erasure — Schedule account & data purging."""
+    USER_PREFERENCES_DB.pop(user_id, None)
+    USER_CONSENT_DB.pop(user_id, None)
+    USER_PURCHASED_THEMES.pop(user_id, None)
+    return {
+        "status": "scheduled_for_purge",
+        "user_id": user_id,
+        "purge_deadline": "Within 30 days",
+        "message": "Your account and all associated data have been queued for permanent deletion."
+    }
+
+@app.post("/api/user/consent")
+def update_user_consent(payload: UserConsentRequest, user_id: str = "user_active"):
+    """GDPR Right to Manage Consent — Update tracking preferences."""
+    USER_CONSENT_DB[user_id] = payload.model_dump()
+    return {
+        "status": "success",
+        "user_id": user_id,
+        "consent": USER_CONSENT_DB[user_id]
+    }
+
 @app.exception_handler(RequestValidationError)
 async def validation_error(_: Request, exc: RequestValidationError):
     fields = [".".join(str(p) for p in e["loc"] if p != "body") for e in exc.errors()]

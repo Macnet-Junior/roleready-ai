@@ -387,3 +387,21 @@ def test_security_headers():
     assert res.headers["X-Frame-Options"] == "DENY"
     assert res.headers["X-XSS-Protection"] == "1; mode=block"
     assert "strict-origin-when-cross-origin" in res.headers["Referrer-Policy"]
+
+def test_gdpr_endpoints():
+    export_res = client.get("/api/user/export?user_id=user_active")
+    assert export_res.status_code == 200
+    assert export_res.json()["user_id"] == "user_active"
+    assert "profile" in export_res.json()
+
+    data_res = client.get("/api/user/data?user_id=user_active")
+    assert data_res.status_code == 200
+    assert "categories_collected" in data_res.json()
+
+    consent_res = client.post("/api/user/consent?user_id=user_active", json={"analytics": True, "marketing": False, "ai_training": False})
+    assert consent_res.status_code == 200
+    assert consent_res.json()["status"] == "success"
+
+    delete_res = client.post("/api/user/delete?user_id=user_active")
+    assert delete_res.status_code == 200
+    assert delete_res.json()["status"] == "scheduled_for_purge"
