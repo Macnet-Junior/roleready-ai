@@ -1268,6 +1268,12 @@ function applyTheme(themeId, targetType = 'resume') {
     body: JSON.stringify({ user_id: state.user.email || 'user_active' })
   }).catch(() => {});
 
+  fetch(`/api/user/preferences`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: state.user.email || 'user_active', theme_id: themeId, [targetType === 'app' ? 'app_theme_id' : 'resume_theme_id']: themeId })
+  }).catch(() => {});
+
   playUiSound('success');
   showToast(`${targetType === 'app' ? 'App UI Theme' : 'Resume Template'} applied: ${themeData.name}`, 'success');
 }

@@ -285,8 +285,41 @@ class ThemeItem(BaseModel):
     typography: ThemeTypography
     border_radius: str
 
+class UserPreferencesRequest(BaseModel):
+    user_id: str | None = "user_active"
+    theme_id: str | None = None
+    app_theme_id: str | None = None
+    resume_theme_id: str | None = None
+
 class ApplyThemeRequest(BaseModel):
     user_id: str | None = "user_active"
+
+USER_PREFERENCES_DB = {}
+
+@app.post("/api/user/preferences")
+def save_user_preferences(payload: UserPreferencesRequest):
+    uid = payload.user_id or "user_active"
+    prefs = USER_PREFERENCES_DB.get(uid, {})
+    if payload.theme_id:
+        prefs["theme_id"] = payload.theme_id
+    if payload.app_theme_id:
+        prefs["app_theme_id"] = payload.app_theme_id
+    if payload.resume_theme_id:
+        prefs["resume_theme_id"] = payload.resume_theme_id
+    USER_PREFERENCES_DB[uid] = prefs
+    
+    theme_id = payload.theme_id or payload.app_theme_id or payload.resume_theme_id or "theme_app_dark_navy"
+    theme = next((t for t in SEED_THEMES if t.id == theme_id), None)
+    return {
+        "status": "success",
+        "preferences": prefs,
+        "active_theme": theme
+    }
+
+@app.get("/api/user/preferences")
+def get_user_preferences(user_id: str = "user_active"):
+    prefs = USER_PREFERENCES_DB.get(user_id, {"app_theme_id": "theme_app_dark_navy", "resume_theme_id": "theme_executive_slate"})
+    return {"user_id": user_id, "preferences": prefs}
 
 SEED_THEMES: list[ThemeItem] = [
     ThemeItem(

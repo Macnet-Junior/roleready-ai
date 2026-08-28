@@ -370,3 +370,12 @@ def test_user_themes():
     res = client.get("/api/user/themes?user_id=user_active")
     assert res.status_code == 200
     assert "themes" in res.json()
+
+def test_user_preferences_api():
+    post_res = client.post("/api/user/preferences", json={"user_id": "user_active", "theme_id": "theme_modern_tech"})
+    assert post_res.status_code == 200
+    assert post_res.json()["status"] == "success"
+    
+    get_res = client.get("/api/user/preferences?user_id=user_active")
+    assert get_res.status_code == 200
+    assert get_res.json()["preferences"]["theme_id"] == "theme_modern_tech"
