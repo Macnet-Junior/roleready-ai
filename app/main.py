@@ -259,6 +259,171 @@ def voice_interview_report(payload: VoiceInterviewIntake):
     except OptimizationError as exc:
         raise HTTPException(exc.status_code, exc.user_message)
 
+# ─── Theme Management API ───────────────────────────────────────────────────
+
+class ThemeColor(BaseModel):
+    primary: str
+    secondary: str
+    accent: str
+    background: str
+    surface: str
+    text: str
+
+class ThemeTypography(BaseModel):
+    headingFont: str
+    bodyFont: str
+
+class ThemeItem(BaseModel):
+    id: str
+    name: str
+    type: str # 'app' or 'resume'
+    category: str
+    tier: str # 'free' or 'premium'
+    price: float
+    description: str
+    colors: ThemeColor
+    typography: ThemeTypography
+    border_radius: str
+
+class ApplyThemeRequest(BaseModel):
+    user_id: str | None = "user_active"
+
+SEED_THEMES: list[ThemeItem] = [
+    ThemeItem(
+        id="theme_executive_slate",
+        name="Executive Slate",
+        type="resume",
+        category="executive",
+        tier="free",
+        price=0.0,
+        description="Deep navy headers, clean ATS hierarchy, authoritative typography.",
+        colors=ThemeColor(primary="#0A1628", secondary="#2563EB", accent="#10B981", background="#F8FAFC", surface="#FFFFFF", text="#0F172A"),
+        typography=ThemeTypography(headingFont="Poppins", bodyFont="Inter"),
+        border_radius="rounded"
+    ),
+    ThemeItem(
+        id="theme_modern_tech",
+        name="Modern Tech",
+        type="resume",
+        category="tech",
+        tier="free",
+        price=0.0,
+        description="Violet accents, compact monospace typography, high-impact data tags.",
+        colors=ThemeColor(primary="#8B5CF6", secondary="#7C3AED", accent="#3B82F6", background="#FAFAFE", surface="#FFFFFF", text="#0F172A"),
+        typography=ThemeTypography(headingFont="JetBrains Mono", bodyFont="Inter"),
+        border_radius="rounded"
+    ),
+    ThemeItem(
+        id="theme_clean_minimal",
+        name="Clean Minimal",
+        type="resume",
+        category="minimal",
+        tier="free",
+        price=0.0,
+        description="Classic serif headings with balanced whitespace for legal & finance roles.",
+        colors=ThemeColor(primary="#334155", secondary="#64748B", accent="#0F172A", background="#FFFFFF", surface="#FFFFFF", text="#1E293B"),
+        typography=ThemeTypography(headingFont="Georgia", bodyFont="Inter"),
+        border_radius="sharp"
+    ),
+    ThemeItem(
+        id="theme_impact_emerald",
+        name="Impact Emerald",
+        type="resume",
+        category="executive",
+        tier="premium",
+        price=4.99,
+        description="Bold metric highlights, emerald badges, ideal for revenue & growth leaders.",
+        colors=ThemeColor(primary="#059669", secondary="#10B981", accent="#2563EB", background="#F0FDF4", surface="#FFFFFF", text="#064E3B"),
+        typography=ThemeTypography(headingFont="Poppins", bodyFont="Inter"),
+        border_radius="rounded"
+    ),
+    ThemeItem(
+        id="theme_creative_ruby",
+        name="Creative Ruby",
+        type="resume",
+        category="ruby",
+        tier="premium",
+        price=5.99,
+        description="Vibrant rose accents & two-column layout for design & product leaders.",
+        colors=ThemeColor(primary="#E11D48", secondary="#F43F5E", accent="#8B5CF6", background="#FFF1F2", surface="#FFFFFF", text="#881337"),
+        typography=ThemeTypography(headingFont="Poppins", bodyFont="Inter"),
+        border_radius="rounded"
+    ),
+    ThemeItem(
+        id="theme_app_dark_navy",
+        name="Deep Navy (App Skin)",
+        type="app",
+        category="app_dark",
+        tier="free",
+        price=0.0,
+        description="Default high-contrast executive dark navy application theme.",
+        colors=ThemeColor(primary="#2563EB", secondary="#8B5CF6", accent="#10B981", background="#F8FAFC", surface="#FFFFFF", text="#0F172A"),
+        typography=ThemeTypography(headingFont="Poppins", bodyFont="Inter"),
+        border_radius="rounded"
+    ),
+    ThemeItem(
+        id="theme_app_cyber_violet",
+        name="Cyber Violet (App Skin)",
+        type="app",
+        category="app_violet",
+        tier="premium",
+        price=3.99,
+        description="Vibrant violet accent skin for technical recruiter workspace.",
+        colors=ThemeColor(primary="#8B5CF6", secondary="#6366F1", accent="#EC4899", background="#FAF5FF", surface="#FFFFFF", text="#3B0764"),
+        typography=ThemeTypography(headingFont="JetBrains Mono", bodyFont="Inter"),
+        border_radius="rounded"
+    )
+]
+
+USER_PURCHASED_THEMES = {"user_active": ["theme_executive_slate", "theme_modern_tech", "theme_clean_minimal", "theme_app_dark_navy"]}
+
+@app.get("/api/themes", response_model=list[ThemeItem])
+def get_themes(type: str | None = None, category: str | None = None, tier: str | None = None):
+    results = SEED_THEMES
+    if type:
+        results = [t for t in results if t.type == type]
+    if category:
+        results = [t for t in results if t.category == category]
+    if tier:
+        results = [t for t in results if t.tier == tier]
+    return results
+
+@app.get("/api/themes/{theme_id}", response_model=ThemeItem)
+def get_theme_by_id(theme_id: str):
+    theme = next((t for t in SEED_THEMES if t.id == theme_id), None)
+    if not theme:
+        raise HTTPException(404, f"Theme '{theme_id}' not found.")
+    return theme
+
+@app.post("/api/themes/{theme_id}/apply")
+def apply_theme(theme_id: str, payload: ApplyThemeRequest | None = None):
+    theme = next((t for t in SEED_THEMES if t.id == theme_id), None)
+    if not theme:
+        raise HTTPException(404, f"Theme '{theme_id}' not found.")
+    
+    user_id = payload.user_id if payload else "user_active"
+    purchased = USER_PURCHASED_THEMES.get(user_id, ["theme_executive_slate", "theme_modern_tech", "theme_clean_minimal", "theme_app_dark_navy"])
+    
+    if theme.tier == "premium" and theme.id not in purchased:
+        # Auto-unlock for demo or enforce check
+        purchased.append(theme.id)
+        USER_PURCHASED_THEMES[user_id] = purchased
+    
+    return {
+        "status": "applied",
+        "theme_id": theme.id,
+        "type": theme.type,
+        "colors": theme.colors,
+        "typography": theme.typography,
+        "border_radius": theme.border_radius
+    }
+
+@app.get("/api/user/themes")
+def get_user_themes(user_id: str = "user_active"):
+    purchased_ids = USER_PURCHASED_THEMES.get(user_id, ["theme_executive_slate", "theme_modern_tech", "theme_clean_minimal", "theme_app_dark_navy"])
+    purchased_themes = [t for t in SEED_THEMES if t.id in purchased_ids]
+    return {"user_id": user_id, "themes": purchased_themes}
+
 @app.exception_handler(RequestValidationError)
 async def validation_error(_: Request, exc: RequestValidationError):
     fields = [".".join(str(p) for p in e["loc"] if p != "body") for e in exc.errors()]

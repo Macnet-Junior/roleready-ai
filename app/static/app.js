@@ -97,6 +97,7 @@ const state = {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadPersistedState();
+  initThemeSystem();
   initGateway();
   initModals();
   initNotifications();
@@ -1179,6 +1180,113 @@ function handleUpgradePlan(planName, price) {
   });
 }
 
+// ─── Theme System (App Skin vs Resume Templates) ──────────────────────────────
+
+const THEME_DEFAULTS = {
+  theme_executive_slate: {
+    name: 'Executive Slate',
+    type: 'resume',
+    colors: { primary: '#0A1628', secondary: '#2563EB', accent: '#10B981', background: '#F8FAFC', surface: '#FFFFFF', text: '#0F172A' },
+    typography: { headingFont: 'Poppins', bodyFont: 'Inter' },
+    border_radius: 'rounded'
+  },
+  theme_modern_tech: {
+    name: 'Modern Tech',
+    type: 'resume',
+    colors: { primary: '#8B5CF6', secondary: '#7C3AED', accent: '#3B82F6', background: '#FAFAFE', surface: '#FFFFFF', text: '#0F172A' },
+    typography: { headingFont: 'JetBrains Mono', bodyFont: 'Inter' },
+    border_radius: 'rounded'
+  },
+  theme_clean_minimal: {
+    name: 'Clean Minimal',
+    type: 'resume',
+    colors: { primary: '#334155', secondary: '#64748B', accent: '#0F172A', background: '#FFFFFF', surface: '#FFFFFF', text: '#1E293B' },
+    typography: { headingFont: 'Georgia', bodyFont: 'Inter' },
+    border_radius: 'sharp'
+  },
+  theme_impact_emerald: {
+    name: 'Impact Emerald',
+    type: 'resume',
+    colors: { primary: '#059669', secondary: '#10B981', accent: '#2563EB', background: '#F0FDF4', surface: '#FFFFFF', text: '#064E3B' },
+    typography: { headingFont: 'Poppins', bodyFont: 'Inter' },
+    border_radius: 'rounded'
+  },
+  theme_creative_ruby: {
+    name: 'Creative Ruby',
+    type: 'resume',
+    colors: { primary: '#E11D48', secondary: '#F43F5E', accent: '#8B5CF6', background: '#FFF1F2', surface: '#FFFFFF', text: '#881337' },
+    typography: { headingFont: 'Poppins', bodyFont: 'Inter' },
+    border_radius: 'rounded'
+  },
+  theme_app_dark_navy: {
+    name: 'Deep Navy (App Skin)',
+    type: 'app',
+    colors: { primary: '#2563EB', secondary: '#8B5CF6', accent: '#10B981', background: '#F8FAFC', surface: '#FFFFFF', text: '#0F172A' },
+    typography: { headingFont: 'Poppins', bodyFont: 'Inter' },
+    border_radius: 'rounded'
+  },
+  theme_app_cyber_violet: {
+    name: 'Cyber Violet (App Skin)',
+    type: 'app',
+    colors: { primary: '#8B5CF6', secondary: '#6366F1', accent: '#EC4899', background: '#FAF5FF', surface: '#FFFFFF', text: '#3B0764' },
+    typography: { headingFont: 'JetBrains Mono', bodyFont: 'Inter' },
+    border_radius: 'rounded'
+  }
+};
+
+let previousAppTheme = null;
+
+function initThemeSystem() {
+  const savedAppTheme = localStorage.getItem('rr_app_theme') || 'theme_app_dark_navy';
+  applyAppThemeCSS(THEME_DEFAULTS[savedAppTheme] || THEME_DEFAULTS.theme_app_dark_navy, false);
+}
+
+function applyTheme(themeId, targetType = 'resume') {
+  const themeData = THEME_DEFAULTS[themeId];
+  if (!themeData) return;
+
+  const previousId = localStorage.getItem(targetType === 'app' ? 'rr_app_theme' : 'rr_resume_theme');
+  previousAppTheme = previousId;
+
+  if (targetType === 'app') {
+    applyAppThemeCSS(themeData, true);
+    localStorage.setItem('rr_app_theme', themeId);
+  } else {
+    localStorage.setItem('rr_resume_theme', themeId);
+    const preview = document.getElementById('studio-live-preview');
+    if (preview) {
+      preview.style.setProperty('--color-primary', themeData.colors.primary);
+      preview.style.setProperty('--color-secondary', themeData.colors.secondary);
+      preview.style.setProperty('--color-accent', themeData.colors.accent);
+    }
+  }
+
+  fetch(`/api/themes/${themeId}/apply`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: state.user.email || 'user_active' })
+  }).catch(() => {});
+
+  playUiSound('success');
+  showToast(`${targetType === 'app' ? 'App UI Theme' : 'Resume Template'} applied: ${themeData.name}`, 'success');
+}
+
+function applyAppThemeCSS(theme, showToastMsg = false) {
+  const root = document.documentElement;
+  const c = theme.colors;
+  const t = theme.typography;
+
+  root.style.setProperty('--color-primary', c.primary);
+  root.style.setProperty('--color-secondary', c.secondary);
+  root.style.setProperty('--color-accent', c.accent);
+  root.style.setProperty('--color-bg', c.background);
+  root.style.setProperty('--color-surface', c.surface);
+  root.style.setProperty('--color-text', c.text);
+  root.style.setProperty('--font-heading', `'${t.headingFont}', sans-serif`);
+  root.style.setProperty('--font-body', `'${t.bodyFont}', sans-serif`);
+  root.style.setProperty('--radius-base', theme.border_radius === 'sharp' ? '4px' : theme.border_radius === 'rounded' ? '12px' : '9999px');
+}
+
 // ─── Global Helpers ───────────────────────────────────────────────────────────
 
 function attachGlobalHelpers() {
@@ -1190,6 +1298,7 @@ function attachGlobalHelpers() {
   window.speakText = speakText;
   window.playUiSound = playUiSound;
   window.handleUpgradePlan = handleUpgradePlan;
+  window.applyTheme = applyTheme;
 }
 
 // ─── Toast Notifications ──────────────────────────────────────────────────────

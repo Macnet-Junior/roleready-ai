@@ -9,7 +9,7 @@
   --navy-900: #0A1628;
   --navy-800: #0F1F38;
   --navy-700: #172A46;
-  --blue-primary: #2563EB;
+  --blue-primary: var(--color-primary, #2563EB);
   --blue-hover: #1D4ED8;
   --blue-light: #3B82F6;
   --blue-soft: rgba(37, 99, 235, 0.1);

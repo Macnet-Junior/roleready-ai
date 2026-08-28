@@ -341,3 +341,32 @@ def test_voice_interview_endpoints(monkeypatch):
   rep_res = client.post("/api/voice-interview/report", json={"first_name": "Alex", "last_name": "Morgan", "target_role": "Senior Engineer", "career_stage": "senior"})
   assert rep_res.status_code == 200
   assert rep_res.json()["overall_rating"].startswith("Strong Hire")
+
+
+def test_theme_api_list():
+    res = client.get("/api/themes")
+    assert res.status_code == 200
+    themes = res.json()
+    assert len(themes) >= 7
+
+def test_theme_api_filter():
+    res = client.get("/api/themes?type=resume")
+    assert res.status_code == 200
+    for t in res.json():
+        assert t["type"] == "resume"
+
+def test_theme_api_get_by_id():
+    res = client.get("/api/themes/theme_executive_slate")
+    assert res.status_code == 200
+    assert res.json()["id"] == "theme_executive_slate"
+
+def test_theme_api_apply():
+    res = client.post("/api/themes/theme_executive_slate/apply")
+    assert res.status_code == 200
+    assert res.json()["status"] == "applied"
+    assert res.json()["theme_id"] == "theme_executive_slate"
+
+def test_user_themes():
+    res = client.get("/api/user/themes?user_id=user_active")
+    assert res.status_code == 200
+    assert "themes" in res.json()
