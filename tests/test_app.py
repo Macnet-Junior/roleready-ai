@@ -379,3 +379,11 @@ def test_user_preferences_api():
     get_res = client.get("/api/user/preferences?user_id=user_active")
     assert get_res.status_code == 200
     assert get_res.json()["preferences"]["theme_id"] == "theme_modern_tech"
+
+def test_security_headers():
+    res = client.get("/health")
+    assert res.status_code == 200
+    assert res.headers["X-Content-Type-Options"] == "nosniff"
+    assert res.headers["X-Frame-Options"] == "DENY"
+    assert res.headers["X-XSS-Protection"] == "1; mode=block"
+    assert "strict-origin-when-cross-origin" in res.headers["Referrer-Policy"]
