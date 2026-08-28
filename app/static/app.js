@@ -1,7 +1,11 @@
 /**
  * RoleReady Application Controller v2.0
- * Comprehensive & Defensively-Wired Event Handling with Seed Data, Onboarding Wizard,
- * Dynamic STAR Evaluation, and Human Recruiter Decision Authority.
+ * Comprehensive & Defensively-Wired Event Handling with:
+ * 1. Full-Screen Gateway & Persona-Specific Onboarding
+ * 2. Strict Isolation between Candidate & Enterprise Workspaces
+ * 3. 1-Click Seed Data Loader
+ * 4. Dynamic STAR Evaluation
+ * 5. Human Recruiter Decision Authority ("AI Recommends, Humans Decide")
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     recordingTimer: null,
     recordingSeconds: 0,
     onboardingStep: 1,
-    selectedRole: 'candidate',
+    selectedPath: 'candidate', // 'candidate' | 'employer'
     kanbanApps: [
       { id: 'app-1', company: 'Stripe', role: 'Senior Product Manager', stage: 'interview', match: 92, date: '2 days ago' },
       { id: 'app-2', company: 'OpenAI', role: 'Staff Product Lead', stage: 'applied', match: 88, date: '4 days ago' },
@@ -96,22 +100,189 @@ To structure my decision, I conducted a rapid impact matrix evaluation. I gather
 As a result, we successfully delivered the compliance feature in 18 days, enabling Sales to close the contract on schedule, while reducing query load on the primary cluster by 35%.`;
 
   // =========================================================================
-  // 1. Navigation & View Router
+  // 1. Full-Screen Gateway & Persona-Specific Onboarding Controller
   // =========================================================================
+  const gatewayOverlay = document.getElementById('fullscreen-welcome-gateway');
+  const candidatePathCard = document.getElementById('choice-path-candidate');
+  const employerPathCard = document.getElementById('choice-path-employer');
+
+  function updateOnboardingUI() {
+    // Update step visibility
+    for (let i = 1; i <= 4; i++) {
+      const stepEl = document.getElementById(`ob-step-${i}`);
+      const dotEl = document.getElementById(`ob-dot-${i}`);
+      if (stepEl) stepEl.style.display = i === state.onboardingStep ? 'block' : 'none';
+      if (dotEl) {
+        if (i < state.onboardingStep) {
+          dotEl.className = 'dot done';
+          dotEl.style.background = 'var(--emerald)';
+        } else if (i === state.onboardingStep) {
+          dotEl.className = 'dot active';
+          dotEl.style.background = state.selectedPath === 'employer' ? 'var(--violet)' : 'var(--blue-primary)';
+        } else {
+          dotEl.className = 'dot';
+          dotEl.style.background = 'rgba(255,255,255,0.15)';
+        }
+      }
+    }
+
+    // Step 2 dynamic goals based on path
+    const candGoals = document.getElementById('ob-candidate-goals-list');
+    const empGoals = document.getElementById('ob-employer-goals-list');
+    const step2Title = document.getElementById('ob-step2-title');
+    const step2Desc = document.getElementById('ob-step2-desc');
+
+    if (state.selectedPath === 'employer') {
+      if (candGoals) candGoals.style.display = 'none';
+      if (empGoals) empGoals.style.display = 'block';
+      if (step2Title) step2Title.textContent = 'Enterprise Hiring Objectives';
+      if (step2Desc) step2Desc.textContent = 'Configure bulk screening rubrics and hiring pipelines.';
+    } else {
+      if (candGoals) candGoals.style.display = 'block';
+      if (empGoals) empGoals.style.display = 'none';
+      if (step2Title) step2Title.textContent = 'Candidate Career Goals';
+      if (step2Desc) step2Desc.textContent = 'Select AI tools to optimize your job applications and interviews.';
+    }
+
+    // Step 3 dynamic setup based on path
+    const candSetup = document.getElementById('ob-candidate-setup');
+    const empSetup = document.getElementById('ob-employer-setup');
+    const step3Title = document.getElementById('ob-step3-title');
+    const step3Desc = document.getElementById('ob-step3-desc');
+
+    if (state.selectedPath === 'employer') {
+      if (candSetup) candSetup.style.display = 'none';
+      if (empSetup) empSetup.style.display = 'block';
+      if (step3Title) step3Title.textContent = 'Requisition & Candidate Queue';
+      if (step3Desc) step3Desc.textContent = 'Setup your open role or load benchmark candidate resumes.';
+    } else {
+      if (candSetup) candSetup.style.display = 'block';
+      if (empSetup) empSetup.style.display = 'none';
+      if (step3Title) step3Title.textContent = 'Upload or Pre-load Resume';
+      if (step3Desc) step3Desc.textContent = 'Drop your resume file or load verified executive seed profile.';
+    }
+
+    // Step 4 summary
+    const readyTitle = document.getElementById('ob-ready-title');
+    const readyDesc = document.getElementById('ob-ready-desc');
+    if (state.selectedPath === 'employer') {
+      if (readyTitle) readyTitle.textContent = 'Enterprise Portal Ready!';
+      if (readyDesc) readyDesc.textContent = 'Your Talent Acquisition command center is active with bulk screening, candidate matrix, and recruiter decision authority.';
+    } else {
+      if (readyTitle) readyTitle.textContent = 'Candidate Workspace Ready!';
+      if (readyDesc) readyDesc.textContent = 'Your Career Intelligence workspace is active with truth-gated resume scoring, STAR interview coach, and Kanban tracker.';
+    }
+  }
+
+  // Path selection clicks
+  candidatePathCard?.addEventListener('click', () => {
+    state.selectedPath = 'candidate';
+    candidatePathCard.classList.add('selected');
+    employerPathCard.classList.remove('selected');
+  });
+
+  employerPathCard?.addEventListener('click', () => {
+    state.selectedPath = 'employer';
+    employerPathCard.classList.add('selected');
+    candidatePathCard.classList.remove('selected');
+  });
+
+  // Step navigation buttons
+  document.getElementById('btn-ob-step1-next')?.addEventListener('click', () => {
+    state.onboardingStep = 2;
+    updateOnboardingUI();
+  });
+
+  document.getElementById('btn-ob-step2-next')?.addEventListener('click', () => {
+    state.onboardingStep = 3;
+    updateOnboardingUI();
+  });
+
+  document.getElementById('btn-ob-step2-back')?.addEventListener('click', () => {
+    state.onboardingStep = 1;
+    updateOnboardingUI();
+  });
+
+  document.getElementById('btn-ob-step3-next')?.addEventListener('click', () => {
+    state.onboardingStep = 4;
+    updateOnboardingUI();
+  });
+
+  document.getElementById('btn-ob-step3-back')?.addEventListener('click', () => {
+    state.onboardingStep = 2;
+    updateOnboardingUI();
+  });
+
+  document.getElementById('btn-ob-load-cand-seed')?.addEventListener('click', () => {
+    populateSeedData();
+    showToast('Loaded Alex Morgan Executive Profile into memory!', 'success');
+    state.onboardingStep = 4;
+    updateOnboardingUI();
+  });
+
+  document.getElementById('btn-ob-load-emp-seed')?.addEventListener('click', () => {
+    showToast('Loaded 3 Candidate Resumes into Bulk Screening Queue!', 'success');
+    state.onboardingStep = 4;
+    updateOnboardingUI();
+  });
+
+  // Final Launch
+  document.getElementById('btn-ob-launch')?.addEventListener('click', () => {
+    if (gatewayOverlay) gatewayOverlay.classList.add('hidden');
+    setPortalMode(state.selectedPath);
+    showToast(`Welcome to your ${state.selectedPath === 'employer' ? 'Enterprise Talent' : 'Candidate'} Workspace!`, 'success');
+  });
+
+  function openGateway() {
+    state.onboardingStep = 1;
+    updateOnboardingUI();
+    if (gatewayOverlay) gatewayOverlay.classList.remove('hidden');
+  }
+
+  // =========================================================================
+  // 2. Persona Workspace Isolation & View Router
+  // =========================================================================
+  const candidateNav = document.getElementById('candidate-nav');
+  const employerNav = document.getElementById('employer-nav');
+  const sidebarBadge = document.getElementById('sidebar-portal-badge');
+
+  function setPortalMode(mode) {
+    state.mode = mode;
+    if (mode === 'employer') {
+      document.body.classList.add('employer-mode');
+      if (candidateNav) candidateNav.style.display = 'none';
+      if (employerNav) employerNav.style.display = 'block';
+      if (sidebarBadge) {
+        sidebarBadge.textContent = 'Enterprise Talent Portal';
+        sidebarBadge.style.color = 'var(--violet)';
+      }
+      switchView('emp-dashboard');
+    } else {
+      document.body.classList.remove('employer-mode');
+      if (employerNav) employerNav.style.display = 'none';
+      if (candidateNav) candidateNav.style.display = 'block';
+      if (sidebarBadge) {
+        sidebarBadge.textContent = 'Candidate Portal';
+        sidebarBadge.style.color = 'var(--blue-light)';
+      }
+      switchView('cand-dashboard');
+    }
+  }
+
   const viewTitles = {
-    'cand-dashboard': { title: 'Candidate Dashboard', sub: 'Welcome back, Alex. Your job matching pipeline is active.' },
+    'cand-dashboard': { title: 'Candidate Dashboard', sub: 'Welcome back, Alex. Your career intelligence pipeline is active.' },
     'cand-resume-analysis': { title: 'Resume Analysis & Truth Gating', sub: 'ATS-tailored content and qualification verification.' },
     'cand-resume-studio': { title: 'Resume Studio & Templates', sub: 'Customize executive formats with real-time rendering.' },
     'cand-cover-letter': { title: 'Cover Letter Generator', sub: 'Generate high-impact, evidence-backed cover letters.' },
     'cand-tracker': { title: 'Application Tracker', sub: 'Manage your active job pipeline across stages.' },
     'cand-outreach': { title: 'Recruiter Outreach Drafts', sub: 'Craft concise LinkedIn notes and cold InMail messages.' },
-    'cand-interview': { title: 'STAR Voice Practice', sub: 'Simulate behavioral interviews with AI coach feedback.' },
+    'cand-interview': { title: 'STAR Voice Practice', sub: 'Simulate behavioral interviews with dynamic AI coach feedback.' },
     'cand-salary': { title: 'Salary Strategy & Negotiation', sub: 'Target 50th/75th percentiles and counter-offer scripts.' },
     'cand-settings': { title: 'Settings & Preferences', sub: 'Customize profile and application configurations.' },
     'emp-dashboard': { title: 'Employer Hiring Dashboard', sub: 'Overview of open requisitions, pipeline metrics, and candidate intake.' },
     'emp-vacancies': { title: 'Active Vacancies', sub: 'Manage open requisitions and screening funnels.' },
     'emp-bulk-screening': { title: 'Bulk Candidate Screening', sub: 'Benchmark and rank multiple resumes against job criteria.' },
-    'emp-candidate-comparison': { title: 'Candidate Comparison Matrix', sub: 'Side-by-side rubric evaluation.' },
+    'emp-candidate-comparison': { title: 'Candidate Comparison Matrix', sub: 'Side-by-side rubric evaluation & Human Decision Authority.' },
     'emp-email-templates': { title: 'Candidate Communications', sub: 'Manage interview invites, offer letters, and feedback.' },
     'emp-scoring-rubrics': { title: 'Scoring Rubrics', sub: 'Configure weighting parameters for candidate screening.' }
   };
@@ -119,7 +290,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   function switchView(targetViewId) {
     state.activeView = targetViewId;
 
-    // Show active view page, hide others
+    // Show target view, hide others
     document.querySelectorAll('.view-page').forEach(page => {
       if (page.id === `view-${targetViewId}`) {
         page.classList.add('active');
@@ -130,7 +301,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       }
     });
 
-    // Update active nav item highlights
+    // Update active nav links
     document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(item => {
       if (item.getAttribute('data-view') === targetViewId) {
         item.classList.add('active');
@@ -139,7 +310,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       }
     });
 
-    // Update Topbar
+    // Update Topbar Title & Subtitle
     const titleEl = document.getElementById('topbar-title');
     const subEl = document.getElementById('topbar-subtitle');
     if (viewTitles[targetViewId]) {
@@ -147,7 +318,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       if (subEl) subEl.textContent = viewTitles[targetViewId].sub;
     }
 
-    // Update Primary Action button in Topbar
+    // Update Topbar Primary Action button
     const actionText = document.getElementById('topbar-action-text');
     const actionBtn = document.getElementById('btn-topbar-primary-action');
     if (actionText && actionBtn) {
@@ -163,7 +334,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Bind all nav items and data-nav click triggers via delegation
+  // Bind all nav links and data-nav cards
   document.addEventListener('click', (e) => {
     const navBtn = e.target.closest('[data-view], [data-nav]');
     if (navBtn) {
@@ -175,41 +346,22 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     }
   });
 
-  // Mode Switcher (Candidate ↔ Employer)
-  const btnModeCandidate = document.getElementById('btn-mode-candidate');
-  const btnModeEmployer = document.getElementById('btn-mode-employer');
-  const candidateNav = document.getElementById('candidate-nav');
-  const employerNav = document.getElementById('employer-nav');
-  const brandTag = document.getElementById('brand-tag');
+  // Topbar and Header triggers
+  document.getElementById('btn-open-onboarding')?.addEventListener('click', openGateway);
+  document.getElementById('btn-sidebar-user')?.addEventListener('click', () => openModal('modal-user-profile'));
+  document.getElementById('btn-history-reports')?.addEventListener('click', () => openModal('modal-history-reports'));
+  document.getElementById('btn-notifications')?.addEventListener('click', () => {
+    showToast('Notifications: All systems operational. 0 unread alerts.', 'info');
+  });
 
-  function setMode(newMode) {
-    state.mode = newMode;
-    if (newMode === 'employer') {
-      document.body.classList.add('employer-mode');
-      if (btnModeEmployer) btnModeEmployer.classList.add('active');
-      if (btnModeCandidate) btnModeCandidate.classList.remove('active');
-      if (candidateNav) candidateNav.style.display = 'none';
-      if (employerNav) employerNav.style.display = 'block';
-      if (brandTag) brandTag.style.color = 'var(--employer-accent)';
-      switchView('emp-dashboard');
-      showToast('Switched to Enterprise Hiring Mode', 'info');
-    } else {
-      document.body.classList.remove('employer-mode');
-      if (btnModeCandidate) btnModeCandidate.classList.add('active');
-      if (btnModeEmployer) btnModeEmployer.classList.remove('active');
-      if (employerNav) employerNav.style.display = 'none';
-      if (candidateNav) candidateNav.style.display = 'block';
-      if (brandTag) brandTag.style.color = 'var(--candidate-accent)';
-      switchView('cand-dashboard');
-      showToast('Switched to Candidate Career Mode', 'info');
-    }
-  }
-
-  if (btnModeCandidate) btnModeCandidate.addEventListener('click', () => setMode('candidate'));
-  if (btnModeEmployer) btnModeEmployer.addEventListener('click', () => setMode('employer'));
+  document.getElementById('model-speed-select')?.addEventListener('change', (e) => {
+    state.modelSpeed = e.target.value;
+    const label = e.target.value.includes('pro') ? 'Deep Reasoning (Gemini 2.5 Pro)' : 'Fast (Gemini 2.5 Flash)';
+    showToast(`AI Engine set to ${label}`, 'success');
+  });
 
   // =========================================================================
-  // 2. Modals System
+  // 3. Modals System
   // =========================================================================
   function openModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -232,86 +384,6 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       const modal = btn.closest('.modal-overlay');
       if (modal) modal.classList.add('hidden');
     });
-  });
-
-  // Header and Sidebar Triggers
-  document.getElementById('btn-sidebar-user')?.addEventListener('click', () => openModal('modal-user-profile'));
-  document.getElementById('btn-history-reports')?.addEventListener('click', () => openModal('modal-history-reports'));
-  document.getElementById('btn-open-onboarding')?.addEventListener('click', () => {
-    state.onboardingStep = 1;
-    renderOnboardingStep();
-    openModal('modal-onboarding-flow');
-  });
-  document.getElementById('btn-notifications')?.addEventListener('click', () => {
-    showToast('Notifications: All systems operational. 0 unread alerts.', 'info');
-  });
-
-  document.getElementById('model-speed-select')?.addEventListener('change', (e) => {
-    state.modelSpeed = e.target.value;
-    const label = e.target.value.includes('pro') ? 'Deep Reasoning (Gemini 2.5 Pro)' : 'Fast (Gemini 2.5 Flash)';
-    showToast(`AI Engine set to ${label}`, 'success');
-  });
-
-  // =========================================================================
-  // 3. Onboarding Wizard Logic (4 Steps)
-  // =========================================================================
-  function renderOnboardingStep() {
-    for (let i = 1; i <= 4; i++) {
-      const stepEl = document.getElementById(`onboarding-step-${i}`);
-      const dotEl = document.getElementById(`dot-step-${i}`);
-      if (stepEl) stepEl.style.display = i === state.onboardingStep ? 'block' : 'none';
-      if (dotEl) {
-        if (i < state.onboardingStep) dotEl.style.background = 'var(--emerald)';
-        else if (i === state.onboardingStep) dotEl.style.background = 'var(--blue-primary)';
-        else dotEl.style.background = 'var(--gray-200)';
-      }
-    }
-
-    const prevBtn = document.getElementById('btn-onboarding-prev');
-    const nextBtn = document.getElementById('btn-onboarding-next');
-    if (prevBtn) prevBtn.style.visibility = state.onboardingStep === 1 ? 'hidden' : 'visible';
-    if (nextBtn) {
-      nextBtn.textContent = state.onboardingStep === 4 ? 'Launch Workspace 🚀' : 'Continue →';
-    }
-  }
-
-  document.querySelectorAll('.role-choice-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.role-choice-card').forEach(c => {
-        c.classList.remove('selected');
-        c.style.borderColor = 'var(--gray-200)';
-        c.style.background = 'var(--white)';
-      });
-      card.classList.add('selected');
-      card.style.borderColor = 'var(--blue-primary)';
-      card.style.background = 'var(--blue-soft)';
-      state.selectedRole = card.getAttribute('data-role');
-    });
-  });
-
-  document.getElementById('btn-onboarding-next')?.addEventListener('click', () => {
-    if (state.onboardingStep < 4) {
-      state.onboardingStep++;
-      renderOnboardingStep();
-    } else {
-      closeModal('modal-onboarding-flow');
-      setMode(state.selectedRole);
-      showToast('Workspace initialized! Welcome to RoleReady.', 'success');
-    }
-  });
-
-  document.getElementById('btn-onboarding-prev')?.addEventListener('click', () => {
-    if (state.onboardingStep > 1) {
-      state.onboardingStep--;
-      renderOnboardingStep();
-    }
-  });
-
-  document.getElementById('btn-onboarding-seed-data')?.addEventListener('click', () => {
-    populateSeedData();
-    showToast('Loaded Alex Morgan Executive Profile into memory!', 'success');
-    state.onboardingStep = 4;
-    renderOnboardingStep();
   });
 
   // =========================================================================
@@ -346,7 +418,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     showToast('Loaded verified Executive Candidate & Job seed data!', 'success');
   });
 
-  // Input tabs
+  // Tab toggles
   document.getElementById('btn-tab-upload')?.addEventListener('click', () => {
     document.getElementById('btn-tab-upload')?.classList.add('active');
     document.getElementById('btn-tab-paste')?.classList.remove('active');
@@ -477,7 +549,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       populateSeedData();
       profile = candResumeText.value;
       job = targetJobText.value;
-      showToast('Auto-populated demo data for immediate analysis', 'info');
+      showToast('Auto-populated demo seed data for immediate analysis', 'info');
     }
 
     btnRunAnalysis.disabled = true;
@@ -872,7 +944,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
 
     const currentText = (starAnswerInput ? starAnswerInput.value : SEED_STAR_ANSWER).toLowerCase();
     
-    // Dynamic Rubric Scoring based on keywords and metrics
+    // Dynamic Rubric Scoring based on response quality
     const sitScore = Math.min(95, 75 + (currentText.includes('role') || currentText.includes('time') || currentText.includes('when') ? 15 : 5));
     const taskScore = Math.min(96, 78 + (currentText.includes('decision') || currentText.includes('priority') || currentText.includes('goal') ? 14 : 4));
     const actScore = Math.min(94, 70 + (currentText.includes('conducted') || currentText.includes('gathered') || currentText.includes('allocated') ? 18 : 6));
@@ -1053,9 +1125,12 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   window.showToast = showToast;
   window.openModal = openModal;
   window.closeModal = closeModal;
+  window.openGateway = openGateway;
+  window.setPortalMode = setPortalMode;
   window.populateSeedData = populateSeedData;
   window.loadHistoryItem = (idx) => {
     closeModal('modal-history-reports');
+    setPortalMode('candidate');
     switchView('cand-resume-analysis');
     populateSeedData();
     showToast('Loaded saved optimization report into view', 'success');
@@ -1072,6 +1147,9 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     }
     showToast('Loaded communication template', 'info');
   };
+
+  // Initial Check: If user hasn't selected path, present the Welcome & Onboarding Gateway
+  updateOnboardingUI();
 });
 
 // Global Toast Notification Function

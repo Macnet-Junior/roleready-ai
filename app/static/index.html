@@ -25,6 +25,178 @@
   </style>
 </head>
 <body>
+  <!-- ==========================================================================
+       Full-Screen RoleReady Welcome & Persona Gateway
+       ========================================================================== -->
+  <div class="welcome-screen-overlay" id="fullscreen-welcome-gateway">
+    <div class="welcome-card-box">
+      <!-- Onboarding Progress Dots -->
+      <div class="onboarding-progress-dots">
+        <div class="dot active" id="ob-dot-1"></div>
+        <div class="dot" id="ob-dot-2"></div>
+        <div class="dot" id="ob-dot-3"></div>
+        <div class="dot" id="ob-dot-4"></div>
+      </div>
+
+      <!-- STEP 1: PATH SELECTION (Candidate vs Enterprise) -->
+      <div class="ob-step" id="ob-step-1">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <svg viewBox="0 0 200 200" width="60" height="60" style="margin-bottom: 10px;">
+            <defs>
+              <linearGradient id="obShield" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#2563EB"/>
+                <stop offset="100%" style="stop-color:#1E40AF"/>
+              </linearGradient>
+              <linearGradient id="obCheck" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#10B981"/>
+                <stop offset="100%" style="stop-color:#059669"/>
+              </linearGradient>
+            </defs>
+            <path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#obShield)"/>
+            <path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#obCheck)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h1 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px;">Welcome to RoleReady</h1>
+          <p style="font-size: 13.5px; color: var(--gray-400);">From application to offer — select your workspace path.</p>
+        </div>
+
+        <div class="path-choice-card selected" id="choice-path-candidate" data-path="candidate">
+          <div class="path-choice-icon" style="background: rgba(37,99,235,0.2); color: #60A5FA;">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Job Searching (Candidate)</h3>
+            <p style="font-size: 12.5px; color: var(--gray-400); line-height: 1.4;">Optimize resume with truth gating, practice STAR interviews, and track applications.</p>
+          </div>
+        </div>
+
+        <div class="path-choice-card employer" id="choice-path-employer" data-path="employer">
+          <div class="path-choice-icon" style="background: rgba(139,92,246,0.2); color: #C084FC;">
+            <i class="fa-solid fa-building-user"></i>
+          </div>
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Hiring / Recruiting (Enterprise)</h3>
+            <p style="font-size: 12.5px; color: var(--gray-400); line-height: 1.4;">Bulk resume screening, custom rubrics, candidate comparison matrix, and decision workflows.</p>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary" id="btn-ob-step1-next" style="width: 100%; justify-content: center; margin-top: 18px; padding: 14px; font-size: 15px;">
+          Continue &rarr;
+        </button>
+      </div>
+
+      <!-- STEP 2: DYNAMIC GOALS -->
+      <div class="ob-step" id="ob-step-2" style="display: none;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--blue-light); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;" id="ob-step2-badge">Step 2 of 4</div>
+        <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 6px;" id="ob-step2-title">What are your primary goals?</h2>
+        <p style="font-size: 13px; color: var(--gray-400); margin-bottom: 18px;" id="ob-step2-desc">Select your key objectives to configure your workspace.</p>
+
+        <!-- Candidate Goals List -->
+        <div id="ob-candidate-goals-list">
+          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
+            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <strong style="font-size: 13px; color: #fff; display: block;">📄 Resume Optimization & Truth Gating</strong>
+              <span style="font-size: 11.5px; color: var(--gray-400);">AI alignment to target job requirements with zero hallucinations</span>
+            </div>
+          </div>
+          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
+            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <strong style="font-size: 13px; color: #fff; display: block;">🎤 STAR Voice Behavioral Coaching</strong>
+              <span style="font-size: 11.5px; color: var(--gray-400);">Real-time interview simulator scoring Situation, Task, Action & Result</span>
+            </div>
+          </div>
+          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
+            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <strong style="font-size: 13px; color: #fff; display: block;">📊 Application Kanban Tracker</strong>
+              <span style="font-size: 11.5px; color: var(--gray-400);">Manage active pipeline across Wishlist, Applied, Interview, Offer stages</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enterprise Goals List -->
+        <div id="ob-employer-goals-list" style="display: none;">
+          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
+            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <strong style="font-size: 13px; color: #fff; display: block;">👥 Bulk Resume Screening & Ranking</strong>
+              <span style="font-size: 11.5px; color: var(--gray-400);">Benchmark and score multiple candidate resumes simultaneously</span>
+            </div>
+          </div>
+          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
+            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <strong style="font-size: 13px; color: #fff; display: block;">⚖️ Custom Requisition Scoring Rubrics</strong>
+              <span style="font-size: 11.5px; color: var(--gray-400);">Configure weights for mandatory skills, experience & evidence</span>
+            </div>
+          </div>
+          <div class="goal-selection-item selected" onclick="this.classList.toggle('selected')">
+            <div class="goal-check-box"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <strong style="font-size: 13px; color: #fff; display: block;">🛡️ Human Recruiter Decision Authority</strong>
+              <span style="font-size: 11.5px; color: var(--gray-400);">AI recommends, human hiring managers make final decisions</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; gap: 12px; margin-top: 20px;">
+          <button type="button" class="btn-secondary" id="btn-ob-step2-back" style="flex: 1; justify-content: center;">&larr; Back</button>
+          <button type="button" class="btn-primary" id="btn-ob-step2-next" style="flex: 2; justify-content: center;">Continue &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: SETUP & SEED DATA -->
+      <div class="ob-step" id="ob-step-3" style="display: none;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--blue-light); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 3 of 4</div>
+        <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 6px;" id="ob-step3-title">Load Profile Data</h2>
+        <p style="font-size: 13px; color: var(--gray-400); margin-bottom: 16px;" id="ob-step3-desc">Upload your profile or load verified seed data.</p>
+
+        <!-- Candidate Step 3 -->
+        <div id="ob-candidate-setup">
+          <div class="dropzone" style="background: rgba(255,255,255,0.03); border: 2px dashed rgba(255,255,255,0.2); margin-bottom: 14px; padding: 22px 16px;">
+            <div class="icon" style="font-size: 26px; color: #60A5FA;"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <strong style="color: #fff;">Upload Candidate Resume (PDF, DOCX)</strong>
+            <span style="color: var(--gray-400);">or load verified pre-populated profile below</span>
+          </div>
+          <button type="button" class="btn-secondary" id="btn-ob-load-cand-seed" style="width: 100%; justify-content: center; font-size: 13px; padding: 11px;">
+            <i class="fa-solid fa-sparkles" style="color: #60A5FA;"></i> Pre-load Alex Morgan Executive Seed Profile
+          </button>
+        </div>
+
+        <!-- Enterprise Step 3 -->
+        <div id="ob-employer-setup" style="display: none;">
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Initial Requisition</label>
+            <input type="text" id="ob-req-title" class="form-input" value="Senior Product Manager — Requisition #REQ-409" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;">
+          </div>
+          <button type="button" class="btn-secondary" id="btn-ob-load-emp-seed" style="width: 100%; justify-content: center; font-size: 13px; padding: 11px;">
+            <i class="fa-solid fa-sparkles" style="color: #C084FC;"></i> Pre-load Candidate Benchmarking Queue (3 Candidates)
+          </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; gap: 12px; margin-top: 20px;">
+          <button type="button" class="btn-secondary" id="btn-ob-step3-back" style="flex: 1; justify-content: center;">&larr; Back</button>
+          <button type="button" class="btn-primary" id="btn-ob-step3-next" style="flex: 2; justify-content: center;">Continue &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: WORKSPACE READY -->
+      <div class="ob-step" id="ob-step-4" style="display: none; text-align: center; padding: 10px 0;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(16,185,129,0.2); color: #34D399; font-size: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px;" id="ob-ready-title">Workspace Ready!</h2>
+        <p style="font-size: 13.5px; color: var(--gray-400); margin-bottom: 22px; line-height: 1.5;" id="ob-ready-desc">
+          Your Candidate Career intelligence workspace is initialized with truth-verified AI models, ATS score rings, and active application tracking.
+        </p>
+        <button type="button" class="btn-primary" id="btn-ob-launch" style="width: 100%; justify-content: center; padding: 14px; font-size: 15.5px;">
+          Launch Workspace 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="app-layout">
     <!-- ==========================================================================
          Fixed Deep Navy Sidebar
@@ -49,18 +221,9 @@
           <path d="M100 25 L100 45" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round" />
           <path d="M92 35 L100 25 L108 35" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span>Role<em id="brand-tag">Ready</em></span>
-      </div>
-
-      <!-- Mode Switcher Pill -->
-      <div class="mode-switch-wrapper">
-        <div class="mode-switch">
-          <button type="button" class="mode-btn active" data-mode="candidate" id="btn-mode-candidate">
-            <i class="fa-solid fa-user-graduate"></i> Candidate
-          </button>
-          <button type="button" class="mode-btn" data-mode="employer" id="btn-mode-employer">
-            <i class="fa-solid fa-building-user"></i> Employer
-          </button>
+        <div>
+          <div style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; line-height: 1.1;">Role<em style="font-style: normal; color: var(--blue-light);">Ready</em></div>
+          <div id="sidebar-portal-badge" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--blue-light);">Candidate Portal</div>
         </div>
       </div>
 
@@ -1389,8 +1552,8 @@ Talent Acquisition Team
             <strong style="color: var(--emerald);"><i class="fa-solid fa-shield-check"></i> Enabled</strong>
           </div>
         </div>
-        <button type="button" class="btn-secondary" style="width: 100%; justify-content: center;" onclick="showToast('Signed out of demo session', 'info'); document.getElementById('modal-user-profile').classList.add('hidden');">
-          <i class="fa-solid fa-right-from-bracket"></i> Sign Out / Switch Account
+        <button type="button" class="btn-secondary" style="width: 100%; justify-content: center;" onclick="document.getElementById('modal-user-profile').classList.add('hidden'); openGateway();">
+          <i class="fa-solid fa-right-from-bracket"></i> Switch Workspace / Change Persona
         </button>
       </div>
     </div>
@@ -1462,121 +1625,10 @@ Talent Acquisition Team
     </div>
   </div>
 
-  <!-- Modal: 4-Step Interactive Onboarding Wizard -->
-  <div class="modal-overlay hidden" id="modal-onboarding-flow">
-    <div class="modal-content" style="max-width: 520px;">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <div class="user-avatar" style="width: 28px; height: 28px; font-size: 11px;">⚡</div>
-          <h3 id="onboarding-step-header">Welcome to RoleReady</h3>
-        </div>
-        <button type="button" class="modal-close-btn" id="btn-close-onboarding-modal">&times;</button>
-      </div>
-      <div class="modal-body" style="padding: 20px 24px;">
-        <!-- Step Indicator -->
-        <div style="display: flex; gap: 6px; margin-bottom: 20px;">
-          <div class="progress-dot active" id="dot-step-1" style="flex: 1; height: 4px; border-radius: 2px; background: var(--blue-primary);"></div>
-          <div class="progress-dot" id="dot-step-2" style="flex: 1; height: 4px; border-radius: 2px; background: var(--gray-200);"></div>
-          <div class="progress-dot" id="dot-step-3" style="flex: 1; height: 4px; border-radius: 2px; background: var(--gray-200);"></div>
-          <div class="progress-dot" id="dot-step-4" style="flex: 1; height: 4px; border-radius: 2px; background: var(--gray-200);"></div>
-        </div>
-
-        <!-- STEP 1: Choose Role -->
-        <div id="onboarding-step-1">
-          <div style="font-size: 11px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 1 of 4</div>
-          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">How will you use RoleReady?</h2>
-          <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 18px;">Choose your path. Candidate and Enterprise workspaces are fully separated.</p>
-
-          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-            <div class="action-card role-choice-card selected" data-role="candidate" style="padding: 16px; border: 2px solid var(--blue-primary); background: var(--blue-soft);">
-              <div style="display: flex; align-items: center; gap: 14px;">
-                <div class="action-icon blue" style="margin: 0; width: 42px; height: 42px;"><i class="fa-solid fa-user-graduate"></i></div>
-                <div>
-                  <h4 style="font-size: 15px; font-weight: 700; color: var(--navy-900);">I'm Job Searching (Candidate)</h4>
-                  <p style="font-size: 12.5px; color: var(--gray-600);">Resume analysis, job matching, STAR voice practice, application tracker.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="action-card role-choice-card" data-role="employer" style="padding: 16px; border: 1.5px solid var(--gray-200);">
-              <div style="display: flex; align-items: center; gap: 14px;">
-                <div class="action-icon violet" style="margin: 0; width: 42px; height: 42px;"><i class="fa-solid fa-building-user"></i></div>
-                <div>
-                  <h4 style="font-size: 15px; font-weight: 700; color: var(--navy-900);">I'm Hiring / Recruiting (Enterprise)</h4>
-                  <p style="font-size: 12.5px; color: var(--gray-600);">Bulk candidate screening, scoring rubrics, candidate comparison matrix.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 2: Goals -->
-        <div id="onboarding-step-2" style="display: none;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 2 of 4</div>
-          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">Select Primary Goals</h2>
-          <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 16px;">Customize which AI tools to prioritize in your workspace.</p>
-
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
-            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
-              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">📄 Optimize Resume with Truth Checks</span>
-            </label>
-            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
-              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">🎯 Match Against Target Job Requirements</span>
-            </label>
-            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
-              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">🎤 Practice STAR Behavioral Voice Interviews</span>
-            </label>
-            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
-              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">💰 Salary Benchmarks & Negotiation Strategy</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- STEP 3: Initial Upload / Seed Data -->
-        <div id="onboarding-step-3" style="display: none;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 3 of 4</div>
-          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">Load Your Profile</h2>
-          <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 16px;">Drop your resume or load verified demo seed data instantly.</p>
-
-          <div class="dropzone" id="onboarding-dropzone" style="margin-bottom: 14px; padding: 28px 16px;">
-            <div class="icon" style="font-size: 28px;"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-            <strong>Upload Resume (PDF, DOCX, MD)</strong>
-            <span>or use pre-loaded executive profile</span>
-          </div>
-
-          <button type="button" class="btn-secondary" id="btn-onboarding-seed-data" style="width: 100%; justify-content: center; font-size: 13px;">
-            <i class="fa-solid fa-sparkles" style="color: var(--blue-primary);"></i> Pre-load Alex Morgan Executive Seed Profile
-          </button>
-        </div>
-
-        <!-- STEP 4: Ready to Launch -->
-        <div id="onboarding-step-4" style="display: none; text-align: center; padding: 10px 0;">
-          <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--emerald-soft); color: var(--emerald); font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-            <i class="fa-solid fa-circle-check"></i>
-          </div>
-          <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">You're Ready to Launch!</h2>
-          <p style="font-size: 13.5px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.5;">
-            Your RoleReady workspace is configured with truth-verified AI models, ATS rubrics, and active application tracking.
-          </p>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <div style="display: flex; justify-content: space-between; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--gray-200);">
-          <button type="button" class="btn-secondary" id="btn-onboarding-prev" style="visibility: hidden;">&larr; Back</button>
-          <button type="button" class="btn-primary" id="btn-onboarding-next">Continue &rarr;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.0.3"></script>
+  <script src="/static/app.js?v=2.0.4"></script>
 </body>
 </html>
