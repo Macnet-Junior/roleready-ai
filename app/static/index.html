@@ -291,6 +291,28 @@
             <span class="notif-dot"></span>
           </button>
 
+          <!-- Interactive Notification Dropdown Panel -->
+          <div class="notification-dropdown" id="notification-dropdown">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--gray-100); padding-bottom: 8px;">
+              <strong style="font-size: 14px; color: var(--navy-900);">Notifications</strong>
+              <button type="button" class="btn-ghost" id="btn-clear-notifications" style="font-size: 11.5px; padding: 0; color: var(--blue-primary);">Mark All Read</button>
+            </div>
+            <div id="notif-list-container">
+              <div class="notif-item urgent">
+                <div style="font-weight: 600; color: var(--navy-900); margin-bottom: 2px;">📅 Interview Scheduled — Stripe</div>
+                <div>Technical Interview confirmed for <strong>Thursday, Sep 4 at 2:00 PM PST</strong> with Lead Hiring Manager.</div>
+              </div>
+              <div class="notif-item success">
+                <div style="font-weight: 600; color: var(--navy-900); margin-bottom: 2px;">🛡️ Truth Protection Verified</div>
+                <div>All 12 bullet points on your Alex Morgan profile passed zero-hallucination benchmark.</div>
+              </div>
+              <div class="notif-item">
+                <div style="font-weight: 600; color: var(--navy-900); margin-bottom: 2px;">💰 Market Benchmark Update</div>
+                <div>Senior PM 50th percentile adjusted to $190,000 base in San Francisco Tier 1.</div>
+              </div>
+            </div>
+          </div>
+
           <button class="topbar-btn" id="btn-history-reports" title="Saved Analysis History">
             <i class="fa-solid fa-clock-rotate-left"></i>
           </button>
@@ -593,12 +615,12 @@
              VIEW 3: JOB MATCH & ATS SKILL ALIGNMENT (11-job-match.html)
              ==================================================================== -->
         <section class="view-page" id="view-cand-job-match">
-          <div class="match-input-card" style="background: linear-gradient(135deg, #2563EB, #1E40AF); border-radius: 16px; padding: 28px; color: #fff; margin-bottom: 24px;">
-            <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; margin-bottom: 6px;">Target Job Match & Gap Analyzer</h2>
-            <p style="font-size: 13.5px; opacity: 0.9; margin-bottom: 16px;">Paste a job description or URL to benchmark your resume and get immediate gap analysis.</p>
-            <div style="display: flex; gap: 12px;">
-              <input type="text" id="job-match-quick-input" placeholder="e.g. Senior Product Manager at Stripe or paste job URL..." class="form-input" style="flex: 1; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff;">
-              <button type="button" class="btn-primary" id="btn-run-job-match" style="background: #fff; color: #2563EB; font-weight: 700; padding: 0 24px;">
+          <div class="match-input-card">
+            <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 6px;">Target Job Match & Gap Analyzer</h2>
+            <p style="font-size: 13.5px; color: rgba(255,255,255,0.9); margin-bottom: 16px;">Paste a job description or URL to benchmark your resume and get immediate gap analysis.</p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <input type="text" id="job-match-quick-input" placeholder="e.g. Senior Product Manager at Stripe or paste job URL..." class="form-input" style="flex: 1; min-width: 260px;" value="Senior Product Manager — Stripe">
+              <button type="button" class="btn-primary" id="btn-run-job-match" style="background: #ffffff; color: #1E40AF; font-weight: 700; padding: 0 24px; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
                 <i class="fa-solid fa-bullseye"></i> Analyze Match
               </button>
             </div>
@@ -611,20 +633,23 @@
                 <h2><i class="fa-solid fa-circle-notch" style="color: var(--blue-primary);"></i> Match Overview</h2>
                 <span class="match-pill high">78% Match</span>
               </div>
-              <div class="section-body" style="text-align: center; padding: 24px;">
-                <div class="score-ring-wrap" style="width: 130px; height: 130px; margin: 0 auto 14px; position: relative;">
-                  <svg viewBox="0 0 120 120" width="130" height="130" style="transform: rotate(-90deg);">
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--gray-200)" stroke-width="10"/>
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--blue-primary)" stroke-width="10" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="74"/>
+              <div class="section-body" style="text-align: center; padding: 28px 24px;">
+                <div class="score-ring-wrap">
+                  <svg viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="var(--gray-200)" stroke-width="10"/>
+                    <circle cx="60" cy="60" r="52" fill="none" stroke="var(--blue-primary)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326" stroke-dashoffset="71"/>
                   </svg>
-                  <div class="score-value" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--navy-900);">78%</div>
+                  <div class="score-value">78%</div>
                 </div>
-                <h3 style="font-size: 16px; font-weight: 700; color: var(--navy-900); margin-bottom: 2px;">Senior Product Manager</h3>
-                <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 20px;">Stripe • San Francisco, CA (Hybrid)</p>
 
-                <div style="text-align: left;">
+                <div style="margin-top: 16px; margin-bottom: 24px;">
+                  <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 700; color: var(--navy-900); margin-bottom: 4px;">Senior Product Manager</h3>
+                  <p style="font-size: 13px; color: var(--gray-500);">Stripe • San Francisco, CA (Hybrid)</p>
+                </div>
+
+                <div style="text-align: left; border-top: 1px solid var(--gray-100); padding-top: 20px;">
                   <h4 style="font-size: 13px; font-weight: 600; color: var(--emerald-dark); margin-bottom: 8px;"><i class="fa-solid fa-circle-check"></i> Matched Skills (14 of 18)</h4>
-                  <div class="skill-chips" style="margin-bottom: 16px;">
+                  <div class="skill-chips" style="margin-bottom: 18px;">
                     <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Product Strategy</span>
                     <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Agile/Scrum</span>
                     <span class="skill-chip matched"><i class="fa-solid fa-check"></i> PRD Authoring</span>
@@ -651,22 +676,31 @@
               </div>
               <div class="section-body">
                 <div style="display: flex; flex-direction: column; gap: 14px;">
-                  <div style="padding: 14px; background: rgba(244,63,94,0.06); border-left: 3px solid var(--rose); border-radius: 0 8px 8px 0;">
+                  <div style="padding: 16px; background: rgba(244,63,94,0.06); border-left: 4px solid var(--rose); border-radius: 0 8px 8px 0;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                      <strong style="font-size: 13.5px; color: var(--navy-900);">GraphQL API Architecture</strong>
+                      <strong style="font-size: 14px; color: var(--navy-900);">GraphQL API Architecture</strong>
                       <span class="match-pill low" style="font-size: 10.5px;">Critical Requirement</span>
                     </div>
-                    <p style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;">Stripe's developer platform requires experience with unified GraphQL schemas.</p>
+                    <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px; line-height: 1.45;">Stripe's developer platform requires experience with unified GraphQL schemas and latency SLAs.</p>
                     <div style="font-size: 12px; color: var(--blue-primary); font-weight: 600;">Recommendation: Add explicit bullet referencing GraphQL telemetry endpoints from Apex Cloud.</div>
                   </div>
 
-                  <div style="padding: 14px; background: rgba(245,158,11,0.06); border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0;">
+                  <div style="padding: 16px; background: rgba(245,158,11,0.06); border-left: 4px solid var(--amber); border-radius: 0 8px 8px 0;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                      <strong style="font-size: 13.5px; color: var(--navy-900);">Enterprise Tier Pricing Sprints</strong>
+                      <strong style="font-size: 14px; color: var(--navy-900);">Enterprise Tier Pricing Sprints</strong>
                       <span class="match-pill med" style="font-size: 10.5px;">Preferred Qualification</span>
                     </div>
-                    <p style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;">Job calls for packaging self-serve to enterprise sales tiers.</p>
+                    <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px; line-height: 1.45;">Job calls for packaging self-serve to enterprise sales tiers.</p>
                     <div style="font-size: 12px; color: var(--blue-primary); font-weight: 600;">Recommendation: Frame your $18M ARR growth story around the enterprise tier migration.</div>
+                  </div>
+
+                  <div style="padding: 16px; background: rgba(37,99,235,0.06); border-left: 4px solid var(--blue-primary); border-radius: 0 8px 8px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                      <strong style="font-size: 14px; color: var(--navy-900);">Python Data Automation</strong>
+                      <span class="match-pill high" style="font-size: 10.5px;">Transferable Skill</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 8px; line-height: 1.45;">Can substitute extensive SQL data pipelines with basic Python scripting experience.</p>
+                    <div style="font-size: 12px; color: var(--blue-primary); font-weight: 600;">Recommendation: Highlight Looker & SQL metrics dashboards as evidence of data automation.</div>
                   </div>
                 </div>
               </div>
@@ -675,14 +709,43 @@
         </section>
 
         <!-- ====================================================================
-             VIEW 4: APPLICATION KANBAN TRACKER
+             VIEW 4: APPLICATION TRACKER & AI INTEL (10-application-tracker.html)
              ==================================================================== -->
         <section class="view-page" id="view-cand-tracker">
+          <!-- Pipeline Stats Overview (6 stages) -->
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;">
+            <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-total">
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--navy-900);">18</div>
+              <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Total</div>
+            </div>
+            <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-wishlist">
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-600);">4</div>
+              <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Wishlist</div>
+            </div>
+            <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-applied">
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--blue-primary);">6</div>
+              <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Applied</div>
+            </div>
+            <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer; border-color: var(--violet);" id="stat-pipe-interview">
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--violet);">3</div>
+              <div style="font-size: 11px; font-weight: 600; color: var(--violet); text-transform: uppercase;">Interview</div>
+            </div>
+            <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-offer">
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--emerald);">2</div>
+              <div style="font-size: 11px; font-weight: 600; color: var(--emerald); text-transform: uppercase;">Offers</div>
+            </div>
+            <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-closed">
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-400);">3</div>
+              <div style="font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase;">Closed</div>
+            </div>
+          </div>
+
           <div class="kanban-toolbar">
-            <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
               <span style="font-size: 13px; font-weight: 600; color: var(--gray-600);">Filter:</span>
-              <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12.5px;" id="btn-filter-all">All Roles</button>
-              <button type="button" class="btn-ghost" style="padding: 6px 12px; font-size: 12.5px;">Remote Only</button>
+              <button type="button" class="btn-secondary active" style="padding: 6px 12px; font-size: 12.5px;" id="btn-filter-all">All Roles (6)</button>
+              <button type="button" class="btn-ghost" style="padding: 6px 12px; font-size: 12.5px;" id="btn-filter-remote">Remote Only (3)</button>
+              <button type="button" class="btn-ghost" style="padding: 6px 12px; font-size: 12.5px;" id="btn-filter-high-match">High Match &gt;90% (2)</button>
             </div>
             <button type="button" class="btn-primary" id="btn-add-kanban-card">
               <i class="fa-solid fa-plus"></i> New Application
@@ -695,7 +758,7 @@
             <div class="kanban-column" data-stage="wishlist">
               <div class="kanban-col-header">
                 <h3><i class="fa-regular fa-bookmark" style="color: var(--gray-500);"></i> Wishlist</h3>
-                <span class="count" id="count-wishlist">2</span>
+                <span class="count" id="count-wishlist">1</span>
               </div>
               <div class="kanban-cards-list" id="col-wishlist"></div>
             </div>
@@ -704,7 +767,7 @@
             <div class="kanban-column" data-stage="applied">
               <div class="kanban-col-header">
                 <h3><i class="fa-regular fa-paper-plane" style="color: var(--blue-primary);"></i> Applied</h3>
-                <span class="count" id="count-applied">4</span>
+                <span class="count" id="count-applied">2</span>
               </div>
               <div class="kanban-cards-list" id="col-applied"></div>
             </div>
@@ -713,7 +776,7 @@
             <div class="kanban-column" data-stage="interview">
               <div class="kanban-col-header">
                 <h3><i class="fa-solid fa-microphone-lines" style="color: var(--violet);"></i> Interview</h3>
-                <span class="count" id="count-interview">3</span>
+                <span class="count" id="count-interview">1</span>
               </div>
               <div class="kanban-cards-list" id="col-interview"></div>
             </div>
@@ -734,6 +797,83 @@
                 <span class="count" id="count-closed">1</span>
               </div>
               <div class="kanban-cards-list" id="col-closed"></div>
+            </div>
+          </div>
+
+          <!-- Slide-Over Application Detail Panel -->
+          <div class="detail-panel-overlay" id="detail-panel-overlay"></div>
+          <div class="detail-panel" id="application-detail-panel">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid var(--gray-100); padding-bottom: 16px;">
+              <div>
+                <span class="match-pill high" id="detail-app-stage">Interview Stage</span>
+                <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-top: 6px;" id="detail-app-company">Stripe</h2>
+                <p style="font-size: 14px; color: var(--gray-600);" id="detail-app-role">Senior Product Manager — Developer Platform</p>
+              </div>
+              <button type="button" class="btn-ghost" id="btn-close-detail-panel" style="font-size: 20px; color: var(--gray-400);">&times;</button>
+            </div>
+
+            <!-- Scheduled Interview Box -->
+            <div style="background: rgba(139,92,246,0.06); border: 1.5px solid rgba(139,92,246,0.25); border-radius: 12px; padding: 16px; margin-bottom: 20px;" id="detail-interview-box">
+              <div style="display: flex; align-items: center; gap: 8px; color: var(--violet); font-weight: 700; font-size: 13.5px; margin-bottom: 8px;">
+                <i class="fa-solid fa-calendar-check"></i> Confirmed Interview Schedule
+              </div>
+              <div style="font-size: 13px; color: var(--navy-900); font-weight: 600; margin-bottom: 4px;" id="detail-interview-date">
+                📅 Thursday, Sep 4, 2026 at 2:00 PM PST
+              </div>
+              <div style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;" id="detail-interview-format">
+                Format: 45-minute Video Call with Sarah Jenkins (Director of PM)
+              </div>
+              <button type="button" class="btn-primary" style="padding: 6px 14px; font-size: 12px; background: var(--violet); border-color: var(--violet);" onclick="switchView('cand-interview'); showToast('Loaded Stripe interview questions into Voice Simulator', 'info');">
+                <i class="fa-solid fa-microphone"></i> Practice Interview for Stripe
+              </button>
+            </div>
+
+            <!-- AI-Gathered Company & Interview Intel -->
+            <div style="margin-bottom: 20px;">
+              <h4 style="font-size: 13px; font-weight: 700; color: var(--navy-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+                <i class="fa-solid fa-brain" style="color: var(--blue-primary);"></i> AI-Gathered Role Intelligence
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                <div style="background: var(--gray-50); padding: 12px; border-radius: 8px;">
+                  <strong style="color: var(--navy-900); display: block; margin-bottom: 2px;">Key Focus Areas:</strong>
+                  <span style="color: var(--gray-600);">High-volume API availability, developer telemetry, self-serve to enterprise migration.</span>
+                </div>
+                <div style="background: var(--gray-50); padding: 12px; border-radius: 8px;">
+                  <strong style="color: var(--navy-900); display: block; margin-bottom: 2px;">Predicted Interview Question:</strong>
+                  <span style="color: var(--gray-600);">"How would you evaluate sunsetting a legacy endpoint that still serves 5% of enterprise traffic?"</span>
+                </div>
+                <div style="background: var(--gray-50); padding: 12px; border-radius: 8px;">
+                  <strong style="color: var(--navy-900); display: block; margin-bottom: 2px;">Compensation Benchmark:</strong>
+                  <span style="color: var(--emerald-dark); font-weight: 600;">$185,000 – $215,000 Base + RSUs ($75K/yr)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div style="margin-bottom: 24px;">
+              <h4 style="font-size: 13px; font-weight: 700; color: var(--navy-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+                Pipeline Timeline
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 12px; font-size: 12.5px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald);"></span>
+                  <span style="color: var(--gray-700);"><strong>Applied:</strong> Aug 14 (ATS Score: 92%)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald);"></span>
+                  <span style="color: var(--gray-700);"><strong>Recruiter Screen Passed:</strong> Aug 20</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--blue-primary);"></span>
+                  <span style="color: var(--navy-900); font-weight: 600;"><strong>Technical Interview:</strong> Sep 4 (Scheduled)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn-primary" style="flex: 1; justify-content: center;" id="btn-detail-advance">Advance to Offer &rarr;</button>
+              <button type="button" class="btn-secondary" style="color: var(--rose-dark); border-color: rgba(244,63,94,0.3);" id="btn-detail-delete"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         </section>
@@ -911,7 +1051,110 @@ Results-driven Senior Product Manager with 7+ years directing high-scale B2B Saa
         </section>
 
         <!-- ====================================================================
-             VIEW 6: RECRUITER OUTREACH & LINKEDIN
+             VIEW 6: LINKEDIN PROFILE SYNC (17-linkedin-sync.html)
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-linkedin-sync">
+          <div style="background: linear-gradient(135deg, #0A72DA, #004182); border-radius: 16px; padding: 24px 28px; color: #fff; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h2 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; margin-bottom: 4px;"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile Connected</h2>
+              <p style="font-size: 13px; opacity: 0.85;">Ensures your resume and public LinkedIn profile tell an aligned, high-impact executive story.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #34D399; display: inline-block;"></span>
+              <span>Synced · Alex Morgan (linkedin.com/in/alexmorgan-pm)</span>
+            </div>
+          </div>
+
+          <div class="two-col-layout" style="margin-bottom: 24px;">
+            <!-- Headline Alignment Card -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-heading" style="color: var(--blue-primary);"></i> Headline Alignment</h2>
+                <span class="match-pill med" style="color: var(--amber-dark);">Action Recommended</span>
+              </div>
+              <div class="section-body">
+                <div style="margin-bottom: 12px;">
+                  <span style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Resume Title (Truth-Checked):</span>
+                  <div style="font-size: 13px; padding: 10px 12px; background: var(--gray-50); border-left: 3px solid var(--emerald); border-radius: 4px; margin-top: 4px;">
+                    Senior Product Manager — SaaS & AI Platform Lead
+                  </div>
+                </div>
+                <div style="margin-bottom: 16px;">
+                  <span style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Current Public LinkedIn Headline:</span>
+                  <div style="font-size: 13px; padding: 10px 12px; background: var(--gray-50); border-left: 3px solid var(--amber); border-radius: 4px; margin-top: 4px;">
+                    Product Lead | Building SaaS products
+                  </div>
+                </div>
+                <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="navigator.clipboard.writeText('Senior Product Manager — SaaS & AI Platform Lead | Scaling $18M ARR B2B Systems'); showToast('Suggested headline copied to clipboard! Paste into LinkedIn.', 'success');">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Copy Optimized Headline Fix
+                </button>
+              </div>
+            </div>
+
+            <!-- Summary / About Section Alignment -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-align-left" style="color: var(--violet);"></i> About Summary Alignment</h2>
+                <span class="match-pill high">88% Aligned</span>
+              </div>
+              <div class="section-body">
+                <div style="margin-bottom: 12px;">
+                  <span style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Missing from LinkedIn About:</span>
+                  <div style="font-size: 12.5px; padding: 8px 12px; background: rgba(245,158,11,0.06); border-left: 3px solid var(--amber); border-radius: 4px; margin-top: 4px; color: var(--gray-800);">
+                    "Scaled platform ARR from $4M to $18M with 32% latency reduction."
+                  </div>
+                </div>
+                <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="navigator.clipboard.writeText('Results-driven Senior Product Manager with 7+ years of experience leading cross-functional engineering teams. Scaled B2B SaaS platforms from $4M to $18M ARR, reducing latency by 32% and lifting retention by 18%.'); showToast('Copied synced About paragraph!', 'success');">
+                  <i class="fa-solid fa-copy"></i> Copy Synced LinkedIn Summary
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="two-col-layout">
+            <!-- Role Experience Alignment -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-briefcase" style="color: var(--blue-primary);"></i> Experience Metrics Alignment</h2>
+                <span class="match-pill high">Apex Cloud (2021 – Present)</span>
+              </div>
+              <div class="section-body">
+                <p style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 12px;">Ensure public bullets match your tailored truth-gated resume achievements:</p>
+                <div style="font-size: 12.5px; background: var(--gray-50); padding: 12px; border-radius: 8px; line-height: 1.5; margin-bottom: 14px;">
+                  • Spearheaded enterprise SaaS platform roadmap scaling MAU from 45K to 180K (+300%).<br>
+                  • Migrated legacy microservices to event streaming, reducing query latency by 32%.<br>
+                  • Lifted contract renewal rate by 18% across Tier 1 accounts.
+                </div>
+                <button type="button" class="btn-primary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="navigator.clipboard.writeText('• Spearheaded enterprise SaaS platform roadmap scaling MAU from 45K to 180K (+300%).\n• Migrated legacy microservices to event streaming, reducing query latency by 32%.\n• Lifted contract renewal rate by 18% across Tier 1 accounts.'); showToast('Experience bullets copied for LinkedIn!', 'success');">
+                  <i class="fa-solid fa-copy"></i> Copy Experience Bullets
+                </button>
+              </div>
+            </div>
+
+            <!-- Core Skills Overlap -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-list-check" style="color: var(--emerald);"></i> Core Skills & Endorsements</h2>
+                <span class="match-pill high">92% Match</span>
+              </div>
+              <div class="section-body">
+                <p style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 12px;">Top keywords on your resume to add as LinkedIn skills:</p>
+                <div class="skill-chips" style="margin-bottom: 16px;">
+                  <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Enterprise SaaS Growth</span>
+                  <span class="skill-chip matched"><i class="fa-solid fa-check"></i> SQL & Data Telemetry</span>
+                  <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Agile PRD Authoring</span>
+                  <span class="skill-chip missing"><i class="fa-solid fa-plus"></i> Truth-Gated Validation</span>
+                </div>
+                <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="showToast('Suggested skill tags copied!', 'success');">
+                  <i class="fa-brands fa-linkedin"></i> Copy Skills for LinkedIn Endorsements
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 7: RECRUITER OUTREACH & EMAIL DRAFTS
              ==================================================================== -->
         <section class="view-page" id="view-cand-outreach">
           <div class="two-col-layout">
@@ -922,117 +1165,72 @@ Results-driven Senior Product Manager with 7+ years directing high-scale B2B Saa
               <div class="section-body">
                 <div style="display: flex; flex-direction: column; gap: 14px;">
                   <div>
-                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Hiring Manager / Recruiter Name</label>
-                    <input type="text" id="outreach-recipient" class="form-input" placeholder="e.g. Sarah Jenkins">
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Recruiter / Hiring Manager Email</label>
+                    <input type="email" id="outreach-email" class="form-input" placeholder="e.g. sarah.jenkins@stripe.com" value="sarah.jenkins@stripe.com">
                   </div>
                   <div>
-                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Company & Role</label>
-                    <input type="text" id="outreach-company-role" class="form-input" placeholder="e.g. Figma — Director of Engineering">
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Recruiter Full Name</label>
+                    <input type="text" id="outreach-recipient" class="form-input" placeholder="e.g. Sarah Jenkins" value="Sarah Jenkins">
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Company & Role Title</label>
+                    <input type="text" id="outreach-company-role" class="form-input" placeholder="e.g. Stripe — Senior Product Manager" value="Stripe — Senior Product Manager">
                   </div>
                   <button type="button" class="btn-primary" id="btn-generate-outreach">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Message Variations
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tailored Drafts
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Drafts Outputs -->
+            <!-- Drafts Outputs with Direct Send / Copy Action -->
             <div class="section-card">
               <div class="section-header">
                 <h2><i class="fa-solid fa-messages" style="color: var(--violet);"></i> Ready-to-Send Drafts</h2>
               </div>
-              <div class="section-body" id="outreach-drafts-list">
+              <div class="section-body" id="outreach-drafts-list" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- LinkedIn Note -->
                 <div class="bullet-card">
                   <div class="bullet-card-header">
-                    <span class="bullet-tag">LinkedIn Connection Note (300 char)</span>
-                    <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); showToast('Copied LinkedIn note!', 'success');"><i class="fa-solid fa-copy"></i></button>
+                    <span class="bullet-tag">LinkedIn Connection Note (280 char)</span>
+                    <button class="btn-ghost" onclick="navigator.clipboard.writeText('Hi Sarah, I noticed Stripe is expanding its Developer Platform. Having scaled B2B SaaS analytics to $18M ARR at Apex Cloud, I would love to connect and share a few thoughts on the open PM requisition!'); showToast('Copied LinkedIn note!', 'success');"><i class="fa-solid fa-copy"></i></button>
                   </div>
-                  <div class="bullet-text">Hi Sarah, I've been following Figma's recent expansion in collaborative tools. With 7+ yrs leading SaaS product roadmaps and scaling ARR, I'd love to connect and share a few thoughts on the open PM role!</div>
+                  <div class="bullet-text">
+                    Hi Sarah, I noticed Stripe is expanding its Developer Platform. Having scaled B2B SaaS analytics to $18M ARR at Apex Cloud, I would love to connect and share a few thoughts on the open PM requisition!
+                  </div>
                 </div>
 
+                <!-- Cold Email / InMail with Direct Mailto -->
                 <div class="bullet-card">
                   <div class="bullet-card-header">
-                    <span class="bullet-tag">Cold Email / InMail Draft</span>
-                    <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); showToast('Copied InMail draft!', 'success');"><i class="fa-solid fa-copy"></i></button>
+                    <span class="bullet-tag">Direct Cold Email (1-Click Send)</span>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="mailto:sarah.jenkins@stripe.com?subject=Senior%20Product%20Manager%20Inquiry%20%E2%80%94%20Alex%20Morgan&body=Hi%20Sarah%2C%0A%0AI%20noticed%20Stripe%20is%20seeking%20a%20Senior%20Product%20Manager%20for%20the%20Developer%20Platform.%20At%20Apex%20Cloud%2C%20I%20scaled%20our%20data%20infrastructure%20from%20%244M%20to%20%2418M%20ARR%20and%20reduced%20latency%20by%2032%25.%0A%0AI%20would%20welcome%2010%20minutes%20to%20discuss%20how%20my%20background%20in%20agile%20delivery%20aligns%20with%20your%20quarterly%20goals.%0A%0ABest%20regards%2C%0AAlex%20Morgan" class="btn-primary" style="padding: 3px 8px; font-size: 11.5px; text-decoration: none;" target="_blank">
+                        <i class="fa-solid fa-paper-plane"></i> Open in Email Client
+                      </a>
+                      <button class="btn-ghost" onclick="navigator.clipboard.writeText('Subject: Senior Product Manager Inquiry — Alex Morgan\n\nHi Sarah,\n\nI noticed Stripe is seeking a Senior Product Manager for the Developer Platform. At Apex Cloud, I scaled our data infrastructure from $4M to $18M ARR and reduced latency by 32%.\n\nI would welcome 10 minutes to discuss how my background in agile delivery aligns with your quarterly goals.\n\nBest regards,\nAlex Morgan'); showToast('Copied email body!', 'success');"><i class="fa-solid fa-copy"></i></button>
+                    </div>
                   </div>
-                  <div class="bullet-text">Subject: Quick note regarding Senior PM opening at Figma
+                  <div class="bullet-text" style="white-space: pre-line;">
+Subject: Senior Product Manager Inquiry — Alex Morgan
 
 Hi Sarah,
 
-I noticed Figma is seeking a Senior Product Manager to spearhead enterprise expansion. In my current role at Apex Cloud, I scaled our core data analytics platform to 150K+ MAU and grew enterprise retention by 18%.
+I noticed Stripe is seeking a Senior Product Manager for the Developer Platform. At Apex Cloud, I scaled our data infrastructure from $4M to $18M ARR and reduced latency by 32%.
 
-I would welcome 10 minutes to discuss how my background in high-velocity agile delivery aligns with your quarterly hiring objectives.
+I would welcome 10 minutes to discuss how my background in agile delivery aligns with your quarterly goals.
 
 Best regards,
-Alex Morgan</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        <!-- ====================================================================
-             VIEW 6: LINKEDIN SYNC & PROFILE ALIGNMENT (17-linkedin-sync.html)
-             ==================================================================== -->
-        <section class="view-page" id="view-cand-linkedin-sync">
-          <div style="background: linear-gradient(135deg, #0A72DA, #004182); border-radius: 16px; padding: 24px 28px; color: #fff; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-              <h2 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; margin-bottom: 4px;"><i class="fa-brands fa-linkedin"></i> LinkedIn Profile Connected</h2>
-              <p style="font-size: 13px; opacity: 0.85;">Ensures your resume and public LinkedIn profile tell an aligned, high-impact story.</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: #34D399; display: inline-block;"></span>
-              <span>Synced · Profile Imported</span>
-            </div>
-          </div>
-
-          <div class="two-col-layout">
-            <!-- Headline Alignment Card -->
-            <div class="section-card">
-              <div class="section-header">
-                <h2><i class="fa-solid fa-heading" style="color: var(--blue-primary);"></i> Headline Alignment</h2>
-                <span class="match-pill med" style="color: var(--amber-dark);">Partial Alignment</span>
-              </div>
-              <div class="section-body">
-                <div style="margin-bottom: 12px;">
-                  <span style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Resume Title:</span>
-                  <div style="font-size: 13px; padding: 8px 12px; background: var(--gray-50); border-left: 3px solid var(--emerald); border-radius: 4px; margin-top: 4px;">
-                    Senior Product Manager — SaaS & AI Platform Lead
+Alex Morgan
                   </div>
                 </div>
-                <div style="margin-bottom: 16px;">
-                  <span style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Current LinkedIn Headline:</span>
-                  <div style="font-size: 13px; padding: 8px 12px; background: var(--gray-50); border-left: 3px solid var(--amber); border-radius: 4px; margin-top: 4px;">
-                    Product Lead | Building SaaS products
-                  </div>
-                </div>
-                <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="showToast('Suggested headline copied to clipboard! Paste into LinkedIn.', 'success');">
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> Copy Optimized Headline Fix
-                </button>
-              </div>
-            </div>
-
-            <!-- Summary & Skills Alignment Card -->
-            <div class="section-card">
-              <div class="section-header">
-                <h2><i class="fa-solid fa-list-check" style="color: var(--emerald);"></i> Core Skills Overlap</h2>
-                <span class="match-pill high">92% Match</span>
-              </div>
-              <div class="section-body">
-                <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 12px;">We identified 3 high-impact keywords on your resume that should be added to your LinkedIn Skills section:</p>
-                <div class="skill-chips" style="margin-bottom: 16px;">
-                  <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Enterprise SaaS Growth</span>
-                  <span class="skill-chip matched"><i class="fa-solid fa-check"></i> SQL & Data Telemetry</span>
-                  <span class="skill-chip missing"><i class="fa-solid fa-plus"></i> Truth-Gated Validation</span>
-                </div>
-                <button type="button" class="btn-primary" style="width: 100%; justify-content: center; font-size: 12.5px;" onclick="showToast('Syncing skill recommendations to LinkedIn draft...', 'info'); setTimeout(() => showToast('LinkedIn profile alignment updated!', 'success'), 600);">
-                  <i class="fa-brands fa-linkedin"></i> Apply Suggested Skill Updates
-                </button>
               </div>
             </div>
           </div>
         </section>
 
         <!-- ====================================================================
-             VIEW 7: STAR VOICE PRACTICE & COACHING
+             VIEW 8: STAR VOICE PRACTICE & COACHING (13-interview-practice.html)
              ==================================================================== -->
         <section class="view-page" id="view-cand-interview">
           <div class="two-col-layout">
@@ -1042,6 +1240,13 @@ Alex Morgan</div>
                 <span class="match-pill high" id="voice-sim-status">Ready</span>
               </div>
               <div class="section-body">
+                <!-- Question Category Selector -->
+                <div style="display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+                  <button type="button" class="btn-secondary active" style="padding: 4px 10px; font-size: 12px;" onclick="showToast('Category: Behavioral Stakeholder Alignment', 'info');">Behavioral</button>
+                  <button type="button" class="btn-ghost" style="padding: 4px 10px; font-size: 12px;" onclick="showToast('Category: Technical Scalability', 'info');">Technical Trade-offs</button>
+                  <button type="button" class="btn-ghost" style="padding: 4px 10px; font-size: 12px;" onclick="showToast('Category: Product Leadership', 'info');">Leadership & Conflict</button>
+                </div>
+
                 <div class="voice-simulator-wrap">
                   <div class="voice-mic-orb" id="btn-voice-record-toggle">
                     <i class="fa-solid fa-microphone"></i>
@@ -1066,13 +1271,13 @@ Alex Morgan</div>
 
                 <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px;">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <h4 style="font-size: 13px; font-weight: 600; color: var(--gray-700);">Target Question:</h4>
+                    <h4 style="font-size: 13px; font-weight: 600; color: var(--gray-700);">Target Interview Question:</h4>
                     <button type="button" class="btn-ghost" id="btn-star-load-sample" style="font-size: 11px; padding: 2px 6px;">Load Sample Answer</button>
                   </div>
-                  <p id="current-interview-question" style="font-size: 14px; font-weight: 500; color: var(--navy-900);">
+                  <p id="current-interview-question" style="font-size: 14px; font-weight: 600; color: var(--navy-900);">
                     "Tell me about a time when you had to prioritize conflicting stakeholder demands under a tight deadline. How did you structure your decision?"
                   </p>
-                  <textarea id="star-answer-input" class="form-textarea" style="min-height: 80px; margin-top: 10px; font-size: 13px;" placeholder="Spoken audio transcript or typed STAR response appears here for AI scoring..."></textarea>
+                  <textarea id="star-answer-input" class="form-textarea" style="min-height: 90px; margin-top: 10px; font-size: 13px;" placeholder="Spoken audio transcript or typed STAR response appears here for AI scoring..."></textarea>
                 </div>
               </div>
             </div>
@@ -1105,9 +1310,12 @@ Alex Morgan</div>
                 </div>
 
                 <div style="margin-top: 20px; padding: 14px; background: rgba(37,99,235,0.05); border-left: 3px solid var(--blue-primary); border-radius: 0 6px 6px 0;">
-                  <h4 style="font-size: 13px; font-weight: 600; color: var(--blue-primary); margin-bottom: 4px;">AI Coach Advice</h4>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <h4 style="font-size: 13px; font-weight: 600; color: var(--blue-primary);">AI Coach Advice for Alex Morgan</h4>
+                    <button type="button" class="btn-ghost" style="font-size: 11.5px;" onclick="speakText('Strong STAR structure. Your quantified outcome provides credible evidence of impact. To reach 100 percent, consider adding the specific trade-off framework you used during stakeholder alignment.')"><i class="fa-solid fa-volume-high"></i> Listen to Advice</button>
+                  </div>
                   <p style="font-size: 12.5px; color: var(--gray-700); line-height: 1.5;">
-                    Strong structured narrative! To elevate from good to executive, quantify the business trade-offs more explicitly when explaining which stakeholder request was deferred.
+                    Strong STAR structure. Your quantified outcome (query load reduced by 35% & contract closed) provides credible evidence of impact. To reach 100%, consider adding the specific trade-off framework you used during stakeholder alignment.
                   </p>
                 </div>
               </div>
@@ -1116,13 +1324,54 @@ Alex Morgan</div>
         </section>
 
         <!-- ====================================================================
-             VIEW 8: SALARY STRATEGY & NEGOTIATION
+             VIEW 9: SALARY STRATEGY & NEGOTIATION (14-salary-strategy.html)
              ==================================================================== -->
         <section class="view-page" id="view-cand-salary">
+          <!-- Salary Hero Card with Visual Percentile Range Bar -->
+          <div class="salary-hero" style="background: linear-gradient(135deg, #0A1628, #1E293B); border-radius: 16px; padding: 28px; color: #fff; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 2px;">Senior Product Manager Compensation Benchmark</h2>
+                <p style="font-size: 13px; opacity: 0.8;">San Francisco Bay Area • Tier 1 High-Growth SaaS • 7+ Years Experience</p>
+              </div>
+              <span class="match-pill high" style="background: rgba(16,185,129,0.2); color: #34D399;">High Confidence Benchmark</span>
+            </div>
+
+            <!-- Percentile Range Bar -->
+            <div style="margin: 20px 0 12px;">
+              <div style="height: 12px; background: rgba(255,255,255,0.12); border-radius: 6px; position: relative; overflow: hidden;">
+                <div style="height: 100%; width: 75%; background: linear-gradient(90deg, #2563EB, #10B981); border-radius: 6px;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.7; margin-top: 6px;">
+                <span>25th: $175,000</span>
+                <span>50th Target: $205,000</span>
+                <span>75th Top Tier: $245,000</span>
+                <span>90th: $280,000</span>
+              </div>
+            </div>
+
+            <!-- 3 Stat Numbers -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; margin-top: 16px; text-align: center;">
+              <div>
+                <div style="font-size: 11px; opacity: 0.7; text-transform: uppercase;">Base Salary (50th)</div>
+                <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: #fff;">$205,000</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; opacity: 0.7; text-transform: uppercase;">Equity / RSUs (Annual)</div>
+                <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: #60A5FA;">$75,000/yr</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; opacity: 0.7; text-transform: uppercase;">Total Annual Comp</div>
+                <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: #34D399;">$310,000</div>
+              </div>
+            </div>
+          </div>
+
           <div class="two-col-layout">
+            <!-- Left: Compensation Input Parameters -->
             <div class="section-card">
               <div class="section-header">
-                <h2><i class="fa-solid fa-hand-holding-dollar" style="color: var(--emerald);"></i> Compensation Parameters</h2>
+                <h2><i class="fa-solid fa-calculator" style="color: var(--emerald);"></i> Calculate Custom Benchmark</h2>
               </div>
               <div class="section-body">
                 <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -1131,47 +1380,45 @@ Alex Morgan</div>
                     <input type="text" id="salary-role-input" class="form-input" value="Senior Product Manager">
                   </div>
                   <div>
-                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Market Location / Tier</label>
-                    <input type="text" id="salary-loc-input" class="form-input" value="San Francisco Bay Area / Tier 1 Remote">
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Location / Market Tier</label>
+                    <input type="text" id="salary-loc-input" class="form-input" value="San Francisco, CA (Tier 1)">
                   </div>
                   <div>
                     <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Years of Verified Experience</label>
                     <input type="number" id="salary-exp-input" class="form-input" value="7">
                   </div>
                   <button type="button" class="btn-primary" id="btn-generate-salary">
-                    <i class="fa-solid fa-calculator"></i> Calculate Market Strategy
+                    <i class="fa-solid fa-calculator"></i> Recalculate Benchmarks
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Strategy Report -->
+            <!-- Right: 3 Interactive Negotiation Scripts -->
             <div class="section-card">
               <div class="section-header">
-                <h2><i class="fa-solid fa-chart-line" style="color: var(--blue-primary);"></i> Benchmarks & Leverage Scripts</h2>
+                <h2><i class="fa-solid fa-file-signature" style="color: var(--blue-primary);"></i> Tailored Negotiation Scripts</h2>
               </div>
               <div class="section-body" id="salary-strategy-output">
-                <div style="display: flex; justify-content: space-around; margin-bottom: 20px; text-align: center;">
-                  <div>
-                    <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">25th Percentile</div>
-                    <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-700);">$165,000</div>
+                <!-- Script 1: Counter-Offer Script -->
+                <div class="bullet-card" style="margin-bottom: 12px;">
+                  <div class="bullet-card-header">
+                    <span class="bullet-tag">Target Anchor Counter-Offer</span>
+                    <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); showToast('Copied counter-offer script!', 'success');"><i class="fa-solid fa-copy"></i></button>
                   </div>
-                  <div>
-                    <div style="font-size: 11px; font-weight: 600; color: var(--blue-primary); text-transform: uppercase;">50th (Target)</div>
-                    <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--navy-900);">$190,000</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 11px; font-weight: 600; color: var(--emerald-dark); text-transform: uppercase;">75th (Top Tier)</div>
-                    <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--emerald);">$225,000</div>
+                  <div class="bullet-text">
+                    "Thank you for this offer; I'm genuinely excited about the team's roadmap. Based on market data for Senior PMs in Tier 1 with 7+ years scaling B2B SaaS to $18M ARR, I was anticipating a base salary closer to $205,000. If we can align the base to $205,000 or augment with $20,000 in additional equity, I'm ready to sign today."
                   </div>
                 </div>
 
+                <!-- Script 2: Competing Offer Leverage -->
                 <div class="bullet-card">
                   <div class="bullet-card-header">
-                    <span class="bullet-tag">Counter-Offer Leverage Script</span>
+                    <span class="bullet-tag">Competing Offer Leverage Script</span>
+                    <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); showToast('Copied competing offer script!', 'success');"><i class="fa-solid fa-copy"></i></button>
                   </div>
                   <div class="bullet-text">
-                    "Thank you for this offer; I'm genuinely excited about the team's roadmap. Based on market data for Senior PMs in Tier 1 with my proven track record of scaling $12M ARR platforms, I was anticipating a base salary closer to $195,000. If we can adjust the base to $195K or augment with additional equity, I'm ready to sign today."
+                    "Your team is my first choice given the technical challenges. I do have a competing offer at $215K base. If we can close the delta to $205K base with a $25K sign-on bonus, I would be thrilled to commit immediately and withdraw from other processes."
                   </div>
                 </div>
               </div>
@@ -1180,34 +1427,52 @@ Alex Morgan</div>
         </section>
 
         <!-- ====================================================================
-             VIEW 9: CANDIDATE SETTINGS & SAVED REPORTS
+             VIEW 10: CANDIDATE SETTINGS & PREFERENCES (15-settings.html)
              ==================================================================== -->
         <section class="view-page" id="view-cand-settings">
-          <div class="section-card">
+          <div class="section-card" style="margin-bottom: 24px;">
             <div class="section-header">
-              <h2><i class="fa-solid fa-sliders" style="color: var(--blue-primary);"></i> Candidate Preferences & Account</h2>
+              <h2><i class="fa-solid fa-user-gear" style="color: var(--blue-primary);"></i> Candidate Profile & Personal Info</h2>
+              <p style="font-size: 13px; color: var(--gray-500); margin-top: 2px;">Your information is stored locally and protected by truth-gated zero hallucination models.</p>
             </div>
             <div class="section-body">
-              <div style="max-width: 600px; display: flex; flex-direction: column; gap: 16px;">
-                <div>
-                  <label style="font-size: 13px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Default Candidate Full Name</label>
-                  <input type="text" id="settings-name-input" class="form-input" value="Alex Morgan">
+              <div style="max-width: 680px; display: flex; flex-direction: column; gap: 16px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Candidate Full Name</label>
+                    <input type="text" id="settings-name-input" class="form-input" value="Alex Morgan">
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Email Address</label>
+                    <input type="email" id="settings-email-input" class="form-input" value="alex.morgan@executive.io">
+                  </div>
                 </div>
-                <div>
-                  <label style="font-size: 13px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Registered Account Email</label>
-                  <input type="email" id="settings-email-input" class="form-input" value="alex.morgan@executive.io">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Target Career Level</label>
+                    <select class="form-input">
+                      <option value="mid">Mid-Senior (4-7 Years)</option>
+                      <option value="lead" selected>Lead / Staff (7-10 Years)</option>
+                      <option value="executive">Director / VP (10+ Years)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Location</label>
+                    <input type="text" class="form-input" value="San Francisco, CA">
+                  </div>
                 </div>
+
                 <div>
-                  <label style="font-size: 13px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Target Career Level</label>
-                  <select class="form-input">
-                    <option value="mid">Mid-Senior (4-7 Years)</option>
-                    <option value="lead" selected>Lead / Staff (7-10 Years)</option>
-                    <option value="executive">Director / VP (10+ Years)</option>
-                  </select>
+                  <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Public LinkedIn Profile URL</label>
+                  <input type="text" class="form-input" value="linkedin.com/in/alexmorgan-pm">
                 </div>
-                <div style="padding-top: 10px; display: flex; gap: 12px;">
-                  <button type="button" class="btn-primary" onclick="showToast('Preferences saved successfully!', 'success');">Save Preferences</button>
-                  <button type="button" class="btn-secondary" onclick="localStorage.clear(); showToast('Local storage cache reset.', 'info');">Clear Local Cache</button>
+
+                <div style="border-top: 1px solid var(--gray-100); padding-top: 16px; display: flex; gap: 12px;">
+                  <button type="button" class="btn-primary" onclick="showToast('Profile preferences updated successfully!', 'success');">Save Profile Changes</button>
+                  <button type="button" class="btn-secondary" onclick="const blob = new Blob([localStorage.getItem('roleready_user_session') || '{}'], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'roleready-data-export.json'; a.click(); showToast('Exported profile data (GDPR compliant)', 'info');">
+                    <i class="fa-solid fa-download"></i> Export Data (JSON)
+                  </button>
                 </div>
               </div>
             </div>
@@ -1801,6 +2066,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.0.6"></script>
+  <script src="/static/app.js?v=2.0.7"></script>
 </body>
 </html>

@@ -1941,4 +1941,136 @@ body.employer-mode .user-avatar {
   color: #fff;
 }
 
+/* ==========================================================================
+   High-Contrast Inputs & Score Ring Fixes
+   ========================================================================== */
+.match-input-card {
+  background: linear-gradient(135deg, #2563EB, #1E40AF);
+  border-radius: 16px;
+  padding: 28px;
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.match-input-card .form-input {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1.5px solid #CBD5E1 !important;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.match-input-card .form-input::placeholder {
+  color: #64748B !important;
+  opacity: 1 !important;
+}
+
+.score-ring-wrap {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-ring-wrap svg {
+  width: 140px;
+  height: 140px;
+  transform: rotate(-90deg);
+}
+
+.score-ring-wrap .score-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--navy-900);
+  line-height: 1;
+}
+
+/* Slide-Over Application Detail Panel */
+.detail-panel {
+  position: fixed;
+  top: 0;
+  right: -520px;
+  width: 480px;
+  max-width: 90vw;
+  height: 100vh;
+  background: #FFFFFF;
+  border-left: 1px solid var(--gray-200);
+  z-index: 1050;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  box-shadow: -4px 0 28px rgba(0,0,0,0.15);
+  padding: 28px 24px;
+}
+
+.detail-panel.open {
+  right: 0;
+}
+
+.detail-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 22, 40, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 1040;
+  display: none;
+}
+
+.detail-panel-overlay.show {
+  display: block;
+}
+
+/* Notification Dropdown */
+.notification-dropdown {
+  position: absolute;
+  top: 65px;
+  right: 24px;
+  width: 360px;
+  max-width: 90vw;
+  background: #FFFFFF;
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  z-index: 1000;
+  padding: 18px;
+  display: none;
+}
+
+.notification-dropdown.show {
+  display: block;
+}
+
+.notif-item {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--gray-50);
+  border-left: 3px solid var(--blue-primary);
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--gray-800);
+}
+
+.notif-item.urgent {
+  border-left-color: var(--rose);
+  background: rgba(244,63,94,0.05);
+}
+
+.notif-item.success {
+  border-left-color: var(--emerald);
+  background: rgba(16,185,129,0.05);
+}
+
+
 

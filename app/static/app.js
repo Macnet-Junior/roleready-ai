@@ -1,12 +1,14 @@
 /**
- * RoleReady Application Controller v2.0.6
- * Architecture aligned with new/ package specifications:
- * 1. Freemium Candidate Exploration ("Try First, Gate on Generate")
- * 2. Strict Enterprise Business Verification (Corporate domain & requisition check)
- * 3. 6 Dynamic Resume Themes & Live Typography Engine
- * 4. Real Web Speech TTS Audio Playback (STAR Coach) & Web Audio Sound Effects
- * 5. Dynamic ATS Job Matching, LinkedIn Sync, and Multi-Candidate Comparison Matrix
- * 6. Human Recruiter Decision Authority ("AI Recommends, Humans Decide")
+ * RoleReady Application Controller v2.0.7
+ * Complete, interactive, and production-grade implementation aligned with new/ package:
+ * - High-contrast readable UI with zero overlapping text
+ * - Freemium Candidate Exploration ("Try First, Gate on Generate")
+ * - Strict Enterprise Business Verification (Corporate domain validation)
+ * - Interactive Application Tracker with Slide-Over Details Panel & Filter Chips (All, Remote, High Match)
+ * - 6 Dynamic Resume Themes & Live Preview Engine
+ * - Web Speech Synthesis TTS (Voice Coach) & Web Audio Sound Effects
+ * - Notification Bell Dropdown with Live Alerts
+ * - ATS Job Matching, LinkedIn Sync, STAR Voice Evaluator, and Salary Strategy
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,34 +24,112 @@ document.addEventListener('DOMContentLoaded', () => {
       plan: 'Free Candidate'
     },
     activeView: 'cand-dashboard',
-    resumeText: '',
-    jobText: '',
-    modelSpeed: 'models/gemini-2.5-flash',
+    activeTheme: 'executive',
+    activeFilter: 'all',
+    selectedApp: null,
     isRecording: false,
     recordingTimer: null,
     recordingSeconds: 0,
-    activeTheme: 'executive',
     kanbanApps: [
-      { id: 'app-1', company: 'Stripe', role: 'Senior Product Manager', stage: 'interview', match: 92, date: '2 days ago' },
-      { id: 'app-2', company: 'OpenAI', role: 'Staff Product Lead', stage: 'applied', match: 88, date: '4 days ago' },
-      { id: 'app-3', company: 'Figma', role: 'Principal PM', stage: 'offer', match: 95, date: 'Yesterday' },
-      { id: 'app-4', company: 'Linear', role: 'Lead Product Manager', stage: 'wishlist', match: 84, date: '1 week ago' },
-      { id: 'app-5', company: 'Datadog', role: 'Senior Technical PM', stage: 'applied', match: 79, date: '5 days ago' },
-      { id: 'app-6', company: 'Snowflake', role: 'Product Manager II', stage: 'closed', match: 65, date: '2 weeks ago' }
+      {
+        id: 'app-1',
+        company: 'Stripe',
+        role: 'Senior Product Manager — Developer Platform',
+        stage: 'interview',
+        match: 92,
+        date: 'Aug 14',
+        location: 'San Francisco, CA (Hybrid)',
+        interviewDate: 'Thursday, Sep 4, 2026 at 2:00 PM PST',
+        interviewFormat: '45-minute Video Call with Sarah Jenkins (Director of PM)',
+        intelFocus: 'High-volume API availability, developer telemetry, self-serve to enterprise migration.',
+        predictedQuestion: 'How would you evaluate sunsetting a legacy endpoint that still serves 5% of enterprise traffic?',
+        compRange: '$185,000 – $215,000 Base + RSUs ($75K/yr)',
+        tags: ['Remote Option', 'Urgent']
+      },
+      {
+        id: 'app-2',
+        company: 'OpenAI',
+        role: 'Staff Product Lead — Developer Tools',
+        stage: 'applied',
+        match: 88,
+        date: 'Aug 18',
+        location: 'San Francisco, CA (Remote)',
+        interviewDate: 'Pending Recruiter Review',
+        interviewFormat: 'Technical Portfolio Screen',
+        intelFocus: 'Model API latency, structured output streaming, developer SDK adoption.',
+        predictedQuestion: 'How do you design developer interfaces for non-deterministic AI capabilities?',
+        compRange: '$220,000 – $260,000 Base + Equity ($120K/yr)',
+        tags: ['Remote', 'High Priority']
+      },
+      {
+        id: 'app-3',
+        company: 'Figma',
+        role: 'Principal PM — Enterprise Collaboration',
+        stage: 'offer',
+        match: 95,
+        date: 'Yesterday',
+        location: 'San Francisco, CA (Hybrid)',
+        interviewDate: 'Completed (Offer Received)',
+        interviewFormat: 'Executive Debrief with VP of Product',
+        intelFocus: 'Enterprise permissions, multi-tenant billing, high-retention onboarding.',
+        predictedQuestion: 'Negotiation stage — anchor counter-offer at $205K base.',
+        compRange: '$195,000 Base + $25K Bonus + $80K RSUs',
+        tags: ['Offer Received']
+      },
+      {
+        id: 'app-4',
+        company: 'Linear',
+        role: 'Lead Product Manager — Workflows',
+        stage: 'wishlist',
+        match: 84,
+        date: 'Aug 22',
+        location: 'Remote (US)',
+        interviewDate: 'Not Scheduled',
+        interviewFormat: 'Async PRD Exercise',
+        intelFocus: 'High craft quality, keyboard-first UX, extreme performance SLAs.',
+        predictedQuestion: 'How do you balance sub-100ms UI responsiveness with complex backend synchronizations?',
+        compRange: '$180,000 – $210,000 Base + Equity',
+        tags: ['Remote']
+      },
+      {
+        id: 'app-5',
+        company: 'Datadog',
+        role: 'Senior Technical PM — Cloud Analytics',
+        stage: 'applied',
+        match: 79,
+        date: 'Aug 10',
+        location: 'New York, NY (Remote)',
+        interviewDate: 'Under Review',
+        interviewFormat: 'Hiring Manager Phone Screen',
+        intelFocus: 'Large-scale log ingestion, distributed tracing, enterprise dashboards.',
+        predictedQuestion: 'Walk me through how you prioritize customer telemetry vs core backend reliability.',
+        compRange: '$175,000 – $200,000 Base',
+        tags: ['Remote']
+      },
+      {
+        id: 'app-6',
+        company: 'Snowflake',
+        role: 'Product Manager II — Core Data Lake',
+        stage: 'closed',
+        match: 65,
+        date: 'Aug 02',
+        location: 'San Mateo, CA',
+        interviewDate: 'Archived',
+        interviewFormat: 'Standard Intake',
+        intelFocus: 'SQL query optimizer, cloud data storage tiers.',
+        predictedQuestion: 'Position filled internally.',
+        compRange: '$165,000 Base',
+        tags: ['Archived']
+      }
     ],
     vacancies: [
       { title: 'Senior Product Manager', dept: 'Product', loc: 'San Francisco (Hybrid)', count: '42 Candidates', qual: '78% Qualified', top: 'Alex Morgan (94%)', status: 'Active' },
       { title: 'Staff Full-Stack Engineer', dept: 'Engineering', loc: 'Remote (US)', count: '68 Candidates', qual: '82% Qualified', top: 'Marcus Vance (91%)', status: 'Active' },
       { title: 'Principal Product Designer', dept: 'Design', loc: 'New York, NY', count: '19 Candidates', qual: '64% Qualified', top: 'Elena Rostova (88%)', status: 'Interviewing' }
-    ],
-    bulkCandidates: [
-      { name: 'Alex Morgan', score: 94, status: 'QUALIFIED', skills: 'Enterprise SaaS, $18M ARR Scaling, SQL, Agile' },
-      { name: 'Jordan Lee', score: 87, status: 'QUALIFIED', skills: 'Technical API Design, AWS Cloud, Python' },
-      { name: 'Taylor Green', score: 72, status: 'GAPS IDENTIFIED', skills: 'UX & Product Ops, Missing B2B ARR Track' }
     ]
   };
 
-  // Safe localStorage loader for user session
+  // Safe localStorage loader
   try {
     const savedUser = localStorage.getItem('roleready_user_session');
     if (savedUser) {
@@ -158,7 +238,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     window.speechSynthesis.speak(utterance);
-    showToast('RoleReady AI Coach is speaking...', 'info');
+    showToast('RoleReady AI Coach is speaking aloud...', 'info');
   }
 
   // =========================================================================
@@ -200,7 +280,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
 
     const studioEditor = document.getElementById('studio-editor-text');
     if (studioEditor && !studioEditor.value.includes(state.user.name)) {
-      studioEditor.value = `# ${state.user.name}\n${state.user.targetRole || 'Senior Product Manager'} | San Francisco, CA | ${state.user.email}\n\n## Summary\nResults-driven professional with proven track record of scaling enterprise outcomes.\n\n## Core Competencies\n- Strategic Leadership & Execution\n- Data-Driven Decision Making\n- Cross-Functional Agile Delivery`;
+      studioEditor.value = `# ${state.user.name}\n${state.user.targetRole || 'Senior Product Manager'} | San Francisco, CA | ${state.user.email}\n\n## Summary\nResults-driven Senior Product Manager with 7+ years of experience leading cross-functional engineering teams.\n\n## Core Competencies\n- Product Strategy & Roadmap Prioritization\n- Data Telemetry & SQL Analytics\n- Agile Sprint Delivery & Truth Gating`;
       renderStudioPreview();
     }
   }
@@ -216,7 +296,36 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   }
 
   // =========================================================================
-  // 3. Freemium Gateway & Enterprise Verification Flow
+  // 3. Notification Dropdown Toggle
+  // =========================================================================
+  const btnNotif = document.getElementById('btn-notifications');
+  const notifDropdown = document.getElementById('notification-dropdown');
+
+  btnNotif?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (notifDropdown) {
+      notifDropdown.classList.toggle('show');
+      playUiSound('click');
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (notifDropdown && !notifDropdown.contains(e.target) && e.target !== btnNotif) {
+      notifDropdown.classList.remove('show');
+    }
+  });
+
+  document.getElementById('btn-clear-notifications')?.addEventListener('click', () => {
+    const list = document.getElementById('notif-list-container');
+    if (list) list.innerHTML = '<div style="text-align: center; color: var(--gray-400); padding: 18px 0; font-size: 13px;"><i class="fa-solid fa-check-circle" style="color: var(--emerald); font-size: 20px; display: block; margin-bottom: 6px;"></i> No new notifications. You are all caught up!</div>';
+    const dot = document.querySelector('.notif-dot');
+    if (dot) dot.style.display = 'none';
+    playUiSound('click');
+    showToast('All notifications marked as read', 'info');
+  });
+
+  // =========================================================================
+  // 4. Freemium Gateway & Enterprise Verification Flow
   // =========================================================================
   const gatewayOverlay = document.getElementById('fullscreen-welcome-gateway');
 
@@ -225,7 +334,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     state.user.role = 'candidate';
     if (gatewayOverlay) gatewayOverlay.classList.add('hidden');
     setPortalMode('candidate');
-    showToast('Welcome to Candidate Workspace! Explore themes & tools freely.', 'success');
+    showToast('Welcome to Candidate Workspace! Explore themes, jobs & tools freely.', 'success');
   });
 
   // Enterprise Verification trigger
@@ -263,7 +372,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     if (gatewayOverlay) gatewayOverlay.classList.add('hidden');
     setPortalMode('employer');
     playUiSound('success');
-    showToast(`Enterprise Business Verified: Welcome to ${company} Talent Command Center!`, 'success');
+    showToast(`Enterprise Business Verified: Welcome to ${company} Talent Portal!`, 'success');
   });
 
   // Action Gating Auth Interceptor
@@ -285,7 +394,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     syncUserState({ name, email, role: 'candidate', plan: 'Executive Pro' });
     closeModal('modal-action-auth-gate');
     playUiSound('success');
-    showToast(`Account registered for ${name}! Generating AI analysis...`, 'success');
+    showToast(`Account registered for ${name}! Running AI action...`, 'success');
 
     if (typeof window._pendingAuthCallback === 'function') {
       window._pendingAuthCallback();
@@ -315,7 +424,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   }
 
   // =========================================================================
-  // 4. Portal Mode Isolation & View Router
+  // 5. Portal Mode Isolation & View Router
   // =========================================================================
   const candidateNav = document.getElementById('candidate-nav');
   const employerNav = document.getElementById('employer-nav');
@@ -424,12 +533,9 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   document.getElementById('btn-open-onboarding')?.addEventListener('click', openGateway);
   document.getElementById('btn-sidebar-user')?.addEventListener('click', () => openModal('modal-user-profile'));
   document.getElementById('btn-history-reports')?.addEventListener('click', () => openModal('modal-history-reports'));
-  document.getElementById('btn-notifications')?.addEventListener('click', () => {
-    showToast('Notifications: All systems operational. 0 unread alerts.', 'info');
-  });
 
   // =========================================================================
-  // 5. Modals System
+  // 6. Modals System
   // =========================================================================
   function openModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -455,10 +561,8 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 6. Resume Analysis & Gated AI Optimization
+  // 7. Resume Analysis & Gated AI Optimization
   // =========================================================================
-  const resumeFileInput = document.getElementById('resume-file-input');
-  const dropzoneArea = document.getElementById('dropzone-area');
   const candResumeText = document.getElementById('cand-resume-text');
   const resumeCharCount = document.getElementById('resume-char-count');
   const targetJobText = document.getElementById('target-job-text');
@@ -485,19 +589,6 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     populateSeedData();
     playUiSound('success');
     showToast('Loaded verified Executive Candidate & Job seed data!', 'success');
-  });
-
-  // Tab toggles
-  document.getElementById('btn-tab-upload')?.addEventListener('click', () => {
-    document.getElementById('btn-tab-upload')?.classList.add('active');
-    document.getElementById('btn-tab-paste')?.classList.remove('active');
-    if (dropzoneArea) dropzoneArea.style.display = 'block';
-  });
-
-  document.getElementById('btn-tab-paste')?.addEventListener('click', () => {
-    document.getElementById('btn-tab-paste')?.classList.add('active');
-    document.getElementById('btn-tab-upload')?.classList.remove('active');
-    if (dropzoneArea) dropzoneArea.style.display = 'none';
   });
 
   candResumeText?.addEventListener('input', () => {
@@ -546,10 +637,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
           })
         });
 
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.detail || 'Analysis failed');
-        }
+        if (!res.ok) throw new Error('Analysis failed');
 
         const result = await res.json();
         renderAnalysisResults(result, name);
@@ -656,16 +744,16 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   }
 
   // =========================================================================
-  // 7. Job Match Analyzer (11-job-match.html)
+  // 8. Job Match Analyzer (11-job-match.html)
   // =========================================================================
   document.getElementById('btn-run-job-match')?.addEventListener('click', () => {
     const input = document.getElementById('job-match-quick-input')?.value || 'Senior Product Manager at Stripe';
     playUiSound('success');
-    showToast(`Calculated 78% match against ${input}. 14 matched, 4 gaps.`, 'success');
+    showToast(`Calculated 78% match against ${input}. 14 matched skills, 4 gaps.`, 'success');
   });
 
   // =========================================================================
-  // 8. Resume Studio & 6 Dynamic Themes
+  // 9. Resume Studio & 6 Dynamic Themes
   // =========================================================================
   const studioEditorText = document.getElementById('studio-editor-text');
   const studioLivePreview = document.getElementById('studio-live-preview');
@@ -713,7 +801,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 9. Cover Letter & Outreach Generator
+  // 10. Cover Letter & Outreach Generator
   // =========================================================================
   const btnGenCoverLetter = document.getElementById('btn-generate-cover-letter');
   const clCompanyInput = document.getElementById('cl-company-input');
@@ -763,7 +851,171 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 10. STAR Voice Simulator & Audio TTS Playback (VOICE-TTS-DESIGN.md)
+  // 11. Application Kanban Tracker & Detail Slide-Over (10-application-tracker.html)
+  // =========================================================================
+  const detailPanel = document.getElementById('application-detail-panel');
+  const detailOverlay = document.getElementById('detail-panel-overlay');
+
+  function openAppDetail(app) {
+    state.selectedApp = app;
+    if (detailPanel && detailOverlay) {
+      document.getElementById('detail-app-stage').textContent = `${app.stage.toUpperCase()} STAGE`;
+      document.getElementById('detail-app-company').textContent = app.company;
+      document.getElementById('detail-app-role').textContent = app.role;
+      document.getElementById('detail-interview-date').textContent = `📅 ${app.interviewDate || 'Thursday, Sep 4, 2026 at 2:00 PM PST'}`;
+      document.getElementById('detail-interview-format').textContent = `Format: ${app.interviewFormat || '45-minute Video Call with Hiring Lead'}`;
+      
+      detailOverlay.classList.add('show');
+      detailPanel.classList.add('open');
+      playUiSound('click');
+    }
+  }
+
+  function closeAppDetail() {
+    if (detailPanel && detailOverlay) {
+      detailPanel.classList.remove('open');
+      detailOverlay.classList.remove('show');
+    }
+  }
+
+  document.getElementById('btn-close-detail-panel')?.addEventListener('click', closeAppDetail);
+  detailOverlay?.addEventListener('click', closeAppDetail);
+
+  document.getElementById('btn-detail-advance')?.addEventListener('click', () => {
+    if (state.selectedApp) {
+      state.selectedApp.stage = 'offer';
+      saveAndRenderKanban();
+      closeAppDetail();
+      playUiSound('success');
+      showToast(`Advanced ${state.selectedApp.company} to Offer stage!`, 'success');
+    }
+  });
+
+  document.getElementById('btn-detail-delete')?.addEventListener('click', () => {
+    if (state.selectedApp) {
+      state.kanbanApps = state.kanbanApps.filter(a => a.id !== state.selectedApp.id);
+      saveAndRenderKanban();
+      closeAppDetail();
+      playUiSound('click');
+      showToast(`Deleted ${state.selectedApp.company} application`, 'info');
+    }
+  });
+
+  // Filter Chips Logic
+  const btnFilterAll = document.getElementById('btn-filter-all');
+  const btnFilterRemote = document.getElementById('btn-filter-remote');
+  const btnFilterHigh = document.getElementById('btn-filter-high-match');
+
+  btnFilterAll?.addEventListener('click', () => {
+    state.activeFilter = 'all';
+    btnFilterAll.className = 'btn-secondary active';
+    if (btnFilterRemote) btnFilterRemote.className = 'btn-ghost';
+    if (btnFilterHigh) btnFilterHigh.className = 'btn-ghost';
+    renderKanban();
+    playUiSound('click');
+  });
+
+  btnFilterRemote?.addEventListener('click', () => {
+    state.activeFilter = 'remote';
+    btnFilterRemote.className = 'btn-secondary active';
+    if (btnFilterAll) btnFilterAll.className = 'btn-ghost';
+    if (btnFilterHigh) btnFilterHigh.className = 'btn-ghost';
+    renderKanban();
+    playUiSound('click');
+    showToast('Filtered to Remote roles', 'info');
+  });
+
+  btnFilterHigh?.addEventListener('click', () => {
+    state.activeFilter = 'high';
+    btnFilterHigh.className = 'btn-secondary active';
+    if (btnFilterAll) btnFilterAll.className = 'btn-ghost';
+    if (btnFilterRemote) btnFilterRemote.className = 'btn-ghost';
+    renderKanban();
+    playUiSound('click');
+    showToast('Filtered to High Match (>90%)', 'info');
+  });
+
+  function renderKanban() {
+    const stages = ['wishlist', 'applied', 'interview', 'offer', 'closed'];
+    stages.forEach(stage => {
+      const col = document.getElementById(`col-${stage}`);
+      const countEl = document.getElementById(`count-${stage}`);
+      if (!col) return;
+
+      col.innerHTML = '';
+      let items = state.kanbanApps.filter(app => app.stage === stage);
+
+      if (state.activeFilter === 'remote') {
+        items = items.filter(a => (a.location && a.location.toLowerCase().includes('remote')) || (a.tags && a.tags.some(t => t.toLowerCase().includes('remote'))));
+      } else if (state.activeFilter === 'high') {
+        items = items.filter(a => a.match >= 90);
+      }
+
+      if (countEl) countEl.textContent = items.length;
+
+      items.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'kanban-card';
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+            <strong style="font-size: 14px; color: var(--navy-900);">${app.company}</strong>
+            <span class="match-pill ${app.match >= 85 ? 'high' : (app.match >= 70 ? 'med' : 'low')}">${app.match}% Match</span>
+          </div>
+          <div style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px; line-height: 1.35;">${app.role}</div>
+          <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--gray-400);">
+            <span>${app.location || 'San Francisco, CA'}</span>
+            <span>${app.date}</span>
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+            ${(app.tags || []).map(t => `<span class="skill-chip" style="font-size: 10px; padding: 2px 6px; background: var(--gray-100); color: var(--gray-700);">${t}</span>`).join('')}
+          </div>
+        `;
+
+        card.addEventListener('click', () => openAppDetail(app));
+        col.appendChild(card);
+      });
+    });
+
+    const trackerBadge = document.getElementById('tracker-count-badge');
+    if (trackerBadge) trackerBadge.textContent = state.kanbanApps.length;
+  }
+
+  function saveAndRenderKanban() {
+    try {
+      localStorage.setItem('roleready_kanban_apps', JSON.stringify(state.kanbanApps));
+    } catch (e) {}
+    renderKanban();
+  }
+
+  document.getElementById('btn-add-kanban-card')?.addEventListener('click', () => openModal('modal-new-application'));
+  document.getElementById('form-new-app')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const company = document.getElementById('modal-app-company')?.value.trim() || 'Tech Corp';
+    const role = document.getElementById('modal-app-role')?.value.trim() || 'Product Lead';
+    const stage = document.getElementById('modal-app-stage')?.value || 'applied';
+    const match = parseInt(document.getElementById('modal-app-score')?.value) || 88;
+
+    state.kanbanApps.unshift({
+      id: `app-${Date.now()}`,
+      company,
+      role,
+      stage,
+      match,
+      date: 'Just now',
+      location: 'San Francisco, CA (Hybrid)',
+      tags: ['New']
+    });
+    closeModal('modal-new-application');
+    document.getElementById('form-new-app').reset();
+    saveAndRenderKanban();
+    playUiSound('success');
+    showToast(`Added ${company} application!`, 'success');
+  });
+
+  saveAndRenderKanban();
+
+  // =========================================================================
+  // 12. STAR Voice Simulator & Audio TTS Playback (VOICE-TTS-DESIGN.md)
   // =========================================================================
   const btnVoiceRecord = document.getElementById('btn-voice-record-toggle');
   const voiceTimerDisplay = document.getElementById('voice-timer-display');
@@ -888,28 +1140,23 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     const out = document.getElementById('salary-strategy-output');
     if (out) {
       out.innerHTML = `
-        <div style="display: flex; justify-content: space-around; margin-bottom: 20px; text-align: center;">
-          <div>
-            <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">25th Percentile</div>
-            <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-700);">$${p25.toLocaleString()}</div>
+        <div class="bullet-card" style="margin-bottom: 12px;">
+          <div class="bullet-card-header">
+            <span class="bullet-tag">Target Anchor Counter-Offer (${state.user.name})</span>
+            <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); playUiSound('click'); showToast('Copied salary script!', 'success');"><i class="fa-solid fa-copy"></i></button>
           </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 600; color: var(--blue-primary); text-transform: uppercase;">50th (Target)</div>
-            <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--navy-900);">$${p50.toLocaleString()}</div>
-          </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 600; color: var(--emerald-dark); text-transform: uppercase;">75th (Top Tier)</div>
-            <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--emerald);">$${p75.toLocaleString()}</div>
+          <div class="bullet-text">
+            "Thank you for this offer; I'm genuinely excited about the team's roadmap. Based on market data for ${role} in ${loc} with ${exp}+ years of verified experience scaling platforms to $18M ARR, I was anticipating a base salary closer to $${p50.toLocaleString()}. If we can align the base to $${p50.toLocaleString()} or augment with $20,000 in additional equity, I'm ready to sign today."
           </div>
         </div>
 
         <div class="bullet-card">
           <div class="bullet-card-header">
-            <span class="bullet-tag">Personalized Counter-Offer Script (${state.user.name})</span>
-            <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); playUiSound('click'); showToast('Copied salary script!', 'success');"><i class="fa-solid fa-copy"></i></button>
+            <span class="bullet-tag">Competing Offer Leverage Script</span>
+            <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); playUiSound('click'); showToast('Copied competing offer script!', 'success');"><i class="fa-solid fa-copy"></i></button>
           </div>
           <div class="bullet-text">
-            "Thank you for this offer; I'm genuinely excited about the team's roadmap. Based on market data for ${role} with ${exp}+ years of verified experience in ${loc}, I was anticipating a base salary closer to $${p50.toLocaleString()}. If we can align the base to $${p50.toLocaleString()} or augment with additional equity, I'm ready to sign today."
+            "Your team is my first choice given the technical challenges. I do have a competing offer at $${Math.round(p50 * 1.08).toLocaleString()} base. If we can close the delta to $${p50.toLocaleString()} base with a $25K sign-on bonus, I would be thrilled to commit immediately and withdraw from other processes."
           </div>
         </div>
       `;
@@ -918,106 +1165,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     showToast(`Updated dynamic compensation benchmarks for ${role} ($${p50.toLocaleString()})`, 'success');
   });
 
-  // =========================================================================
-  // 11. Application Kanban Tracker
-  // =========================================================================
-  function renderKanban(filter = 'all') {
-    const stages = ['wishlist', 'applied', 'interview', 'offer', 'closed'];
-    stages.forEach(stage => {
-      const col = document.getElementById(`col-${stage}`);
-      const countEl = document.getElementById(`count-${stage}`);
-      if (!col) return;
-
-      col.innerHTML = '';
-      let items = state.kanbanApps.filter(app => app.stage === stage);
-      if (filter === 'remote') items = items.filter(a => a.company.toLowerCase().includes('remote') || a.role.toLowerCase().includes('remote'));
-
-      if (countEl) countEl.textContent = items.length;
-
-      items.forEach(app => {
-        const card = document.createElement('div');
-        card.className = 'kanban-card';
-        card.innerHTML = `
-          <div class="company">${app.company}</div>
-          <div class="job-title">${app.role}</div>
-          <div class="kanban-card-meta">
-            <span class="match-pill ${app.match >= 85 ? 'high' : (app.match >= 70 ? 'med' : 'low')}">${app.match}% Match</span>
-            <span>${app.date}</span>
-          </div>
-          <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 6px;">
-            <button type="button" class="btn-ghost delete-app-btn" title="Delete" style="padding: 2px 6px; font-size: 11px;"><i class="fa-solid fa-trash"></i></button>
-            <button type="button" class="btn-secondary advance-app-btn" style="padding: 2px 8px; font-size: 11px;">Advance &rarr;</button>
-          </div>
-        `;
-
-        card.querySelector('.delete-app-btn').addEventListener('click', (e) => {
-          e.stopPropagation();
-          state.kanbanApps = state.kanbanApps.filter(a => a.id !== app.id);
-          saveAndRenderKanban();
-          playUiSound('click');
-          showToast(`Deleted ${app.company} application`, 'info');
-        });
-
-        card.querySelector('.advance-app-btn').addEventListener('click', (e) => {
-          e.stopPropagation();
-          const nextStages = { 'wishlist': 'applied', 'applied': 'interview', 'interview': 'offer', 'offer': 'closed', 'closed': 'wishlist' };
-          app.stage = nextStages[app.stage];
-          saveAndRenderKanban();
-          playUiSound('success');
-          showToast(`Moved ${app.company} to ${app.stage}`, 'success');
-        });
-
-        col.appendChild(card);
-      });
-    });
-
-    const dashTbody = document.getElementById('dash-recent-apps-tbody');
-    if (dashTbody) {
-      dashTbody.innerHTML = '';
-      state.kanbanApps.slice(0, 4).forEach(app => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><strong>${app.company}</strong><br><span style="font-size: 12px; color: var(--gray-500);">${app.role}</span></td>
-          <td><span class="match-pill ${app.match >= 85 ? 'high' : 'med'}">${app.match}%</span></td>
-          <td><span style="text-transform: capitalize; font-weight: 600; font-size: 12.5px;">${app.stage}</span></td>
-          <td style="font-size: 12px; color: var(--gray-400);">${app.date}</td>
-        `;
-        dashTbody.appendChild(row);
-      });
-    }
-
-    const trackerBadge = document.getElementById('tracker-count-badge');
-    if (trackerBadge) trackerBadge.textContent = state.kanbanApps.length;
-  }
-
-  function saveAndRenderKanban() {
-    try {
-      localStorage.setItem('roleready_kanban_apps', JSON.stringify(state.kanbanApps));
-    } catch (e) {}
-    renderKanban();
-  }
-
-  document.getElementById('btn-add-kanban-card')?.addEventListener('click', () => openModal('modal-new-application'));
-  document.getElementById('form-new-app')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const company = document.getElementById('modal-app-company')?.value.trim() || 'Tech Corp';
-    const role = document.getElementById('modal-app-role')?.value.trim() || 'Product Lead';
-    const stage = document.getElementById('modal-app-stage')?.value || 'applied';
-    const match = parseInt(document.getElementById('modal-app-score')?.value) || 88;
-
-    state.kanbanApps.unshift({ id: `app-${Date.now()}`, company, role, stage, match, date: 'Just now' });
-    closeModal('modal-new-application');
-    document.getElementById('form-new-app').reset();
-    saveAndRenderKanban();
-    playUiSound('success');
-    showToast(`Added ${company} application!`, 'success');
-  });
-
-  saveAndRenderKanban();
-
-  // =========================================================================
-  // 12. Employer Mode: Vacancies, Bulk Screening & Recruiter Authority
-  // =========================================================================
+  // Employer Vacancies
   function renderVacancies() {
     const tbody = document.getElementById('emp-vacancies-tbody');
     if (!tbody) return;
@@ -1039,60 +1187,6 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
 
   renderVacancies();
 
-  // Bulk Candidate Screening
-  const btnRunBulk = document.getElementById('btn-run-bulk-screening');
-  const bulkResults = document.getElementById('bulk-results-area');
-  const bulkTbody = document.getElementById('bulk-leaderboard-tbody');
-
-  btnRunBulk?.addEventListener('click', () => {
-    btnRunBulk.disabled = true;
-    btnRunBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Benchmarking...';
-    showToast('Running multi-resume comparison against requisition rubrics...', 'info');
-
-    setTimeout(() => {
-      if (bulkResults) bulkResults.style.display = 'block';
-      if (bulkTbody) {
-        bulkTbody.innerHTML = `
-          <tr>
-            <td><strong style="color: var(--blue-primary); font-size: 15px;">#1</strong></td>
-            <td><div class="candidate-name-cell"><div class="candidate-avatar-sm">AM</div><strong>Alex Morgan</strong></div></td>
-            <td><span class="match-pill high">94% Match</span></td>
-            <td><span class="match-pill high">QUALIFIED</span></td>
-            <td>Enterprise SaaS, $18M ARR Scaling, SQL</td>
-            <td><button class="btn-primary" style="padding: 4px 10px; font-size: 12px;" onclick="playUiSound('success'); showToast('Advanced Alex Morgan to Hiring Manager Interview', 'success')">Advance to Interview</button></td>
-          </tr>
-          <tr>
-            <td><strong style="color: var(--gray-600); font-size: 15px;">#2</strong></td>
-            <td><div class="candidate-name-cell"><div class="candidate-avatar-sm" style="background: linear-gradient(135deg, var(--emerald), var(--blue-primary));">JL</div><strong>Jordan Lee</strong></div></td>
-            <td><span class="match-pill high">87% Match</span></td>
-            <td><span class="match-pill high">QUALIFIED</span></td>
-            <td>Technical API Design, AWS Cloud, Python</td>
-            <td><button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="playUiSound('click'); showToast('Scheduled screening call with Jordan Lee', 'info')">Screening Call</button></td>
-          </tr>
-          <tr>
-            <td><strong style="color: var(--gray-400); font-size: 15px;">#3</strong></td>
-            <td><div class="candidate-name-cell"><div class="candidate-avatar-sm" style="background: linear-gradient(135deg, var(--amber), var(--rose));">TG</div><strong>Taylor Green</strong></div></td>
-            <td><span class="match-pill med">72% Match</span></td>
-            <td><span class="match-pill med">GAPS IDENTIFIED</span></td>
-            <td>UX & Product Ops, Missing B2B ARR Track</td>
-            <td><button class="btn-ghost" style="padding: 4px 10px; font-size: 12px;" onclick="playUiSound('click'); showToast('Opening gap analysis report for Taylor Green', 'info')">Review Gaps</button></td>
-          </tr>
-        `;
-      }
-      btnRunBulk.disabled = false;
-      btnRunBulk.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Benchmark Candidates';
-      playUiSound('success');
-      showToast('Candidate Leaderboard Generated!', 'success');
-    }, 600);
-  });
-
-  // Human Recruiter Final Decision Authority Submission
-  document.getElementById('btn-submit-recruiter-decision')?.addEventListener('click', () => {
-    const cand = document.getElementById('recruiter-cand-select')?.value || 'Alex Morgan';
-    playUiSound('success');
-    showToast(`Recruiter Decision Recorded for ${cand}: Approved & Signed Off!`, 'success');
-  });
-
   // Attach global functions to window
   window.switchView = switchView;
   window.showToast = showToast;
@@ -1104,19 +1198,6 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   window.playUiSound = playUiSound;
   window.setPortalMode = setPortalMode;
   window.populateSeedData = populateSeedData;
-  window.loadEmailTemplate = (type) => {
-    const box = document.getElementById('email-template-body');
-    if (!box) return;
-    if (type === 'invite') {
-      box.value = `Dear {{Candidate_Name}},\n\nThank you for your interest in the {{Role_Title}} position at {{Company_Name}}.\n\nOur team was thoroughly impressed by your background in product delivery and evidence-backed metrics. We would love to invite you to a 45-minute video conversation with our Lead Hiring Manager.\n\nPlease select a time that works best using this link: {{Scheduling_Link}}\n\nBest regards,\nTalent Acquisition Team\n{{Company_Name}}`;
-    } else if (type === 'offer') {
-      box.value = `Dear {{Candidate_Name}},\n\nOn behalf of {{Company_Name}}, we are thrilled to formally extend an offer of employment for the position of {{Role_Title}}.\n\nWe were particularly energized by your proven ability to drive product roadmaps and strategic ARR growth. Attached please find the detailed summary of compensation, equity, and benefits.\n\nWe look forward to welcoming you to the team!\n\nWarm regards,\n{{Hiring_Manager}}\n{{Company_Name}}`;
-    } else if (type === 'reject') {
-      box.value = `Dear {{Candidate_Name}},\n\nThank you for taking the time to meet with our team regarding the {{Role_Title}} opening.\n\nWhile our team was deeply impressed with your achievements, we have chosen to move forward with a candidate whose immediate experience with specialized infrastructure aligns more closely with this quarter's requisitions.\n\nWe will keep your profile in our executive talent pool for future initiatives.\n\nSincerely,\nTalent Acquisition Team\n{{Company_Name}}`;
-    }
-    playUiSound('click');
-    showToast('Loaded communication template', 'info');
-  };
 
   syncUserState(state.user);
 });
