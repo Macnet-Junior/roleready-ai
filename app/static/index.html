@@ -13,7 +13,7 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Design System Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="/static/styles.css?v=2.0.2">
+  <link rel="stylesheet" href="/static/styles.css?v=2.0.5">
   <style>
     /* Critical Base Reset */
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -38,10 +38,10 @@
         <div class="dot" id="ob-dot-4"></div>
       </div>
 
-      <!-- STEP 1: PATH SELECTION (Candidate vs Enterprise) -->
+      <!-- STEP 1: AUTHENTICATION & PATH SELECTION -->
       <div class="ob-step" id="ob-step-1">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <svg viewBox="0 0 200 200" width="60" height="60" style="margin-bottom: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <svg viewBox="0 0 200 200" width="56" height="56" style="margin-bottom: 8px;">
             <defs>
               <linearGradient id="obShield" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style="stop-color:#2563EB"/>
@@ -55,33 +55,81 @@
             <path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#obShield)"/>
             <path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#obCheck)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <h1 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px;">Welcome to RoleReady</h1>
-          <p style="font-size: 13.5px; color: var(--gray-400);">From application to offer — select your workspace path.</p>
+          <h1 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 2px;">RoleReady Platform</h1>
+          <p style="font-size: 13px; color: var(--gray-400);">From application to offer — personalized career & talent intelligence.</p>
         </div>
 
-        <div class="path-choice-card selected" id="choice-path-candidate" data-path="candidate">
-          <div class="path-choice-icon" style="background: rgba(37,99,235,0.2); color: #60A5FA;">
-            <i class="fa-solid fa-user-graduate"></i>
-          </div>
-          <div>
-            <h3 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Job Searching (Candidate)</h3>
-            <p style="font-size: 12.5px; color: var(--gray-400); line-height: 1.4;">Optimize resume with truth gating, practice STAR interviews, and track applications.</p>
-          </div>
+        <!-- Auth Mode Tabs (Sign In vs Create Account) -->
+        <div class="auth-nav-tabs">
+          <button type="button" class="auth-nav-tab active" id="tab-auth-signup">Create Account</button>
+          <button type="button" class="auth-nav-tab" id="tab-auth-signin">Sign In</button>
         </div>
 
-        <div class="path-choice-card employer" id="choice-path-employer" data-path="employer">
-          <div class="path-choice-icon" style="background: rgba(139,92,246,0.2); color: #C084FC;">
-            <i class="fa-solid fa-building-user"></i>
+        <!-- SIGN UP FORM -->
+        <div id="auth-signup-form">
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Your Full Name</label>
+              <input type="text" id="auth-reg-name" class="form-input" placeholder="e.g. Alex Morgan" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="Alex Morgan">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Work or Personal Email</label>
+              <input type="email" id="auth-reg-email" class="form-input" placeholder="e.g. alex@morgan.io" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="alex.morgan@executive.io">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Target Role Title</label>
+              <input type="text" id="auth-reg-title" class="form-input" placeholder="e.g. Senior Product Manager / Lead Engineer" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="Senior Product Manager">
+            </div>
           </div>
-          <div>
-            <h3 style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Hiring / Recruiting (Enterprise)</h3>
-            <p style="font-size: 12.5px; color: var(--gray-400); line-height: 1.4;">Bulk resume screening, custom rubrics, candidate comparison matrix, and decision workflows.</p>
+
+          <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 6px;">Select Your Workspace Account Type</label>
+          <div class="path-choice-card selected" id="choice-path-candidate" data-path="candidate">
+            <div class="path-choice-icon" style="background: rgba(37,99,235,0.2); color: #60A5FA;">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Job Searching (Candidate)</h3>
+              <p style="font-size: 12px; color: var(--gray-400); line-height: 1.35;">ATS resume scoring, truth protection, STAR voice coach, application tracker.</p>
+            </div>
           </div>
+
+          <div class="path-choice-card employer" id="choice-path-employer" data-path="employer">
+            <div class="path-choice-icon" style="background: rgba(139,92,246,0.2); color: #C084FC;">
+              <i class="fa-solid fa-building-user"></i>
+            </div>
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: #fff; margin-bottom: 2px;">I'm Hiring / Recruiting (Enterprise)</h3>
+              <p style="font-size: 12px; color: var(--gray-400); line-height: 1.35;">Bulk resume screening, custom rubrics, candidate matrix, recruiter authority.</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn-primary" id="btn-auth-signup-submit" style="width: 100%; justify-content: center; margin-top: 14px; padding: 13px; font-size: 14.5px;">
+            Create Account & Continue &rarr;
+          </button>
         </div>
 
-        <button type="button" class="btn-primary" id="btn-ob-step1-next" style="width: 100%; justify-content: center; margin-top: 18px; padding: 14px; font-size: 15px;">
-          Continue &rarr;
-        </button>
+        <!-- SIGN IN FORM -->
+        <div id="auth-signin-form" style="display: none;">
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Email Address</label>
+              <input type="email" id="auth-login-email" class="form-input" placeholder="alex.morgan@executive.io" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;" value="alex.morgan@executive.io">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--gray-300); display: block; margin-bottom: 4px;">Password</label>
+              <input type="password" id="auth-login-pwd" class="form-input" value="••••••••••••" style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); color: #fff;">
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <button type="button" class="btn-primary" id="btn-auth-login-candidate" style="justify-content: center; padding: 12px;">
+              <i class="fa-solid fa-user-graduate"></i> Sign In as Candidate (Alex Morgan)
+            </button>
+            <button type="button" class="btn-secondary" id="btn-auth-login-employer" style="justify-content: center; padding: 12px; border-color: var(--violet); color: #C084FC;">
+              <i class="fa-solid fa-building-user"></i> Sign In as Enterprise Recruiter (Talent Team)
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- STEP 2: DYNAMIC GOALS -->
@@ -750,14 +798,12 @@
                 <button type="button" class="btn-primary" id="btn-studio-save-version"><i class="fa-solid fa-floppy-disk"></i> Save Version</button>
               </div>
             </div>
-            <div class="section-body">
-              <div class="template-grid">
+              <div class="template-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="template-card selected" data-template="executive">
                   <div class="template-preview-thumb">
-                    <div class="template-mock-line title"></div>
+                    <div class="template-mock-line title" style="background: var(--navy-900);"></div>
                     <div class="template-mock-line" style="width: 80%;"></div>
                     <div class="template-mock-line" style="width: 90%;"></div>
-                    <div class="template-mock-line" style="width: 70%;"></div>
                   </div>
                   <div class="template-card-info">
                     <h4>Executive Slate</h4>
@@ -770,7 +816,6 @@
                     <div class="template-mock-line title" style="background: var(--violet);"></div>
                     <div class="template-mock-line" style="width: 85%;"></div>
                     <div class="template-mock-line" style="width: 75%;"></div>
-                    <div class="template-mock-line" style="width: 95%;"></div>
                   </div>
                   <div class="template-card-info">
                     <h4>Modern Tech</h4>
@@ -780,27 +825,49 @@
 
                 <div class="template-card" data-template="minimal">
                   <div class="template-preview-thumb">
-                    <div class="template-mock-line title" style="background: var(--gray-800);"></div>
+                    <div class="template-mock-line title" style="background: var(--gray-600);"></div>
                     <div class="template-mock-line" style="width: 70%;"></div>
                     <div class="template-mock-line" style="width: 60%;"></div>
-                    <div class="template-mock-line" style="width: 80%;"></div>
                   </div>
                   <div class="template-card-info">
                     <h4>Clean Minimal</h4>
-                    <p>Classic serif & sans-serif contrast.</p>
+                    <p>Classic serif & whitespace balance.</p>
                   </div>
                 </div>
 
-                <div class="template-card" data-template="bold">
+                <div class="template-card" data-template="emerald">
                   <div class="template-preview-thumb">
                     <div class="template-mock-line title" style="background: var(--emerald);"></div>
                     <div class="template-mock-line" style="width: 90%;"></div>
                     <div class="template-mock-line" style="width: 80%;"></div>
-                    <div class="template-mock-line" style="width: 65%;"></div>
                   </div>
                   <div class="template-card-info">
                     <h4>Impact Emerald</h4>
                     <p>Bold metrics and highlight callouts.</p>
+                  </div>
+                </div>
+
+                <div class="template-card" data-template="ruby">
+                  <div class="template-preview-thumb">
+                    <div class="template-mock-line title" style="background: var(--rose);"></div>
+                    <div class="template-mock-line" style="width: 85%;"></div>
+                    <div class="template-mock-line" style="width: 70%;"></div>
+                  </div>
+                  <div class="template-card-info">
+                    <h4>Creative Ruby</h4>
+                    <p>Vibrant accents & two-column summary.</p>
+                  </div>
+                </div>
+
+                <div class="template-card" data-template="corporate">
+                  <div class="template-preview-thumb">
+                    <div class="template-mock-line title" style="background: #1E293B;"></div>
+                    <div class="template-mock-line" style="width: 75%;"></div>
+                    <div class="template-mock-line" style="width: 85%;"></div>
+                  </div>
+                  <div class="template-card-info">
+                    <h4>Classic Corporate</h4>
+                    <p>Traditional Wall Street standard layout.</p>
                   </div>
                 </div>
               </div>
@@ -1551,10 +1618,11 @@ Talent Acquisition Team
             <span style="color: var(--gray-600);">Truth Protection Status:</span>
             <strong style="color: var(--emerald);"><i class="fa-solid fa-shield-check"></i> Enabled</strong>
           </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; color: var(--rose-dark); border-color: rgba(244,63,94,0.3);" onclick="signOut();">
+            <i class="fa-solid fa-right-from-bracket" style="color: var(--rose);"></i> Sign Out
+          </button>
         </div>
-        <button type="button" class="btn-secondary" style="width: 100%; justify-content: center;" onclick="document.getElementById('modal-user-profile').classList.add('hidden'); openGateway();">
-          <i class="fa-solid fa-right-from-bracket"></i> Switch Workspace / Change Persona
-        </button>
       </div>
     </div>
   </div>
@@ -1629,6 +1697,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.0.4"></script>
+  <script src="/static/app.js?v=2.0.5"></script>
 </body>
 </html>

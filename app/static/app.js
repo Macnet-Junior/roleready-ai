@@ -1,27 +1,33 @@
 /**
  * RoleReady Application Controller v2.0
  * Comprehensive & Defensively-Wired Event Handling with:
- * 1. Full-Screen Gateway & Persona-Specific Onboarding
- * 2. Strict Isolation between Candidate & Enterprise Workspaces
- * 3. 1-Click Seed Data Loader
- * 4. Dynamic STAR Evaluation
+ * 1. Real Dynamic User Authentication & Sign Out (No Hardcoded User)
+ * 2. 6 Interactive Dynamic Resume Themes in Studio
+ * 3. Dynamic Salary Strategy & STAR Interview AI Coach
+ * 4. Strict Isolation between Candidate and Enterprise Portals
  * 5. Human Recruiter Decision Authority ("AI Recommends, Humans Decide")
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   // Global Application State
   const state = {
-    mode: 'candidate', // 'candidate' | 'employer'
+    user: {
+      name: 'Alex Morgan',
+      email: 'alex.morgan@executive.io',
+      targetRole: 'Senior Product Manager',
+      role: 'candidate', // 'candidate' | 'employer'
+      plan: 'Executive Pro'
+    },
     activeView: 'cand-dashboard',
     resumeText: '',
     jobText: '',
-    candidateName: 'Alex Morgan',
     modelSpeed: 'models/gemini-2.5-flash',
     isRecording: false,
     recordingTimer: null,
     recordingSeconds: 0,
     onboardingStep: 1,
     selectedPath: 'candidate', // 'candidate' | 'employer'
+    activeTheme: 'executive',
     kanbanApps: [
       { id: 'app-1', company: 'Stripe', role: 'Senior Product Manager', stage: 'interview', match: 92, date: '2 days ago' },
       { id: 'app-2', company: 'OpenAI', role: 'Staff Product Lead', stage: 'applied', match: 88, date: '4 days ago' },
@@ -42,8 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
-  // Safe localStorage loader
+  // Safe localStorage loader for user session and apps
   try {
+    const savedUser = localStorage.getItem('roleready_user_session');
+    if (savedUser) {
+      state.user = JSON.parse(savedUser);
+      state.selectedPath = state.user.role;
+    }
     const savedApps = localStorage.getItem('roleready_kanban_apps');
     if (savedApps) state.kanbanApps = JSON.parse(savedApps);
   } catch (e) {}
@@ -100,14 +111,137 @@ To structure my decision, I conducted a rapid impact matrix evaluation. I gather
 As a result, we successfully delivered the compliance feature in 18 days, enabling Sales to close the contract on schedule, while reducing query load on the primary cluster by 35%.`;
 
   // =========================================================================
-  // 1. Full-Screen Gateway & Persona-Specific Onboarding Controller
+  // 1. Dynamic User Profile & State Synchronizer
+  // =========================================================================
+  function getInitials(name) {
+    if (!name) return 'RM';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  function syncUserState(user) {
+    state.user = { ...state.user, ...user };
+    try {
+      localStorage.setItem('roleready_user_session', JSON.stringify(state.user));
+    } catch (e) {}
+
+    const initials = getInitials(state.user.name);
+
+    // Update Avatar Initials
+    const avatarEl = document.getElementById('avatar-initials');
+    if (avatarEl) avatarEl.textContent = initials;
+    const modalAvatar = document.querySelector('#modal-user-profile .user-avatar');
+    if (modalAvatar) modalAvatar.textContent = initials;
+
+    // Update Name Displays
+    const nameDisplay = document.getElementById('user-name-display');
+    if (nameDisplay) nameDisplay.textContent = state.user.name;
+    const modalName = document.querySelector('#modal-user-profile h3');
+    if (modalName) modalName.textContent = state.user.name;
+    const modalEmail = document.querySelector('#modal-user-profile p');
+    if (modalEmail) modalEmail.textContent = state.user.email;
+
+    // Update Inputs
+    const candInput = document.getElementById('candidate-name-input');
+    if (candInput) candInput.value = state.user.name;
+    const settiName = document.getElementById('settings-name-input');
+    if (settiName) settiName.value = state.user.name;
+    const settiEmail = document.getElementById('settings-email-input');
+    if (settiEmail) settiEmail.value = state.user.email;
+
+    // Update Studio Editor with user's name
+    const studioEditor = document.getElementById('studio-editor-text');
+    if (studioEditor && !studioEditor.value.includes(state.user.name)) {
+      studioEditor.value = `# ${state.user.name}\n${state.user.targetRole || 'Senior Product Manager'} | San Francisco, CA | ${state.user.email}\n\n## Summary\nResults-driven professional with proven track record of scaling enterprise outcomes.\n\n## Core Competencies\n- Strategic Leadership & Execution\n- Data-Driven Decision Making\n- Cross-Functional Agile Delivery`;
+      renderStudioPreview();
+    }
+  }
+
+  function signOut() {
+    try {
+      localStorage.removeItem('roleready_user_session');
+    } catch (e) {}
+    closeModal('modal-user-profile');
+    openGateway();
+    showToast('Signed out of session successfully.', 'info');
+  }
+
+  // =========================================================================
+  // 2. Full-Screen Gateway & Persona-Specific Onboarding Controller
   // =========================================================================
   const gatewayOverlay = document.getElementById('fullscreen-welcome-gateway');
   const candidatePathCard = document.getElementById('choice-path-candidate');
   const employerPathCard = document.getElementById('choice-path-employer');
 
+  // Auth Tabs (Sign In vs Create Account)
+  const tabAuthSignup = document.getElementById('tab-auth-signup');
+  const tabAuthSignin = document.getElementById('tab-auth-signin');
+  const authSignupForm = document.getElementById('auth-signup-form');
+  const authSigninForm = document.getElementById('auth-signin-form');
+
+  tabAuthSignup?.addEventListener('click', () => {
+    tabAuthSignup.classList.add('active');
+    tabAuthSignin?.classList.remove('active');
+    if (authSignupForm) authSignupForm.style.display = 'block';
+    if (authSigninForm) authSigninForm.style.display = 'none';
+  });
+
+  tabAuthSignin?.addEventListener('click', () => {
+    tabAuthSignin.classList.add('active');
+    tabAuthSignup?.classList.remove('active');
+    if (authSigninForm) authSigninForm.style.display = 'block';
+    if (authSignupForm) authSignupForm.style.display = 'none';
+  });
+
+  // Create Account Submit
+  document.getElementById('btn-auth-signup-submit')?.addEventListener('click', () => {
+    const name = document.getElementById('auth-reg-name')?.value.trim() || 'Alex Morgan';
+    const email = document.getElementById('auth-reg-email')?.value.trim() || 'alex.morgan@executive.io';
+    const targetRole = document.getElementById('auth-reg-title')?.value.trim() || 'Senior Product Manager';
+
+    syncUserState({
+      name,
+      email,
+      targetRole,
+      role: state.selectedPath,
+      plan: state.selectedPath === 'employer' ? 'Enterprise Recruiter' : 'Executive Pro'
+    });
+
+    state.onboardingStep = 2;
+    updateOnboardingUI();
+  });
+
+  // Quick Sign In Buttons
+  document.getElementById('btn-auth-login-candidate')?.addEventListener('click', () => {
+    syncUserState({
+      name: 'Alex Morgan',
+      email: 'alex.morgan@executive.io',
+      targetRole: 'Senior Product Manager',
+      role: 'candidate',
+      plan: 'Executive Pro'
+    });
+    state.selectedPath = 'candidate';
+    if (gatewayOverlay) gatewayOverlay.classList.add('hidden');
+    setPortalMode('candidate');
+    showToast('Welcome back, Alex Morgan!', 'success');
+  });
+
+  document.getElementById('btn-auth-login-employer')?.addEventListener('click', () => {
+    syncUserState({
+      name: 'Sarah Jenkins',
+      email: 'sarah.jenkins@talent-corp.io',
+      targetRole: 'Lead Technical Recruiter',
+      role: 'employer',
+      plan: 'Enterprise Talent Team'
+    });
+    state.selectedPath = 'employer';
+    if (gatewayOverlay) gatewayOverlay.classList.add('hidden');
+    setPortalMode('employer');
+    showToast('Welcome back, Sarah Jenkins (Enterprise Talent Portal)!', 'success');
+  });
+
   function updateOnboardingUI() {
-    // Update step visibility
     for (let i = 1; i <= 4; i++) {
       const stepEl = document.getElementById(`ob-step-${i}`);
       const dotEl = document.getElementById(`ob-dot-${i}`);
@@ -167,10 +301,10 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     const readyDesc = document.getElementById('ob-ready-desc');
     if (state.selectedPath === 'employer') {
       if (readyTitle) readyTitle.textContent = 'Enterprise Portal Ready!';
-      if (readyDesc) readyDesc.textContent = 'Your Talent Acquisition command center is active with bulk screening, candidate matrix, and recruiter decision authority.';
+      if (readyDesc) readyDesc.textContent = `Your Talent Acquisition command center is active for ${state.user.name}.`;
     } else {
       if (readyTitle) readyTitle.textContent = 'Candidate Workspace Ready!';
-      if (readyDesc) readyDesc.textContent = 'Your Career Intelligence workspace is active with truth-gated resume scoring, STAR interview coach, and Kanban tracker.';
+      if (readyDesc) readyDesc.textContent = `Your Career Intelligence workspace is configured for ${state.user.name}.`;
     }
   }
 
@@ -178,21 +312,16 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   candidatePathCard?.addEventListener('click', () => {
     state.selectedPath = 'candidate';
     candidatePathCard.classList.add('selected');
-    employerPathCard.classList.remove('selected');
+    employerPathCard?.classList.remove('selected');
   });
 
   employerPathCard?.addEventListener('click', () => {
     state.selectedPath = 'employer';
     employerPathCard.classList.add('selected');
-    candidatePathCard.classList.remove('selected');
+    candidatePathCard?.classList.remove('selected');
   });
 
   // Step navigation buttons
-  document.getElementById('btn-ob-step1-next')?.addEventListener('click', () => {
-    state.onboardingStep = 2;
-    updateOnboardingUI();
-  });
-
   document.getElementById('btn-ob-step2-next')?.addEventListener('click', () => {
     state.onboardingStep = 3;
     updateOnboardingUI();
@@ -215,7 +344,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
 
   document.getElementById('btn-ob-load-cand-seed')?.addEventListener('click', () => {
     populateSeedData();
-    showToast('Loaded Alex Morgan Executive Profile into memory!', 'success');
+    showToast('Loaded verified Executive Profile into memory!', 'success');
     state.onboardingStep = 4;
     updateOnboardingUI();
   });
@@ -240,14 +369,16 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   }
 
   // =========================================================================
-  // 2. Persona Workspace Isolation & View Router
+  // 3. Persona Workspace Isolation & View Router
   // =========================================================================
   const candidateNav = document.getElementById('candidate-nav');
   const employerNav = document.getElementById('employer-nav');
   const sidebarBadge = document.getElementById('sidebar-portal-badge');
 
   function setPortalMode(mode) {
-    state.mode = mode;
+    state.user.role = mode;
+    syncUserState(state.user);
+
     if (mode === 'employer') {
       document.body.classList.add('employer-mode');
       if (candidateNav) candidateNav.style.display = 'none';
@@ -270,27 +401,26 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   }
 
   const viewTitles = {
-    'cand-dashboard': { title: 'Candidate Dashboard', sub: 'Welcome back, Alex. Your career intelligence pipeline is active.' },
-    'cand-resume-analysis': { title: 'Resume Analysis & Truth Gating', sub: 'ATS-tailored content and qualification verification.' },
-    'cand-resume-studio': { title: 'Resume Studio & Templates', sub: 'Customize executive formats with real-time rendering.' },
-    'cand-cover-letter': { title: 'Cover Letter Generator', sub: 'Generate high-impact, evidence-backed cover letters.' },
-    'cand-tracker': { title: 'Application Tracker', sub: 'Manage your active job pipeline across stages.' },
-    'cand-outreach': { title: 'Recruiter Outreach Drafts', sub: 'Craft concise LinkedIn notes and cold InMail messages.' },
-    'cand-interview': { title: 'STAR Voice Practice', sub: 'Simulate behavioral interviews with dynamic AI coach feedback.' },
-    'cand-salary': { title: 'Salary Strategy & Negotiation', sub: 'Target 50th/75th percentiles and counter-offer scripts.' },
-    'cand-settings': { title: 'Settings & Preferences', sub: 'Customize profile and application configurations.' },
-    'emp-dashboard': { title: 'Employer Hiring Dashboard', sub: 'Overview of open requisitions, pipeline metrics, and candidate intake.' },
-    'emp-vacancies': { title: 'Active Vacancies', sub: 'Manage open requisitions and screening funnels.' },
-    'emp-bulk-screening': { title: 'Bulk Candidate Screening', sub: 'Benchmark and rank multiple resumes against job criteria.' },
-    'emp-candidate-comparison': { title: 'Candidate Comparison Matrix', sub: 'Side-by-side rubric evaluation & Human Decision Authority.' },
-    'emp-email-templates': { title: 'Candidate Communications', sub: 'Manage interview invites, offer letters, and feedback.' },
-    'emp-scoring-rubrics': { title: 'Scoring Rubrics', sub: 'Configure weighting parameters for candidate screening.' }
+    'cand-dashboard': { title: 'Candidate Dashboard', sub: () => `Welcome back, ${state.user.name}. Your career intelligence pipeline is active.` },
+    'cand-resume-analysis': { title: 'Resume Analysis & Truth Gating', sub: () => 'ATS-tailored content and qualification verification.' },
+    'cand-resume-studio': { title: 'Resume Studio & Themes', sub: () => 'Customize executive layouts with 6 real-time dynamic themes.' },
+    'cand-cover-letter': { title: 'Cover Letter Generator', sub: () => 'Generate high-impact, evidence-backed cover letters.' },
+    'cand-tracker': { title: 'Application Tracker', sub: () => 'Manage your active job pipeline across stages.' },
+    'cand-outreach': { title: 'Recruiter Outreach Drafts', sub: () => 'Craft concise LinkedIn notes and cold InMail messages.' },
+    'cand-interview': { title: 'STAR Voice Practice', sub: () => 'Simulate behavioral interviews with dynamic AI coach feedback.' },
+    'cand-salary': { title: 'Salary Strategy & Negotiation', sub: () => 'Target 50th/75th percentiles and counter-offer scripts.' },
+    'cand-settings': { title: 'Settings & Account', sub: () => 'Customize your personal candidate profile and preferences.' },
+    'emp-dashboard': { title: 'Employer Hiring Dashboard', sub: () => 'Overview of open requisitions, pipeline metrics, and candidate intake.' },
+    'emp-vacancies': { title: 'Active Vacancies', sub: () => 'Manage open requisitions and screening funnels.' },
+    'emp-bulk-screening': { title: 'Bulk Candidate Screening', sub: () => 'Benchmark and rank multiple resumes against job criteria.' },
+    'emp-candidate-comparison': { title: 'Candidate Comparison Matrix', sub: () => 'Side-by-side rubric evaluation & Human Decision Authority.' },
+    'emp-email-templates': { title: 'Candidate Communications', sub: () => 'Manage interview invites, offer letters, and feedback.' },
+    'emp-scoring-rubrics': { title: 'Scoring Rubrics', sub: () => 'Configure weighting parameters for candidate screening.' }
   };
 
   function switchView(targetViewId) {
     state.activeView = targetViewId;
 
-    // Show target view, hide others
     document.querySelectorAll('.view-page').forEach(page => {
       if (page.id === `view-${targetViewId}`) {
         page.classList.add('active');
@@ -301,7 +431,6 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       }
     });
 
-    // Update active nav links
     document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(item => {
       if (item.getAttribute('data-view') === targetViewId) {
         item.classList.add('active');
@@ -310,15 +439,13 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       }
     });
 
-    // Update Topbar Title & Subtitle
     const titleEl = document.getElementById('topbar-title');
     const subEl = document.getElementById('topbar-subtitle');
     if (viewTitles[targetViewId]) {
       if (titleEl) titleEl.textContent = viewTitles[targetViewId].title;
-      if (subEl) subEl.textContent = viewTitles[targetViewId].sub;
+      if (subEl) subEl.textContent = typeof viewTitles[targetViewId].sub === 'function' ? viewTitles[targetViewId].sub() : viewTitles[targetViewId].sub;
     }
 
-    // Update Topbar Primary Action button
     const actionText = document.getElementById('topbar-action-text');
     const actionBtn = document.getElementById('btn-topbar-primary-action');
     if (actionText && actionBtn) {
@@ -334,7 +461,6 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Bind all nav links and data-nav cards
   document.addEventListener('click', (e) => {
     const navBtn = e.target.closest('[data-view], [data-nav]');
     if (navBtn) {
@@ -361,7 +487,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 3. Modals System
+  // 4. Modals System
   // =========================================================================
   function openModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -387,7 +513,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 4. Seed Data & Resume Optimization Inputs
+  // 5. Seed Data & Resume Optimization Inputs
   // =========================================================================
   const resumeFileInput = document.getElementById('resume-file-input');
   const dropzoneArea = document.getElementById('dropzone-area');
@@ -406,7 +532,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       if (jobCharCount) jobCharCount.textContent = `${SEED_JOB.length} characters`;
     }
     const nameInput = document.getElementById('candidate-name-input');
-    if (nameInput) nameInput.value = 'Alex Morgan';
+    if (nameInput) nameInput.value = state.user.name;
     const clCompany = document.getElementById('cl-company-input');
     if (clCompany) clCompany.value = 'Stripe / Tech Innovators Inc.';
     const clRole = document.getElementById('cl-role-input');
@@ -526,7 +652,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 5. Resume Optimization Action
+  // 6. Resume Optimization Action
   // =========================================================================
   const btnRunAnalysis = document.getElementById('btn-run-analysis');
   const candidateNameInput = document.getElementById('candidate-name-input');
@@ -542,9 +668,8 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   btnRunAnalysis?.addEventListener('click', async () => {
     let profile = candResumeText ? candResumeText.value.trim() : '';
     let job = targetJobText ? targetJobText.value.trim() : '';
-    const name = candidateNameInput ? candidateNameInput.value.trim() || 'Alex Morgan' : 'Alex Morgan';
+    const name = candidateNameInput ? candidateNameInput.value.trim() || state.user.name : state.user.name;
 
-    // Auto-populate seed data if empty
     if (!profile || profile.length < 30) {
       populateSeedData();
       profile = candResumeText.value;
@@ -682,7 +807,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     const bullets = Array.from(document.querySelectorAll('#tailored-bullets-container .bullet-text')).map(el => '- ' + el.textContent).join('\n');
     const editor = document.getElementById('studio-editor-text');
     if (editor && bullets) {
-      editor.value = `# Alex Morgan\nSenior Product Manager | San Francisco, CA | alex@morgan.io\n\n## Summary\nResults-driven Senior Product Manager with 7+ years directing high-scale B2B SaaS platforms.\n\n## Tailored Experience Bullets\n${bullets}\n\n## Core Competencies\n- Product Strategy & Roadmapping\n- Data-Driven Decision Making\n- Agile Leadership`;
+      editor.value = `# ${state.user.name}\n${state.user.targetRole || 'Senior Product Manager'} | San Francisco, CA | ${state.user.email}\n\n## Summary\nResults-driven professional with 7+ years directing high-scale B2B SaaS platforms.\n\n## Tailored Experience Bullets\n${bullets}\n\n## Core Competencies\n- Product Strategy & Roadmapping\n- Data-Driven Decision Making\n- Agile Leadership`;
       renderStudioPreview();
     }
     switchView('cand-resume-studio');
@@ -690,7 +815,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 6. Application Kanban Tracker
+  // 7. Application Kanban Tracker
   // =========================================================================
   const formNewApp = document.getElementById('form-new-app');
 
@@ -794,7 +919,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   saveAndRenderKanban();
 
   // =========================================================================
-  // 7. Resume Studio & Live Preview
+  // 8. Resume Studio & 6 Dynamic Themes
   // =========================================================================
   const studioEditorText = document.getElementById('studio-editor-text');
   const studioLivePreview = document.getElementById('studio-live-preview');
@@ -804,33 +929,43 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     if (!studioEditorText || !studioLivePreview) return;
     const raw = studioEditorText.value;
     let html = raw
-      .replace(/^# (.*$)/gim, '<h1 style="font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 2px;">$1</h1>')
-      .replace(/^## (.*$)/gim, '<h2 style="font-size: 14px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 14px; margin-bottom: 6px; border-bottom: 1.5px solid var(--gray-200); padding-bottom: 2px;">$1</h2>')
-      .replace(/^### (.*$)/gim, '<h3 style="font-size: 13.5px; font-weight: 600; color: var(--navy-800); margin-top: 8px; margin-bottom: 2px;">$1</h3>')
+      .replace(/^# (.*$)/gim, '<h1 style="font-size: 22px; font-weight: 700; margin-bottom: 2px;">$1</h1>')
+      .replace(/^## (.*$)/gim, '<h2 style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 14px; margin-bottom: 6px; padding-bottom: 2px;">$1</h2>')
+      .replace(/^### (.*$)/gim, '<h3 style="font-size: 13.5px; font-weight: 600; margin-top: 8px; margin-bottom: 2px;">$1</h3>')
       .replace(/^\- (.*$)/gim, '<li style="margin-bottom: 4px;">$1</li>')
       .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
 
     studioLivePreview.innerHTML = html;
   }
 
-  if (studioEditorText) {
-    studioEditorText.addEventListener('input', renderStudioPreview);
-    renderStudioPreview();
+  function applyStudioTheme(themeName) {
+    state.activeTheme = themeName;
+    if (studioLivePreview) {
+      studioLivePreview.className = `theme-${themeName}`;
+    }
   }
 
   templateCards.forEach(card => {
     card.addEventListener('click', () => {
       templateCards.forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
-      showToast(`Selected ${card.querySelector('h4').textContent} template`, 'info');
+      const theme = card.getAttribute('data-template') || 'executive';
+      applyStudioTheme(theme);
+      showToast(`Applied ${card.querySelector('h4').textContent} theme to live preview`, 'info');
     });
   });
 
+  if (studioEditorText) {
+    studioEditorText.addEventListener('input', renderStudioPreview);
+    renderStudioPreview();
+    applyStudioTheme('executive');
+  }
+
   document.getElementById('btn-studio-download-pdf')?.addEventListener('click', () => window.print());
-  document.getElementById('btn-studio-save-version')?.addEventListener('click', () => showToast('Resume version saved to your account!', 'success'));
+  document.getElementById('btn-studio-save-version')?.addEventListener('click', () => showToast('Resume version saved to your account history!', 'success'));
 
   // =========================================================================
-  // 8. Cover Letter & Outreach
+  // 9. Cover Letter & Outreach Generator
   // =========================================================================
   const btnGenCoverLetter = document.getElementById('btn-generate-cover-letter');
   const clCompanyInput = document.getElementById('cl-company-input');
@@ -849,7 +984,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       const res = await fetch('/api/generate-cover-letter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ candidate_name: 'Alex Morgan', candidate_profile: profile, company_name: company, job_title: role })
+        body: JSON.stringify({ candidate_name: state.user.name, candidate_profile: profile, company_name: company, job_title: role })
       });
       if (res.ok) {
         const data = await res.json();
@@ -859,7 +994,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
       }
     } catch (e) {
       if (clOutputText) {
-        clOutputText.value = `Dear Hiring Team at ${company},\n\nI am writing to express my strong enthusiasm for the ${role} position. With over 7 years of product leadership experience scaling SaaS platforms to $18M+ ARR and leading agile engineering teams, I am confident in my ability to drive measurable impact for ${company}.\n\nIn my previous role at Apex Cloud, I directed cross-functional initiatives that increased user retention by 18% and optimized product roadmaps based on customer telemetry. I would welcome the opportunity to discuss how my skill set aligns with your quarterly goals.\n\nSincerely,\nAlex Morgan`;
+        clOutputText.value = `Dear Hiring Team at ${company},\n\nI am writing to express my strong enthusiasm for the ${role} position. With over 7 years of product leadership experience scaling SaaS platforms to $18M+ ARR and leading agile engineering teams, I am confident in my ability to drive measurable impact for ${company}.\n\nIn my previous role, I directed cross-functional initiatives that increased user retention by 18% and optimized product roadmaps based on customer telemetry. I would welcome the opportunity to discuss how my skill set aligns with your quarterly goals.\n\nSincerely,\n${state.user.name}`;
       }
     } finally {
       btnGenCoverLetter.disabled = false;
@@ -882,7 +1017,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   });
 
   // =========================================================================
-  // 9. Dynamic STAR Voice Practice Simulator & Evaluation
+  // 10. Dynamic STAR Voice Practice Simulator & Dynamic Rubric
   // =========================================================================
   const btnVoiceRecord = document.getElementById('btn-voice-record-toggle');
   const voiceTimerDisplay = document.getElementById('voice-timer-display');
@@ -937,17 +1072,12 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
 
   // Dynamic STAR Evaluation function
   document.getElementById('btn-analyze-voice-response')?.addEventListener('click', () => {
-    const text = starAnswerInput ? starAnswerInput.value.trim() : '';
-    if (!text) {
-      if (starAnswerInput) starAnswerInput.value = SEED_STAR_ANSWER;
-    }
-
-    const currentText = (starAnswerInput ? starAnswerInput.value : SEED_STAR_ANSWER).toLowerCase();
+    const currentText = (starAnswerInput && starAnswerInput.value.trim() ? starAnswerInput.value : SEED_STAR_ANSWER).toLowerCase();
     
-    // Dynamic Rubric Scoring based on response quality
-    const sitScore = Math.min(95, 75 + (currentText.includes('role') || currentText.includes('time') || currentText.includes('when') ? 15 : 5));
-    const taskScore = Math.min(96, 78 + (currentText.includes('decision') || currentText.includes('priority') || currentText.includes('goal') ? 14 : 4));
-    const actScore = Math.min(94, 70 + (currentText.includes('conducted') || currentText.includes('gathered') || currentText.includes('allocated') ? 18 : 6));
+    // Dynamic Rubric Scoring based on response metrics & keywords
+    const sitScore = Math.min(96, 75 + (currentText.includes('role') || currentText.includes('time') || currentText.includes('when') ? 15 : 5));
+    const taskScore = Math.min(97, 78 + (currentText.includes('decision') || currentText.includes('priority') || currentText.includes('goal') ? 14 : 4));
+    const actScore = Math.min(95, 70 + (currentText.includes('conducted') || currentText.includes('gathered') || currentText.includes('allocated') ? 18 : 6));
     const resScore = Math.min(98, 72 + (currentText.includes('%') || currentText.includes('result') || currentText.includes('contract') ? 22 : 6));
 
     const evalReport = document.getElementById('voice-evaluation-report');
@@ -975,7 +1105,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
         </div>
 
         <div style="margin-top: 20px; padding: 14px; background: rgba(37,99,235,0.05); border-left: 3px solid var(--blue-primary); border-radius: 0 6px 6px 0;">
-          <h4 style="font-size: 13px; font-weight: 600; color: var(--blue-primary); margin-bottom: 4px;">AI Coach Advice</h4>
+          <h4 style="font-size: 13px; font-weight: 600; color: var(--blue-primary); margin-bottom: 4px;">AI Coach Advice for ${state.user.name}</h4>
           <p style="font-size: 12.5px; color: var(--gray-700); line-height: 1.5;">
             Strong STAR structure. Your quantified outcome (${resScore >= 85 ? 'query load reduced by 35% & contract closed' : 'measurable ROI metrics'}) provides credible evidence of impact. To reach 100%, consider adding the specific trade-off framework you used during stakeholder alignment.
           </p>
@@ -985,15 +1115,60 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     showToast('AI Evaluated STAR Response with dynamic scores!', 'success');
   });
 
-  // Salary Strategy Calculation
+  // Dynamic Salary Strategy Calculation
   document.getElementById('btn-generate-salary')?.addEventListener('click', () => {
     const role = document.getElementById('salary-role-input')?.value || 'Senior Product Manager';
     const loc = document.getElementById('salary-loc-input')?.value || 'San Francisco';
-    showToast(`Updated compensation benchmarks for ${role} (${loc})`, 'success');
+    const exp = parseInt(document.getElementById('salary-exp-input')?.value) || 7;
+
+    // Dynamic percentile computation based on experience and tier
+    const base50 = 120000 + (exp * 10000) + (loc.toLowerCase().includes('san francisco') || loc.toLowerCase().includes('new york') ? 25000 : 10000);
+    const p25 = Math.round(base50 * 0.85);
+    const p50 = Math.round(base50);
+    const p75 = Math.round(base50 * 1.2);
+
+    const out = document.getElementById('salary-strategy-output');
+    if (out) {
+      out.innerHTML = `
+        <div style="display: flex; justify-content: space-around; margin-bottom: 20px; text-align: center;">
+          <div>
+            <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">25th Percentile</div>
+            <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-700);">$${p25.toLocaleString()}</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 600; color: var(--blue-primary); text-transform: uppercase;">50th (Target)</div>
+            <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--navy-900);">$${p50.toLocaleString()}</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 600; color: var(--emerald-dark); text-transform: uppercase;">75th (Top Tier)</div>
+            <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--emerald);">$${p75.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <div class="bullet-card">
+          <div class="bullet-card-header">
+            <span class="bullet-tag">Personalized Counter-Offer Script (${state.user.name})</span>
+            <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); showToast('Copied salary script!', 'success');"><i class="fa-solid fa-copy"></i></button>
+          </div>
+          <div class="bullet-text">
+            "Thank you for this offer; I'm genuinely excited about the team's roadmap. Based on market data for ${role} with ${exp}+ years of verified experience in ${loc}, I was anticipating a base salary closer to $${p50.toLocaleString()}. If we can align the base to $${p50.toLocaleString()} or augment with additional equity, I'm ready to sign today."
+          </div>
+        </div>
+      `;
+    }
+    showToast(`Updated dynamic compensation benchmarks for ${role} ($${p50.toLocaleString()})`, 'success');
+  });
+
+  // Settings Save
+  document.querySelector('#view-cand-settings .btn-primary')?.addEventListener('click', () => {
+    const name = document.getElementById('settings-name-input')?.value.trim() || state.user.name;
+    const email = document.getElementById('settings-email-input')?.value.trim() || state.user.email;
+    syncUserState({ name, email });
+    showToast('Personal profile and preferences saved!', 'success');
   });
 
   // =========================================================================
-  // 10. Employer Mode: Vacancies, Bulk Screening & Human Decision Authority
+  // 11. Employer Mode: Vacancies, Bulk Screening & Human Decision Authority
   // =========================================================================
   function renderVacancies() {
     const tbody = document.getElementById('emp-vacancies-tbody');
@@ -1105,14 +1280,12 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     showToast(`Recruiter Decision Recorded for ${cand}: Approved & Signed Off!`, 'success');
   });
 
-  // Candidate comparison matrix button delegation
   document.querySelectorAll('#view-emp-candidate-comparison button').forEach(btn => {
     btn.addEventListener('click', () => {
       showToast(`Action recorded: ${btn.textContent.trim()}`, 'success');
     });
   });
 
-  // Live Rubric Sliders percentage update
   document.querySelectorAll('#view-emp-scoring-rubrics input[type="range"]').forEach(slider => {
     slider.addEventListener('input', () => {
       const pctEl = slider.parentElement.querySelector('.pct');
@@ -1126,6 +1299,7 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
   window.openModal = openModal;
   window.closeModal = closeModal;
   window.openGateway = openGateway;
+  window.signOut = signOut;
   window.setPortalMode = setPortalMode;
   window.populateSeedData = populateSeedData;
   window.loadHistoryItem = (idx) => {
@@ -1148,7 +1322,8 @@ As a result, we successfully delivered the compliance feature in 18 days, enabli
     showToast('Loaded communication template', 'info');
   };
 
-  // Initial Check: If user hasn't selected path, present the Welcome & Onboarding Gateway
+  // Initialize with active user state
+  syncUserState(state.user);
   updateOnboardingUI();
 });
 
