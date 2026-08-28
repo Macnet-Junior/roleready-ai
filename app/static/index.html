@@ -204,6 +204,10 @@
             </select>
           </div>
 
+          <button class="topbar-btn" id="btn-open-onboarding" title="Start Onboarding Tour">
+            <i class="fa-solid fa-compass"></i>
+          </button>
+
           <button class="topbar-btn" id="btn-notifications" title="Notifications">
             <i class="fa-regular fa-bell"></i>
             <span class="notif-dot"></span>
@@ -405,10 +409,13 @@
           </div>
 
           <!-- Optimization Action Bar -->
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; background: var(--white); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--gray-200);">
-            <div style="display: flex; gap: 16px; align-items: center;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; background: var(--white); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--gray-200); gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
               <label style="font-size: 13.5px; font-weight: 600; color: var(--gray-700);">Candidate Name:</label>
-              <input type="text" id="candidate-name-input" class="form-input" value="Alex Morgan" style="width: 220px;">
+              <input type="text" id="candidate-name-input" class="form-input" value="Alex Morgan" style="width: 180px;">
+              <button type="button" class="btn-secondary" id="btn-load-demo-data" style="font-size: 13px;">
+                <i class="fa-solid fa-sparkles" style="color: var(--blue-primary);"></i> Load Demo Data
+              </button>
             </div>
             <button type="button" class="btn-primary" id="btn-run-analysis" style="font-size: 14.5px; padding: 12px 24px;">
               <i class="fa-solid fa-wand-magic-sparkles"></i> Run AI Optimization
@@ -813,10 +820,14 @@ Alex Morgan</div>
                 </div>
 
                 <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px;">
-                  <h4 style="font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 4px;">Target Question:</h4>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <h4 style="font-size: 13px; font-weight: 600; color: var(--gray-700);">Target Question:</h4>
+                    <button type="button" class="btn-ghost" id="btn-star-load-sample" style="font-size: 11px; padding: 2px 6px;">Load Sample Answer</button>
+                  </div>
                   <p id="current-interview-question" style="font-size: 14px; font-weight: 500; color: var(--navy-900);">
                     "Tell me about a time when you had to prioritize conflicting stakeholder demands under a tight deadline. How did you structure your decision?"
                   </p>
+                  <textarea id="star-answer-input" class="form-textarea" style="min-height: 80px; margin-top: 10px; font-size: 13px;" placeholder="Spoken audio transcript or typed STAR response appears here for AI scoring..."></textarea>
                 </div>
               </div>
             </div>
@@ -1117,6 +1128,33 @@ Alex Morgan</div>
                   </tr>
                 </tbody>
               </table>
+
+              <!-- Human Recruiter Decision & Sign-off Panel -->
+              <div style="background: var(--gray-50); border-top: 2px solid var(--gray-200); padding: 20px 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                  <h4 style="font-size: 14px; font-weight: 700; color: var(--navy-900);">
+                    <i class="fa-solid fa-user-check" style="color: var(--violet); margin-right: 6px;"></i> Human Recruiter Decision Authority
+                  </h4>
+                  <span class="match-pill high"><i class="fa-solid fa-shield-check"></i> AI Recommends, Human Decides</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 12px; align-items: flex-end;">
+                  <div>
+                    <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Selected Candidate</label>
+                    <select id="recruiter-cand-select" class="form-input">
+                      <option value="Alex Morgan">Alex Morgan (Rank #1 - 94%)</option>
+                      <option value="Jordan Lee">Jordan Lee (Rank #2 - 87%)</option>
+                      <option value="Taylor Green">Taylor Green (Rank #3 - 72%)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Recruiter Evidence & Verification Notes</label>
+                    <input type="text" id="recruiter-notes-input" class="form-input" placeholder="e.g. Verified ARR metrics in hiring manager debrief. Approved for offer.">
+                  </div>
+                  <button type="button" class="btn-primary" id="btn-submit-recruiter-decision" style="height: 42px; justify-content: center;">
+                    <i class="fa-solid fa-stamp"></i> Sign & Submit Decision
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1420,6 +1458,117 @@ Talent Acquisition Team
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: 4-Step Interactive Onboarding Wizard -->
+  <div class="modal-overlay hidden" id="modal-onboarding-flow">
+    <div class="modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="user-avatar" style="width: 28px; height: 28px; font-size: 11px;">⚡</div>
+          <h3 id="onboarding-step-header">Welcome to RoleReady</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-onboarding-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px 24px;">
+        <!-- Step Indicator -->
+        <div style="display: flex; gap: 6px; margin-bottom: 20px;">
+          <div class="progress-dot active" id="dot-step-1" style="flex: 1; height: 4px; border-radius: 2px; background: var(--blue-primary);"></div>
+          <div class="progress-dot" id="dot-step-2" style="flex: 1; height: 4px; border-radius: 2px; background: var(--gray-200);"></div>
+          <div class="progress-dot" id="dot-step-3" style="flex: 1; height: 4px; border-radius: 2px; background: var(--gray-200);"></div>
+          <div class="progress-dot" id="dot-step-4" style="flex: 1; height: 4px; border-radius: 2px; background: var(--gray-200);"></div>
+        </div>
+
+        <!-- STEP 1: Choose Role -->
+        <div id="onboarding-step-1">
+          <div style="font-size: 11px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 1 of 4</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">How will you use RoleReady?</h2>
+          <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 18px;">Choose your path. Candidate and Enterprise workspaces are fully separated.</p>
+
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+            <div class="action-card role-choice-card selected" data-role="candidate" style="padding: 16px; border: 2px solid var(--blue-primary); background: var(--blue-soft);">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div class="action-icon blue" style="margin: 0; width: 42px; height: 42px;"><i class="fa-solid fa-user-graduate"></i></div>
+                <div>
+                  <h4 style="font-size: 15px; font-weight: 700; color: var(--navy-900);">I'm Job Searching (Candidate)</h4>
+                  <p style="font-size: 12.5px; color: var(--gray-600);">Resume analysis, job matching, STAR voice practice, application tracker.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-card role-choice-card" data-role="employer" style="padding: 16px; border: 1.5px solid var(--gray-200);">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div class="action-icon violet" style="margin: 0; width: 42px; height: 42px;"><i class="fa-solid fa-building-user"></i></div>
+                <div>
+                  <h4 style="font-size: 15px; font-weight: 700; color: var(--navy-900);">I'm Hiring / Recruiting (Enterprise)</h4>
+                  <p style="font-size: 12.5px; color: var(--gray-600);">Bulk candidate screening, scoring rubrics, candidate comparison matrix.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Goals -->
+        <div id="onboarding-step-2" style="display: none;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 2 of 4</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">Select Primary Goals</h2>
+          <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 16px;">Customize which AI tools to prioritize in your workspace.</p>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
+              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">📄 Optimize Resume with Truth Checks</span>
+            </label>
+            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
+              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">🎯 Match Against Target Job Requirements</span>
+            </label>
+            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
+              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">🎤 Practice STAR Behavioral Voice Interviews</span>
+            </label>
+            <label class="bullet-card" style="margin: 0; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" checked style="accent-color: var(--blue-primary);">
+              <span style="font-size: 13px; font-weight: 600; color: var(--navy-900);">💰 Salary Benchmarks & Negotiation Strategy</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- STEP 3: Initial Upload / Seed Data -->
+        <div id="onboarding-step-3" style="display: none;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">Step 3 of 4</div>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">Load Your Profile</h2>
+          <p style="font-size: 13px; color: var(--gray-500); margin-bottom: 16px;">Drop your resume or load verified demo seed data instantly.</p>
+
+          <div class="dropzone" id="onboarding-dropzone" style="margin-bottom: 14px; padding: 28px 16px;">
+            <div class="icon" style="font-size: 28px;"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <strong>Upload Resume (PDF, DOCX, MD)</strong>
+            <span>or use pre-loaded executive profile</span>
+          </div>
+
+          <button type="button" class="btn-secondary" id="btn-onboarding-seed-data" style="width: 100%; justify-content: center; font-size: 13px;">
+            <i class="fa-solid fa-sparkles" style="color: var(--blue-primary);"></i> Pre-load Alex Morgan Executive Seed Profile
+          </button>
+        </div>
+
+        <!-- STEP 4: Ready to Launch -->
+        <div id="onboarding-step-4" style="display: none; text-align: center; padding: 10px 0;">
+          <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--emerald-soft); color: var(--emerald); font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--navy-900); margin-bottom: 6px;">You're Ready to Launch!</h2>
+          <p style="font-size: 13.5px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.5;">
+            Your RoleReady workspace is configured with truth-verified AI models, ATS rubrics, and active application tracking.
+          </p>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div style="display: flex; justify-content: space-between; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--gray-200);">
+          <button type="button" class="btn-secondary" id="btn-onboarding-prev" style="visibility: hidden;">&larr; Back</button>
+          <button type="button" class="btn-primary" id="btn-onboarding-next">Continue &rarr;</button>
+        </div>
       </div>
     </div>
   </div>
