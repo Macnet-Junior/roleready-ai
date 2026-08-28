@@ -251,10 +251,10 @@
       <!-- User Card Footer -->
       <div class="sidebar-footer">
         <div class="user-card" id="btn-sidebar-user">
-          <div class="user-avatar" id="avatar-initials">AM</div>
+          <div class="user-avatar" id="avatar-initials">?</div>
           <div class="user-info">
-            <div class="name" id="user-name-display">Alex Morgan</div>
-            <div class="plan" id="user-plan-display">Executive Pro</div>
+            <div class="name" id="user-name-display">Loading...</div>
+            <div class="plan" id="user-plan-display">Free Candidate</div>
           </div>
           <i class="fa-solid fa-ellipsis-vertical" style="color: var(--gray-400); font-size: 13px;"></i>
         </div>
@@ -269,7 +269,7 @@
       <header class="topbar">
         <div class="topbar-left">
           <h1 id="topbar-title">Candidate Dashboard</h1>
-          <p id="topbar-subtitle">Welcome back, Alex. Your job matching pipeline is up to date.</p>
+          <p id="topbar-subtitle">Select your workspace path to get started.</p>
         </div>
         <div class="topbar-right">
           <!-- AI Engine Speed Selector -->
@@ -304,11 +304,11 @@
               </div>
               <div class="notif-item success">
                 <div style="font-weight: 600; color: var(--navy-900); margin-bottom: 2px;">🛡️ Truth Protection Verified</div>
-                <div>All 12 bullet points on your Alex Morgan profile passed zero-hallucination benchmark.</div>
+                <div>All resume bullet points passed the zero-hallucination benchmark check.</div>
               </div>
               <div class="notif-item">
                 <div style="font-weight: 600; color: var(--navy-900); margin-bottom: 2px;">💰 Market Benchmark Update</div>
-                <div>Senior PM 50th percentile adjusted to $190,000 base in San Francisco Tier 1.</div>
+                <div>Senior PM 50th percentile adjusted to <strong>$205,000</strong> base in SF Tier 1 markets.</div>
               </div>
             </div>
           </div>
@@ -512,7 +512,7 @@
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; background: var(--white); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--gray-200); gap: 12px; flex-wrap: wrap;">
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
               <label style="font-size: 13.5px; font-weight: 600; color: var(--gray-700);">Candidate Name:</label>
-              <input type="text" id="candidate-name-input" class="form-input" value="Alex Morgan" style="width: 180px;">
+              <input type="text" id="candidate-name-input" class="form-input" placeholder="Your full name" style="width: 180px;">
               <button type="button" class="btn-secondary" id="btn-load-demo-data" style="font-size: 13px;">
                 <i class="fa-solid fa-sparkles" style="color: var(--blue-primary);"></i> Load Demo Data
               </button>
@@ -809,22 +809,19 @@
                 <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900); margin-top: 6px;" id="detail-app-company">Stripe</h2>
                 <p style="font-size: 14px; color: var(--gray-600);" id="detail-app-role">Senior Product Manager — Developer Platform</p>
               </div>
-              <button type="button" class="btn-ghost" id="btn-close-detail-panel" style="font-size: 20px; color: var(--gray-400);">&times;</button>
-            </div>
-
-            <!-- Scheduled Interview Box -->
+              <button type="button" class="btn-ghost" id="btn-close-detail-panel" style="font-size: 20px; color: var(--gray-400);">&times;</button>            <!-- Scheduled Interview Box -->
             <div style="background: rgba(139,92,246,0.06); border: 1.5px solid rgba(139,92,246,0.25); border-radius: 12px; padding: 16px; margin-bottom: 20px;" id="detail-interview-box">
               <div style="display: flex; align-items: center; gap: 8px; color: var(--violet); font-weight: 700; font-size: 13.5px; margin-bottom: 8px;">
                 <i class="fa-solid fa-calendar-check"></i> Confirmed Interview Schedule
               </div>
               <div style="font-size: 13px; color: var(--navy-900); font-weight: 600; margin-bottom: 4px;" id="detail-interview-date">
-                📅 Thursday, Sep 4, 2026 at 2:00 PM PST
+                📅 Not yet scheduled
               </div>
               <div style="font-size: 12.5px; color: var(--gray-600); margin-bottom: 8px;" id="detail-interview-format">
-                Format: 45-minute Video Call with Sarah Jenkins (Director of PM)
+                Format: TBD
               </div>
-              <button type="button" class="btn-primary" style="padding: 6px 14px; font-size: 12px; background: var(--violet); border-color: var(--violet);" onclick="switchView('cand-interview'); showToast('Loaded Stripe interview questions into Voice Simulator', 'info');">
-                <i class="fa-solid fa-microphone"></i> Practice Interview for Stripe
+              <button type="button" class="btn-primary practice-btn" style="padding: 6px 14px; font-size: 12px; background: var(--violet); border-color: var(--violet);">
+                <i class="fa-solid fa-microphone"></i> Practice Interview for this Role
               </button>
             </div>
 
@@ -836,35 +833,35 @@
               <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
                 <div style="background: var(--gray-50); padding: 12px; border-radius: 8px;">
                   <strong style="color: var(--navy-900); display: block; margin-bottom: 2px;">Key Focus Areas:</strong>
-                  <span style="color: var(--gray-600);">High-volume API availability, developer telemetry, self-serve to enterprise migration.</span>
+                  <span style="color: var(--gray-600);" id="detail-intel-focus">Click any application card to load AI intel.</span>
                 </div>
                 <div style="background: var(--gray-50); padding: 12px; border-radius: 8px;">
                   <strong style="color: var(--navy-900); display: block; margin-bottom: 2px;">Predicted Interview Question:</strong>
-                  <span style="color: var(--gray-600);">"How would you evaluate sunsetting a legacy endpoint that still serves 5% of enterprise traffic?"</span>
+                  <span style="color: var(--gray-600);" id="detail-intel-question">Run resume analysis to predict likely interview questions.</span>
                 </div>
                 <div style="background: var(--gray-50); padding: 12px; border-radius: 8px;">
                   <strong style="color: var(--navy-900); display: block; margin-bottom: 2px;">Compensation Benchmark:</strong>
-                  <span style="color: var(--emerald-dark); font-weight: 600;">$185,000 – $215,000 Base + RSUs ($75K/yr)</span>
+                  <span style="color: var(--emerald-dark); font-weight: 600;" id="detail-intel-comp">Market benchmark unavailable.</span>
                 </div>
               </div>
             </div>
 
-            <!-- Timeline -->
+            <!-- Pipeline Timeline -->
             <div style="margin-bottom: 24px;">
               <h4 style="font-size: 13px; font-weight: 700; color: var(--navy-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
                 Pipeline Timeline
               </h4>
               <div style="display: flex; flex-direction: column; gap: 12px; font-size: 12.5px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald);"></span>
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald); flex-shrink: 0;"></span>
                   <span style="color: var(--gray-700);"><strong>Applied:</strong> Aug 14 (ATS Score: 92%)</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald);"></span>
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald); flex-shrink: 0;"></span>
                   <span style="color: var(--gray-700);"><strong>Recruiter Screen Passed:</strong> Aug 20</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--blue-primary);"></span>
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--blue-primary); flex-shrink: 0;"></span>
                   <span style="color: var(--navy-900); font-weight: 600;"><strong>Technical Interview:</strong> Sep 4 (Scheduled)</span>
                 </div>
               </div>
@@ -872,7 +869,7 @@
 
             <!-- Actions -->
             <div style="display: flex; gap: 10px;">
-              <button type="button" class="btn-primary" style="flex: 1; justify-content: center;" id="btn-detail-advance">Advance to Offer &rarr;</button>
+              <button type="button" class="btn-primary" style="flex: 1; justify-content: center;" id="btn-detail-advance">Advance Stage &rarr;</button>
               <button type="button" class="btn-secondary" style="color: var(--rose-dark); border-color: rgba(244,63,94,0.3);" id="btn-detail-delete"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
@@ -968,24 +965,22 @@
               <div class="two-col-equal">
                 <div>
                   <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Markdown / Bullet Content Editor</h3>
-                  <textarea id="studio-editor-text" class="form-textarea" style="min-height: 380px; font-family: var(--font-mono); font-size: 12.5px;">
-# Alex Morgan
-Senior Product Manager | San Francisco, CA | alex@morgan.io
+                  <textarea id="studio-editor-text" class="form-textarea" style="min-height: 380px; font-family: var(--font-mono); font-size: 12.5px;" placeholder="Your resume content will appear here. Load demo data or paste your resume to get started...">
+# Your Name
+Target Role | Location | email@example.com
 
 ## Summary
-Results-driven Senior Product Manager with 7+ years directing high-scale B2B SaaS platforms. Proven track record of boosting active user engagement by 40% and driving $12M+ ARR growth.
+Write your professional summary here.
 
 ## Core Competencies
-- Product Strategy & Roadmapping
-- Data-Driven Decision Making (SQL, Amplitude)
-- Cross-Functional Agile Leadership
-- Enterprise Customer Discovery
+- Key Skill 1
+- Key Skill 2
+- Key Skill 3
 
 ## Professional Experience
-### Lead Product Manager — Apex Cloud (2022 – Present)
-- Directed product roadmap for enterprise analytics suite serving 150K+ monthly active users.
-- Partnered with engineering to architect real-time event streaming pipeline, reducing query latency by 35%.
-- Implemented truth-first validation rubrics that elevated customer retention by 18%.
+### Most Recent Role — Company (Year – Present)
+- Achievement with quantified result.
+- Achievement with quantified result.
                   </textarea>
                 </div>
                 <div>
@@ -2066,6 +2061,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.0.7"></script>
+  <script src="/static/app.js?v=2.0.8"></script>
 </body>
 </html>
