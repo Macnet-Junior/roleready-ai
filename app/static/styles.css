@@ -1617,54 +1617,292 @@ body.employer-mode .user-avatar {
   color: var(--theme-accent);
 }
 
-/* Responsive Media Queries */
+/* ==========================================================================
+   RESPONSIVE DESIGN — TABLET & MOBILE
+   Breakpoints: 1024px (tablet), 768px (large phone), 480px (small phone)
+   ========================================================================== */
+
+/* ─── TABLET (≤1024px) ─── */
 @media (max-width: 1024px) {
-  .sidebar {
-    display: none;
-  }
+  .sidebar { display: none; }
   .main-wrapper {
     margin-left: 0;
-    margin-bottom: 64px;
+    margin-bottom: 68px; /* room for bottom nav */
   }
-  .mobile-bottom-nav {
-    display: flex;
-  }
-  .quick-actions {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .mobile-bottom-nav { display: flex; }
+
+  /* Content grids */
+  .quick-actions { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
   .two-col-layout,
   .two-col-equal,
-  .input-grid {
-    grid-template-columns: 1fr;
+  .input-grid { grid-template-columns: 1fr; }
+  .template-grid { grid-template-columns: repeat(2, 1fr); }
+  .pipeline-overview { grid-template-columns: repeat(2, 1fr); }
+
+  /* Kanban — horizontal scroll on tablet */
+  .kanban-board {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
-  .template-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .pipeline-overview {
-    grid-template-columns: repeat(2, 1fr);
+  .kanban-column {
+    min-width: 240px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 }
 
-@media (max-width: 640px) {
+/* ─── LARGE PHONE (≤768px) ─── */
+@media (max-width: 768px) {
+  /* ── Topbar: compact single row ── */
   .topbar {
-    padding: 14px 18px;
+    padding: 10px 16px;
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-height: 56px;
   }
-  .content-area {
+
+  /* Title block shrinks and truncates */
+  .topbar-left {
+    flex: 1;
+    min-width: 0; /* critical — allows text truncation */
+    overflow: hidden;
+  }
+  .topbar-left h1 {
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.2px;
+    color: var(--navy-900);
+  }
+  .topbar-left p {
+    display: none; /* subtitle hidden on mobile — too much noise */
+  }
+
+  /* Right actions: hide non-essential controls */
+  .topbar-right {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .ai-speed-badge { display: none; }           /* Engine selector — hidden on mobile */
+  #btn-history-reports { display: none; }      /* History button — behind profile */
+  #btn-topbar-primary-action { display: none; } /* "Optimize Resume" — via bottom nav */
+
+  /* Topbar icon buttons — tighter */
+  .topbar-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  /* Content area padding */
+  .content-area { padding: 14px 14px 24px; }
+
+  /* Dashboard stats — 2 columns */
+  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card { padding: 14px 12px; }
+  .stat-value { font-size: 26px; }
+
+  /* Quick action cards — 2 columns */
+  .quick-actions { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .action-card { padding: 16px; }
+  .action-icon { width: 36px; height: 36px; font-size: 16px; }
+  .action-card h3 { font-size: 13.5px; }
+  .action-card p { display: none; } /* hide description on small screens */
+
+  /* Section cards */
+  .section-card { border-radius: 10px; }
+  .section-header { padding: 14px 16px; }
+  .section-body { padding: 14px 16px; }
+
+  /* Kanban: horizontal scroll */
+  .kanban-board {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 8px;
+    padding-right: 14px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .kanban-column {
+    min-width: 220px;
+    max-width: 260px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+  .kanban-toolbar {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .kanban-toolbar > div { flex-wrap: wrap; }
+
+  /* Tracker pipeline stats — 3 columns on phone */
+  #view-cand-tracker > div:first-child {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px;
+  }
+
+  /* Match input card (Job Match) */
+  .match-input-card {
     padding: 18px 16px;
   }
-  .quick-actions {
-    grid-template-columns: 1fr;
+  .match-input-card > div[style*="flex"] {
+    flex-direction: column !important;
   }
-  .stats-row {
-    grid-template-columns: 1fr 1fr;
+  .match-input-card .form-input { min-width: unset !important; }
+
+  /* Detail panel — full width on mobile */
+  .detail-panel {
+    width: 100vw;
+    max-width: 100vw;
+    right: -100vw;
+    padding: 20px 16px;
+    border-radius: 20px 20px 0 0;
+    top: auto;
+    bottom: -100vh;
+    height: 90vh;
+    border-left: none;
+    border-top: 1px solid var(--gray-200);
+    transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    right: 0; /* keep horizontal position fixed */
   }
-  .template-grid {
-    grid-template-columns: 1fr;
+  .detail-panel.open {
+    right: 0;
+    bottom: 0;
   }
+
+  /* Score ring on mobile */
+  .score-ring-wrap { width: 110px; height: 110px; }
+  .score-ring-wrap svg { width: 110px; height: 110px; }
+  .score-ring-wrap .score-value { font-size: 26px; }
+
+  /* Template grid */
+  .template-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  /* Cover letter two-col */
+  .two-col-layout { gap: 14px; }
+
+  /* LinkedIn sync cards */
+  #view-cand-linkedin-sync .two-col-layout,
+  #view-cand-outreach .two-col-layout { gap: 14px; }
+
+  /* Outreach — stack the mailto button nicely */
+  #outreach-drafts-list .bullet-card-header { flex-wrap: wrap; gap: 6px; }
+
+  /* STAR Voice Practice — orb smaller on mobile */
+  .voice-orb {
+    width: 90px !important;
+    height: 90px !important;
+    font-size: 28px !important;
+  }
+
+  /* Notification dropdown — full width on mobile */
+  .notification-dropdown {
+    width: calc(100vw - 28px);
+    right: 14px;
+    top: 58px;
+  }
+
+  /* Modals — full width on mobile */
+  .modal-box,
+  .modal-inner {
+    width: calc(100vw - 28px);
+    max-width: 100%;
+    padding: 20px 18px;
+    border-radius: 16px;
+  }
+
+  /* Auth gate modal */
+  .modal-overlay {
+    padding: 16px;
+    align-items: flex-end;
+  }
+  .modal-overlay .modal-box,
+  .modal-overlay .welcome-card-box {
+    border-radius: 20px 20px 16px 16px;
+    margin-bottom: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Welcome/Gateway card */
+  .welcome-card-box {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  /* Bottom nav labels — keep visible but small */
+  .mobile-nav-item {
+    font-size: 10px;
+    gap: 2px;
+  }
+  .mobile-nav-item i { font-size: 17px; }
+
+  /* Salary section hero card */
+  #view-cand-salary > div:first-of-type {
+    padding: 18px 16px !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Settings form — single column */
+  #view-cand-settings .two-col-equal {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tables on mobile — horizontal scroll */
+  .candidate-table-wrap,
+  table.candidate-table { width: 100%; }
+  table.candidate-table { display: block; overflow-x: auto; font-size: 12px; }
+  table.candidate-table th,
+  table.candidate-table td { padding: 8px 10px; white-space: nowrap; }
+
+  /* Score breakdown bars */
+  .score-breakdown { padding: 0; }
+  .score-row { font-size: 12px; }
 }
+
+/* ─── SMALL PHONE (≤480px) ─── */
+@media (max-width: 480px) {
+  .topbar { padding: 8px 12px; }
+  .topbar-left h1 { font-size: 14px; }
+
+  .content-area { padding: 12px 12px 20px; }
+
+  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .stat-card { padding: 12px 10px; }
+  .stat-value { font-size: 22px; }
+  .stat-label { font-size: 11px; }
+
+  .quick-actions { gap: 8px; }
+  .action-card { padding: 14px 12px; }
+
+  /* Tracker pipeline stats — 2 rows of 3 on very small */
+  #view-cand-tracker > div:first-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .template-grid { grid-template-columns: 1fr; }
+  .kanban-column { min-width: 200px; }
+
+  /* Section headers compact */
+  .section-header h2 { font-size: 14px; }
+
+  /* Topbar: only notification bell + open-onboarding icon */
+  #btn-open-onboarding { display: none; }
+  #btn-notifications { display: flex; }
+}
+
 
 /* ==========================================================================
    Full-Page Standalone Welcome & Onboarding Screen Styles
