@@ -1837,7 +1837,9 @@ body.employer-mode .user-avatar {
 
   /* Welcome/Gateway card */
   .welcome-card-box {
-    padding: 24px 20px;
+    width: 96% !important;
+    max-width: 540px !important;
+    padding: 28px 22px !important;
     border-radius: 20px;
   }
 
