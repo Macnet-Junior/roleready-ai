@@ -427,6 +427,7 @@ const VIEW_META = {
   'cand-linkedin-sync': { title: 'LinkedIn Profile Alignment', sub: () => 'Synchronize your resume headline, summary, and experience with LinkedIn.' },
   'cand-outreach': { title: 'Recruiter Outreach Drafts', sub: () => 'Generate and send tailored cold emails and LinkedIn connection notes.' },
   'cand-interview': { title: 'STAR Voice Practice & Coaching', sub: () => 'Simulate behavioral interviews. Get dynamic AI rubric scores after your answer.' },
+  'cand-mock-interview': { title: 'AI Mock Interviewer (Dark Mode)', sub: () => 'Fullscreen dark mode interview simulator with real-time STAR telemetry and voice scoring.' },
   'cand-salary': { title: 'Salary Strategy & Negotiation', sub: () => 'Market benchmarks and proven negotiation scripts by role and location.' },
   'cand-settings': { title: 'Settings & Account', sub: () => 'Manage your profile, preferences, and data export.' },
   'cand-themes': { title: 'Theme Gallery & Design System', sub: () => 'Customize how RoleReady looks (App UI Skins) or select ATS-optimized resume export layouts.' },

@@ -13,7 +13,7 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Design System Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="/static/styles.css?v=2.1.2">
+  <link rel="stylesheet" href="/static/styles.css?v=2.1.3">
   <style>
     /* Critical Base Reset */
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -1265,6 +1265,9 @@ Alex Morgan
                     <button type="button" class="btn-primary" id="btn-analyze-voice-response">
                       <i class="fa-solid fa-brain"></i> Evaluate Answer
                     </button>
+                    <button type="button" class="btn-secondary" style="background: var(--navy-900); color: #fff; border-color: var(--navy-800);" onclick="switchView('cand-mock-interview');">
+                      <i class="fa-solid fa-display" style="color: var(--blue-light);"></i> Launch Dark Mode Simulator &rarr;
+                    </button>
                   </div>
                 </div>
 
@@ -1293,6 +1296,88 @@ Alex Morgan
                   <p style="font-size:13.5px;font-weight:500;color:var(--gray-500);margin-bottom:6px;">Your STAR rubric scores appear here after evaluation.</p>
                   <p style="font-size:12px;">Type or record your answer, then click <strong>Evaluate Answer</strong>.</p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 14: FULLSCREEN MOCK INTERVIEW DARK MODE (22-mock-interview.html)
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-mock-interview" style="background: #0A1628; color: #fff; min-height: 85vh; border-radius: 16px; padding: 24px; position: relative;">
+          <!-- Top Bar -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <button type="button" class="btn-secondary" style="color: #fff; border-color: rgba(255,255,255,0.2); background: transparent;" onclick="switchView('cand-interview');"><i class="fa-solid fa-arrow-left"></i> Exit Simulator</button>
+              <h2 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #fff;">🤖 AI Mock Interviewer (Dark Mode)</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div style="font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: #60A5FA;" id="mock-timer-display">12:34</div>
+              <span class="match-pill med" style="background: rgba(255,255,255,0.1); color: #94A3B8;">Question 3 of 5</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-ghost" style="color: #94A3B8;" onclick="showToast('Interview paused', 'info');">⏸ Pause</button>
+              <button type="button" class="btn-primary" style="background: var(--rose); border-color: var(--rose);" onclick="switchView('cand-interview'); showToast('Interview complete. Results saved.', 'success');">End &amp; Score</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 300px; gap: 24px;">
+            <!-- Main AI Interview Room -->
+            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px 0;">
+              <div style="margin-bottom: 24px;">
+                <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #2563EB, #7C3AED); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 10px;">🤖</div>
+                <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 600; color: #fff;">Alex — Senior Hiring Coach</h3>
+                <span style="font-size: 12px; color: #94A3B8;">Style: Challenging • Executive Product &amp; Tech Focus</span>
+              </div>
+
+              <!-- Question Bubble -->
+              <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 24px 28px; max-width: 580px; width: 100%; margin-bottom: 28px; text-align: left; position: relative;">
+                <div style="font-size: 11px; font-weight: 700; color: #C084FC; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                  <i class="fa-solid fa-microphone"></i> Product Sense &amp; Trade-Offs
+                </div>
+                <p style="font-family: var(--font-heading); font-size: 17px; font-weight: 600; color: #fff; line-height: 1.45;" id="mock-question-text">
+                  "You mentioned prioritizing features based on user telemetry. How would you structure your decision if the Executive VP requests a strategic feature not requested by customers?"
+                </p>
+              </div>
+
+              <!-- Orb Recording -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 14px;">
+                <div class="voice-mic-orb" id="btn-mock-mic-toggle" style="width: 80px; height: 80px; font-size: 28px; background: rgba(37,99,235,0.2); border: 2px solid #2563EB; color: #fff;">
+                  <i class="fa-solid fa-microphone"></i>
+                </div>
+                <span style="font-size: 13px; color: #94A3B8;" id="mock-mic-status">Click mic orb to capture voice transcript...</span>
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                  <button type="button" class="btn-ghost" style="color: #94A3B8; border: 1px solid rgba(255,255,255,0.1);" onclick="state.currentStarQuestionIndex = (state.currentStarQuestionIndex + 1) % STAR_QUESTIONS.length; el('mock-question-text', STAR_QUESTIONS[state.currentStarQuestionIndex]); showToast('Skipped to next question', 'info');">Skip Question</button>
+                  <button type="button" class="btn-primary" onclick="speakText(el('mock-question-text')?.textContent || '');"><i class="fa-solid fa-volume-high"></i> Read Aloud</button>
+                  <button type="button" class="btn-secondary" style="background: rgba(139,92,246,0.2); color: #C084FC; border-color: rgba(139,92,246,0.4);" onclick="showToast('Tip: Use Situation -> Task -> Action -> Result framework', 'info');">💡 Get Hint</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Sidebar: Real-Time Feedback Stream -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 18px;">
+              <h4 style="font-size: 13px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span> Live Rubric Telemetry
+              </h4>
+
+              <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12.5px;">
+                <div style="padding: 10px; background: rgba(16,185,129,0.08); border-left: 3px solid #10B981; border-radius: 6px;">
+                  <div style="color: #34D399; font-weight: 700; font-size: 11px; margin-bottom: 2px;">SITUATION CLEARED</div>
+                  <div style="color: #E2E8F0;">Context established within initial 30 seconds.</div>
+                </div>
+                <div style="padding: 10px; background: rgba(245,158,11,0.08); border-left: 3px solid #F59E0B; border-radius: 6px;">
+                  <div style="color: #FBBF24; font-weight: 700; font-size: 11px; margin-bottom: 2px;">TASK CLARITY WARNING</div>
+                  <div style="color: #E2E8F0;">Explicitly state your individual ownership responsibility.</div>
+                </div>
+                <div style="padding: 10px; background: rgba(37,99,235,0.08); border-left: 3px solid #60A5FA; border-radius: 6px;">
+                  <div style="color: #60A5FA; font-weight: 700; font-size: 11px; margin-bottom: 2px;">ACTION TRACKING</div>
+                  <div style="color: #E2E8F0;">Listening for specific framework keywords (e.g. prioritization matrix).</div>
+                </div>
+              </div>
+
+              <div style="text-align: center; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 10px; margin-top: 18px;">
+                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase;">Real-Time Score</div>
+                <div style="font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: #34D399; margin-top: 2px;">88%</div>
               </div>
             </div>
           </div>
@@ -2255,6 +2340,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.1.2"></script>
+  <script src="/static/app.js?v=2.1.3"></script>
 </body>
 </html>
