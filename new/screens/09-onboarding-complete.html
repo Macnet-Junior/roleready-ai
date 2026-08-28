@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Onboarding: Complete</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F8FAFC;color:#0F172A;min-height:100vh}
+.onboarding{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.progress-bar{display:flex;gap:6px;padding:20px 24px}
+.progress-dot{flex:1;height:4px;border-radius:2px;background:#10B981}
+.content{flex:1;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.success-icon{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:24px;animation:scaleIn .5s ease}
+@keyframes scaleIn{0%{transform:scale(0)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+.step-title{font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;color:#0A1628;margin-bottom:8px}
+.step-desc{font-size:15px;color:#64748B;margin-bottom:32px;line-height:1.5;max-width:360px}
+.profile-summary{background:#fff;border-radius:14px;border:1px solid #E2E8F0;padding:24px;width:100%;margin-bottom:24px;text-align:left}
+.profile-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F1F5F9}
+.profile-row:last-child{border:none}
+.profile-row .icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.profile-row .icon.blue{background:rgba(37,99,235,.1)}
+.profile-row .icon.green{background:rgba(16,185,129,.1)}
+.profile-row .icon.violet{background:rgba(139,92,246,.1)}
+.profile-row .info{flex:1}
+.profile-row .info .label{font-size:12px;color:#64748B}
+.profile-row .info .value{font-size:14px;font-weight:600}
+.profile-row .edit{font-size:13px;color:#2563EB;cursor:pointer;font-weight:500}
+.next-steps{background:#fff;border-radius:14px;border:1px solid #E2E8F0;padding:24px;width:100%;margin-bottom:24px;text-align:left}
+.next-steps h3{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;margin-bottom:16px}
+.step-item{display:flex;align-items:center;gap:12px;padding:10px 0}
+.step-num{width:28px;height:28px;border-radius:50%;background:#2563EB;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.step-text{font-size:14px;font-weight:500}
+.step-text span{color:#64748B;font-weight:400}
+.btn-primary{display:block;width:100%;padding:16px;background:#2563EB;color:#fff;border:none;border-radius:12px;font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;cursor:pointer}
+.btn-secondary{display:block;width:100%;padding:14px;background:transparent;color:#64748B;border:1.5px solid #E2E8F0;border-radius:12px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="onboarding">
+  <div class="progress-bar">
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+  </div>
+  <div class="content">
+    <div class="success-icon">✓</div>
+    <div class="step-title">You're all set!</div>
+    <div class="step-desc">Your profile is ready. Here's what we found from your resume.</div>
+
+    <div class="profile-summary">
+      <div class="profile-row">
+        <div class="icon blue">👤</div>
+        <div class="info">
+          <div class="label">Name</div>
+          <div class="value">Mac Junior</div>
+        </div>
+        <div class="edit">Edit</div>
+      </div>
+      <div class="profile-row">
+        <div class="icon green">💼</div>
+        <div class="info">
+          <div class="label">Current Role</div>
+          <div class="value">Senior Product Manager</div>
+        </div>
+        <div class="edit">Edit</div>
+      </div>
+      <div class="profile-row">
+        <div class="icon violet">🎯</div>
+        <div class="info">
+          <div class="label">Target Roles</div>
+          <div class="value">VP Product, Director of Product</div>
+        </div>
+        <div class="edit">Edit</div>
+      </div>
+      <div class="profile-row">
+        <div class="icon blue">🛠️</div>
+        <div class="info">
+          <div class="label">Top Skills</div>
+          <div class="value">Product Strategy, Agile, User Research</div>
+        </div>
+        <div class="edit">Edit</div>
+      </div>
+    </div>
+
+    <div class="next-steps">
+      <h3>🚀 Recommended first steps</h3>
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-text">Paste a job URL to <span>see your match score</span></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-text">Review your <span>resume analysis</span></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-text">Generate a <span>tailored cover letter</span></div>
+      </div>
+    </div>
+
+    <button class="btn-primary">Go to Dashboard</button>
+    <button class="btn-secondary">Explore Features</button>
+  </div>
+</div>
+</body>
+</html>

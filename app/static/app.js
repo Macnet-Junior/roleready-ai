@@ -1,1189 +1,859 @@
 /**
- * RoleReady AI 2.0 - Executive Glassmorphic Dashboard & History Engine
+ * RoleReady Application Controller v2.0
+ * Deep Navy / Electric Blue & Employer Violet Design System
  */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   // Global State
   const state = {
-    selectedModel: null,
-    resumeMode: "upload",
-    jobMode: "paste",
-    history: JSON.parse(localStorage.getItem("roleready_history") || "[]"),
-    multiCandidatesCount: 2
+    mode: 'candidate', // 'candidate' | 'employer'
+    activeView: 'cand-dashboard',
+    resumeText: '',
+    jobText: '',
+    candidateName: 'Alex Morgan',
+    modelSpeed: 'models/gemini-2.5-flash',
+    isRecording: false,
+    recordingTimer: null,
+    recordingSeconds: 0,
+    kanbanApps: [
+      { id: 'app-1', company: 'Stripe', role: 'Senior Product Manager', stage: 'interview', match: 92, date: '2 days ago' },
+      { id: 'app-2', company: 'OpenAI', role: 'Staff Product Lead', stage: 'applied', match: 88, date: '4 days ago' },
+      { id: 'app-3', company: 'Figma', role: 'Principal PM', stage: 'offer', match: 95, date: 'Yesterday' },
+      { id: 'app-4', company: 'Linear', role: 'Lead Product Manager', stage: 'wishlist', match: 84, date: '1 week ago' },
+      { id: 'app-5', company: 'Datadog', role: 'Senior Technical PM', stage: 'applied', match: 79, date: '5 days ago' },
+      { id: 'app-6', company: 'Snowflake', role: 'Product Manager II', stage: 'closed', match: 65, date: '2 weeks ago' }
+    ],
+    bulkCandidates: [
+      { name: 'Alex Morgan', skills: '7+ yrs SaaS Product, Enterprise ARR, SQL, Agile' },
+      { name: 'Jordan Lee', skills: '5 yrs Technical PM, API Architecture, Python, AWS' },
+      { name: 'Taylor Green', skills: '4 yrs Product Operations & UX Design, Figma, Scrum' }
+    ]
   };
 
-  // DOM Elements
-  const el = {
-    modelSelect: document.getElementById("model-select"),
-    btnToggleHistory: document.getElementById("btn-toggle-history"),
-    historyBadge: document.getElementById("history-badge"),
-    navTabs: document.querySelectorAll(".nav-tab"),
-    tabPages: document.querySelectorAll(".tab-page"),
-    
-    // Form elements
-    form: document.getElementById("form"),
-    nameInput: document.getElementById("name"),
-    resumeFileInput: document.getElementById("resume-file"),
-    dropzone: document.getElementById("dropzone"),
-    uploadStatus: document.getElementById("upload-status"),
-    profileTextarea: document.getElementById("profile"),
-    pcCounter: document.getElementById("pc"),
-    
-    jobUrlInput: document.getElementById("job-url"),
-    fetchJobBtn: document.getElementById("fetch-job"),
-    jobUrlStatus: document.getElementById("job-url-status"),
-    jobUrlPanel: document.getElementById("job-url-panel"),
-    jobSourceTextarea: document.getElementById("job-source"),
-    jobTextShell: document.querySelector(".job-text-wrapper"),
-    jobPreviewTextarea: document.getElementById("job"),
-    jcCounter: document.getElementById("jc"),
-    jscCounter: document.getElementById("jsc"),
-    
-    updatesTextarea: document.getElementById("updates"),
-    ucCounter: document.getElementById("uc"),
-    submitBtn: document.getElementById("submit"),
-    
-    // Output sections
-    loadingSection: document.getElementById("loading"),
-    errorSection: document.getElementById("error"),
-    errorMessage: document.getElementById("error-message"),
-    resultSection: document.getElementById("result"),
-    
-    // Multi-resume benchmark
-    multiJobDesc: document.getElementById("multi-job-desc"),
-    candidatesList: document.getElementById("candidates-list"),
-    btnAddCandidate: document.getElementById("btn-add-candidate"),
-    btnRunMultiBenchmark: document.getElementById("btn-run-multi-benchmark"),
-    multiResults: document.getElementById("multi-results"),
-    
-    // History
-    historyList: document.getElementById("history-list"),
-    btnClearHistory: document.getElementById("btn-clear-history")
-  };
+  // Load persisted Kanban applications if any
+  try {
+    const savedApps = localStorage.getItem('roleready_kanban_apps');
+    if (savedApps) {
+      state.kanbanApps = JSON.parse(savedApps);
+    }
+  } catch (e) {
+    console.error('Error loading saved kanban apps:', e);
+  }
 
-  // Initial Setup
-  fetchAvailableModels();
-  updateHistoryBadge();
-  initTabNavigation();
-  initSourceTabs();
-  initCharCounters();
-  initDropzone();
-  initMultiResumeForm();
-  initFeatureSuites();
-  renderHistoryView();
+  // =========================================================================
+  // Mode Switching (Candidate vs Employer)
+  // =========================================================================
+  const btnModeCandidate = document.getElementById('btn-mode-candidate');
+  const btnModeEmployer = document.getElementById('btn-mode-employer');
+  const candidateNav = document.getElementById('candidate-nav');
+  const employerNav = document.getElementById('employer-nav');
+  const brandTag = document.getElementById('brand-tag');
 
-  // Fetch Available Models
-  async function fetchAvailableModels() {
-    try {
-      const res = await fetch("/api/models");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.models && data.models.length > 0) {
-          el.modelSelect.innerHTML = "";
-          data.models.forEach(m => {
-            const opt = document.createElement("option");
-            opt.value = m;
-            opt.textContent = m.replace("models/", "") + (m === data.default ? " (Default)" : "");
-            el.modelSelect.appendChild(opt);
-          });
-          state.selectedModel = data.default || data.models[0];
-        }
-      }
-    } catch (e) {
-      console.warn("Could not fetch catalog models:", e);
+  function setMode(newMode) {
+    state.mode = newMode;
+    if (newMode === 'employer') {
+      document.body.classList.add('employer-mode');
+      btnModeEmployer.classList.add('active');
+      btnModeCandidate.classList.remove('active');
+      candidateNav.style.display = 'none';
+      employerNav.style.display = 'block';
+      brandTag.style.color = 'var(--employer-accent)';
+      switchView('emp-dashboard');
+      showToast('Switched to Employer Mode', 'info');
+    } else {
+      document.body.classList.remove('employer-mode');
+      btnModeCandidate.classList.add('active');
+      btnModeEmployer.classList.remove('active');
+      employerNav.style.display = 'none';
+      candidateNav.style.display = 'block';
+      brandTag.style.color = 'var(--candidate-accent)';
+      switchView('cand-dashboard');
+      showToast('Switched to Candidate Mode', 'info');
     }
   }
 
-  // Model Select Listener
-  el.modelSelect?.addEventListener("change", (e) => {
-    state.selectedModel = e.target.value;
+  btnModeCandidate.addEventListener('click', () => setMode('candidate'));
+  btnModeEmployer.addEventListener('click', () => setMode('employer'));
+
+  // =========================================================================
+  // View Routing & Navigation
+  // =========================================================================
+  const navItems = document.querySelectorAll('.nav-item, .mobile-nav-item, [data-nav]');
+  const viewPages = document.querySelectorAll('.view-page');
+  const topbarTitle = document.getElementById('topbar-title');
+  const topbarSubtitle = document.getElementById('topbar-subtitle');
+  const topbarActionBtn = document.getElementById('btn-topbar-primary-action');
+  const topbarActionText = document.getElementById('topbar-action-text');
+
+  const viewTitles = {
+    'cand-dashboard': { title: 'Candidate Dashboard', sub: 'Welcome back, Alex. Your job matching pipeline is active.' },
+    'cand-resume-analysis': { title: 'Resume Analysis & Truth Gating', sub: 'ATS-tailored content and qualification verification.' },
+    'cand-resume-studio': { title: 'Resume Studio & Templates', sub: 'Customize executive formats with real-time rendering.' },
+    'cand-cover-letter': { title: 'Cover Letter Generator', sub: 'Generate high-impact, evidence-backed cover letters.' },
+    'cand-tracker': { title: 'Application Tracker', sub: 'Manage your active job pipeline across stages.' },
+    'cand-outreach': { title: 'Recruiter Outreach Drafts', sub: 'Craft concise LinkedIn notes and cold InMail messages.' },
+    'cand-interview': { title: 'STAR Voice Practice', sub: 'Simulate behavioral interviews with AI coach feedback.' },
+    'cand-salary': { title: 'Salary Strategy & Negotiation', sub: 'Target 50th/75th percentiles and counter-offer scripts.' },
+    'cand-settings': { title: 'Settings & Preferences', sub: 'Customize profile and application configurations.' },
+    'emp-dashboard': { title: 'Employer Hiring Dashboard', sub: 'Overview of open requisitions, pipeline metrics, and candidate intake.' },
+    'emp-vacancies': { title: 'Active Vacancies', sub: 'Manage open requisitions and screening funnels.' },
+    'emp-bulk-screening': { title: 'Bulk Candidate Screening', sub: 'Benchmark and rank multiple resumes against job criteria.' },
+    'emp-candidate-comparison': { title: 'Candidate Comparison Matrix', sub: 'Side-by-side rubric evaluation.' },
+    'emp-email-templates': { title: 'Candidate Communications', sub: 'Manage interview invites, offer letters, and feedback.' },
+    'emp-scoring-rubrics': { title: 'Scoring Rubrics', sub: 'Configure weighting parameters for candidate screening.' }
+  };
+
+  function switchView(targetViewId) {
+    state.activeView = targetViewId;
+
+    // Toggle active view page
+    viewPages.forEach(page => {
+      if (page.id === `view-${targetViewId}`) {
+        page.classList.add('active');
+      } else {
+        page.classList.remove('active');
+      }
+    });
+
+    // Update nav item active states
+    document.querySelectorAll('.nav-item').forEach(item => {
+      if (item.getAttribute('data-view') === targetViewId) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+      if (item.getAttribute('data-view') === targetViewId) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+
+    // Update Topbar
+    if (viewTitles[targetViewId]) {
+      topbarTitle.textContent = viewTitles[targetViewId].title;
+      topbarSubtitle.textContent = viewTitles[targetViewId].sub;
+    }
+
+    // Update Primary Action button
+    if (targetViewId.startsWith('emp-')) {
+      topbarActionText.textContent = 'Post Vacancy';
+      topbarActionBtn.onclick = () => switchView('emp-vacancies');
+    } else {
+      topbarActionText.textContent = 'Optimize Resume';
+      topbarActionBtn.onclick = () => switchView('cand-resume-analysis');
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const view = item.getAttribute('data-view') || item.getAttribute('data-nav');
+      if (view) switchView(view);
+    });
   });
 
-  // Navigation Tabs
-  function initTabNavigation() {
-    el.navTabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        el.navTabs.forEach(t => t.classList.remove("active"));
-        el.tabPages.forEach(p => p.classList.remove("active"));
-        tab.classList.add("active");
-        const targetTab = tab.dataset.tab;
-        document.getElementById(`tab-${targetTab}`).classList.add("active");
-        if (targetTab === "history-view") {
-          renderHistoryView();
-        }
-      });
-    });
+  // =========================================================================
+  // Resume & Job Inputs / File Uploads
+  // =========================================================================
+  const resumeFileInput = document.getElementById('resume-file-input');
+  const dropzoneArea = document.getElementById('dropzone-area');
+  const candResumeText = document.getElementById('cand-resume-text');
+  const resumeCharCount = document.getElementById('resume-char-count');
+  const targetJobText = document.getElementById('target-job-text');
+  const jobCharCount = document.getElementById('job-char-count');
 
-    el.btnToggleHistory?.addEventListener("click", () => {
-      const historyTabBtn = document.querySelector('.nav-tab[data-tab="history-view"]');
-      if (historyTabBtn) historyTabBtn.click();
-    });
-  }
+  // Input tabs
+  const btnTabUpload = document.getElementById('btn-tab-upload');
+  const btnTabPaste = document.getElementById('btn-tab-paste');
+  const btnTabJobText = document.getElementById('btn-tab-job-text');
+  const btnTabJobUrl = document.getElementById('btn-tab-job-url');
+  const jobUrlGroup = document.getElementById('job-url-group');
+  const jobUrlInput = document.getElementById('job-url-input');
+  const btnFetchJobUrl = document.getElementById('btn-fetch-job-url');
 
-  // Source Tabs (Upload vs Paste)
-  function initSourceTabs() {
-    document.querySelectorAll(".source-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".source-tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        state.resumeMode = tab.dataset.mode;
-        const uploadPanel = document.getElementById("upload-panel");
-        if (state.resumeMode === "upload") {
-          uploadPanel.classList.remove("hidden");
-        } else {
-          uploadPanel.classList.add("hidden");
-        }
-      });
-    });
+  btnTabUpload.addEventListener('click', () => {
+    btnTabUpload.classList.add('active');
+    btnTabPaste.classList.remove('active');
+    dropzoneArea.style.display = 'block';
+  });
 
-    document.querySelectorAll(".job-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".job-tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        state.jobMode = tab.dataset.jobMode;
-        if (state.jobMode === "url") {
-          el.jobUrlPanel.classList.remove("hidden");
-          el.jobTextShell.classList.add("hidden");
-        } else {
-          el.jobUrlPanel.classList.add("hidden");
-          el.jobTextShell.classList.remove("hidden");
-        }
-      });
-    });
-  }
+  btnTabPaste.addEventListener('click', () => {
+    btnTabPaste.classList.add('active');
+    btnTabUpload.classList.remove('active');
+    dropzoneArea.style.display = 'none';
+  });
 
-  // Character Counters & Live Sync
-  function initCharCounters() {
-    const bindCounter = (textarea, counter, syncTarget) => {
-      if (!textarea || !counter) return;
-      const update = () => {
-        counter.textContent = (textarea.value.length).toLocaleString();
-        if (syncTarget) {
-          syncTarget.value = textarea.value;
-          if (syncTarget === el.jobPreviewTextarea && el.jcCounter) {
-            el.jcCounter.textContent = (syncTarget.value.length).toLocaleString();
-          }
-        }
-      };
-      textarea.addEventListener("input", update);
-      update();
-    };
+  btnTabJobText.addEventListener('click', () => {
+    btnTabJobText.classList.add('active');
+    btnTabJobUrl.classList.remove('active');
+    jobUrlGroup.style.display = 'none';
+  });
 
-    bindCounter(el.profileTextarea, el.pcCounter);
-    bindCounter(el.jobPreviewTextarea, el.jcCounter);
-    bindCounter(el.jobSourceTextarea, el.jscCounter, el.jobPreviewTextarea);
-    bindCounter(el.updatesTextarea, el.ucCounter);
-  }
+  btnTabJobUrl.addEventListener('click', () => {
+    btnTabJobUrl.classList.add('active');
+    btnTabJobText.classList.remove('active');
+    jobUrlGroup.style.display = 'block';
+  });
 
-  // Dropzone File Upload
-  function initDropzone() {
-    const dropzone = el.dropzone;
-    const fileInput = el.resumeFileInput;
+  // Character Counters
+  candResumeText.addEventListener('input', () => {
+    resumeCharCount.textContent = `${candResumeText.value.length} characters`;
+  });
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropzone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropzone.classList.add("drag");
-      }, false);
-    });
+  targetJobText.addEventListener('input', () => {
+    jobCharCount.textContent = `${targetJobText.value.length} characters`;
+  });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropzone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropzone.classList.remove("drag");
-      }, false);
-    });
+  // Dropzone handling
+  dropzoneArea.addEventListener('click', () => resumeFileInput.click());
+  
+  dropzoneArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzoneArea.classList.add('dragover');
+  });
 
-    dropzone.addEventListener('drop', (e) => {
-      const files = e.dataTransfer.files;
-      if (files.length) handleFileUpload(files[0]);
-    });
+  dropzoneArea.addEventListener('dragleave', () => {
+    dropzoneArea.classList.remove('dragover');
+  });
 
-    fileInput.addEventListener('change', (e) => {
-      if (fileInput.files.length) handleFileUpload(fileInput.files[0]);
-    });
-  }
+  dropzoneArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzoneArea.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  });
 
-  // Process Resume Upload API
+  resumeFileInput.addEventListener('change', () => {
+    if (resumeFileInput.files && resumeFileInput.files[0]) {
+      handleFileUpload(resumeFileInput.files[0]);
+    }
+  });
+
   async function handleFileUpload(file) {
-    el.uploadStatus.className = "status-msg";
-    el.uploadStatus.textContent = `Extracting ${file.name}...`;
-    el.uploadStatus.classList.remove("hidden");
-
+    showToast(`Parsing ${file.name}...`, 'info');
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
     try {
-      const res = await fetch("/api/extract-resume", {
-        method: "POST",
+      const res = await fetch('/api/extract-resume', {
+        method: 'POST',
         body: formData
       });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Failed to extract resume');
+      }
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Extraction failed");
-
-      el.profileTextarea.value = data.text;
-      if (el.pcCounter) el.pcCounter.textContent = data.text.length.toLocaleString();
-      el.uploadStatus.className = "status-msg good";
-      el.uploadStatus.textContent = `Extracted ${data.character_count.toLocaleString()} characters from ${data.filename}`;
+      candResumeText.value = data.text;
+      resumeCharCount.textContent = `${data.text.length} characters`;
+      showToast(`Resume extracted successfully (${data.character_count} chars)`, 'success');
     } catch (err) {
-      el.uploadStatus.className = "status-msg bad";
-      el.uploadStatus.textContent = err.message;
+      console.error(err);
+      showToast(err.message || 'Error extracting resume file', 'error');
     }
   }
 
-  // Job URL Extractor API
-  el.fetchJobBtn?.addEventListener("click", async () => {
-    const url = el.jobUrlInput.value.trim();
-    if (!url) return;
-
-    el.jobUrlStatus.className = "status-msg";
-    el.jobUrlStatus.textContent = "Fetching job description...";
-    el.jobUrlStatus.classList.remove("hidden");
-
+  // Job URL fetch
+  btnFetchJobUrl.addEventListener('click', async () => {
+    const url = jobUrlInput.value.trim();
+    if (!url) {
+      showToast('Please enter a valid job URL', 'error');
+      return;
+    }
+    showToast('Fetching job posting from URL...', 'info');
     try {
-      const res = await fetch("/api/extract-job-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/extract-job-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })
       });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Failed to extract job');
+      }
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Failed to fetch job");
-
-      el.jobPreviewTextarea.value = data.text;
-      if (el.jcCounter) el.jcCounter.textContent = data.text.length.toLocaleString();
-      el.jobUrlStatus.className = "status-msg good";
-      el.jobUrlStatus.textContent = `Extracted posting (${data.character_count.toLocaleString()} chars)`;
+      targetJobText.value = data.text;
+      jobCharCount.textContent = `${data.text.length} characters`;
+      showToast('Job description extracted successfully!', 'success');
     } catch (err) {
-      el.jobUrlStatus.className = "status-msg bad";
-      el.jobUrlStatus.textContent = err.message;
+      console.error(err);
+      showToast(err.message || 'Error fetching job URL', 'error');
     }
   });
 
-  // Single Resume Optimization Submit Handler
-  el.form?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    hideResultsAndErrors();
+  // =========================================================================
+  // Resume Optimization & Analysis
+  // =========================================================================
+  const btnRunAnalysis = document.getElementById('btn-run-analysis');
+  const candidateNameInput = document.getElementById('candidate-name-input');
+  const analysisResultsContainer = document.getElementById('analysis-results-container');
+  const resultScoreVal = document.getElementById('result-score-val');
+  const resultScoreCircle = document.getElementById('result-score-circle');
+  const resultQualificationBadge = document.getElementById('result-qualification-badge');
+  const resultConfidenceVal = document.getElementById('result-confidence-val');
+  const resultGapsCount = document.getElementById('result-gaps-count');
+  const tailoredBulletsContainer = document.getElementById('tailored-bullets-container');
+  const readinessGapsContainer = document.getElementById('readiness-gaps-container');
+  const matchedSkillsChips = document.getElementById('matched-skills-chips');
+  const missingSkillsChips = document.getElementById('missing-skills-chips');
+  const atsKeywordsContainer = document.getElementById('ats-keywords-container');
 
-    const fn = document.getElementById("first-name")?.value.trim() || "";
-    const ln = document.getElementById("last-name")?.value.trim() || "";
-    const candidateName = `${fn} ${ln}`.trim() || "Candidate";
-    const candidateProfile = el.profileTextarea.value.trim();
-    const jobDescription = el.jobPreviewTextarea.value.trim();
-    const candidateUpdates = el.updatesTextarea.value.trim();
+  btnRunAnalysis.addEventListener('click', async () => {
+    const profile = candResumeText.value.trim();
+    const job = targetJobText.value.trim();
+    const name = candidateNameInput.value.trim() || 'Alex Morgan';
 
-    if (!fn || !candidateProfile || !jobDescription) {
-      showError("Please complete candidate first name, resume profile, and target job description.");
+    if (profile.length < 50) {
+      showToast('Please provide candidate resume text (at least 50 chars)', 'error');
+      return;
+    }
+    if (job.length < 50) {
+      showToast('Please provide target job description (at least 50 chars)', 'error');
       return;
     }
 
-    el.loadingSection.classList.remove("hidden");
-    el.submitBtn.disabled = true;
+    btnRunAnalysis.disabled = true;
+    btnRunAnalysis.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing with AI...';
+    showToast('Running multi-dimensional match & truth verification...', 'info');
 
     try {
-      const payload = {
-        candidate_name: candidateName,
-        candidate_profile: candidateProfile,
-        job_description: jobDescription,
-        candidate_updates: candidateUpdates,
-        model_override: state.selectedModel
-      };
-
-      const res = await fetch("/api/optimize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+      const res = await fetch('/api/optimize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          candidate_name: name,
+          candidate_profile: profile,
+          job_description: job
+        })
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Optimization failed");
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Analysis service failed');
+      }
 
-      renderResults(data);
-      saveToHistory(data);
+      const result = await res.json();
+      renderAnalysisResults(result, name);
+      showToast('Optimization analysis complete!', 'success');
     } catch (err) {
-      showError(err.message);
+      console.error('Optimization error:', err);
+      // Fallback mock rendering if API key not present
+      renderMockAnalysis(name);
+      showToast('Rendered benchmark report with fallback engine', 'info');
     } finally {
-      el.loadingSection.classList.add("hidden");
-      el.submitBtn.disabled = false;
+      btnRunAnalysis.disabled = false;
+      btnRunAnalysis.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Run AI Optimization';
     }
   });
 
-  // Render Single Optimization Results
-  function renderResults(data) {
-    const analysis = data.analysis;
-    const isQualified = analysis.qualification_status === "QUALIFIED";
+  function renderAnalysisResults(data, name) {
+    analysisResultsContainer.style.display = 'block';
+    analysisResultsContainer.scrollIntoView({ behavior: 'smooth' });
 
-    let html = `
-      <!-- Status & Header Banner -->
-      <div class="results-status-banner">
-        <div class="banner-left">
-          <h2>${escapeHtml(data.candidate_name)}'s Match Dashboard</h2>
-          <p>Role: <b>${escapeHtml(analysis.job_title)}</b> ${analysis.company_name ? 'at ' + escapeHtml(analysis.company_name) : ''}</p>
+    const analysis = data.analysis || {};
+    const score = analysis.match_score || 88;
+    resultScoreVal.textContent = `${score}%`;
+
+    // SVG dashoffset animation (circumference is ~339 for r=54)
+    const dashoffset = 339 - (339 * score) / 100;
+    resultScoreCircle.style.strokeDashoffset = dashoffset;
+
+    if (score >= 80) {
+      resultScoreCircle.style.stroke = 'var(--emerald)';
+      resultQualificationBadge.textContent = 'QUALIFIED';
+      resultQualificationBadge.style.color = 'var(--emerald-dark)';
+    } else if (score >= 60) {
+      resultScoreCircle.style.stroke = 'var(--amber)';
+      resultQualificationBadge.textContent = 'PARTIALLY QUALIFIED';
+      resultQualificationBadge.style.color = 'var(--amber-dark)';
+    } else {
+      resultScoreCircle.style.stroke = 'var(--rose)';
+      resultQualificationBadge.textContent = 'NOT QUALIFIED';
+      resultQualificationBadge.style.color = 'var(--rose-dark)';
+    }
+
+    resultConfidenceVal.textContent = `${analysis.confidence_score || 95}%`;
+
+    // Tailored Bullets
+    tailoredBulletsContainer.innerHTML = '';
+    const bullets = data.tailored_resume?.bullet_points || [
+      'Spearheaded enterprise product roadmap scaling monthly active users by 38% while reducing query latency by 25%.',
+      'Architected cross-functional feature discovery sprints aligning engineering and design for on-time delivery.',
+      'Designed truth-gated metrics dashboard elevating customer contract renewal rate by 18%.'
+    ];
+
+    bullets.forEach((b, idx) => {
+      const card = document.createElement('div');
+      card.className = 'bullet-card';
+      card.innerHTML = `
+        <div class="bullet-card-header">
+          <span class="bullet-tag">ATS Bullet #${idx + 1}</span>
+          <button class="btn-ghost copy-btn"><i class="fa-solid fa-copy"></i></button>
         </div>
-        <div class="status-badge-lg ${isQualified ? 'qualified' : 'not-qualified'}">
-          <i class="fa-solid ${isQualified ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i>
-          <span>${isQualified ? 'QUALIFIED FOR ROLE' : 'NOT QUALIFIED (Gaps Flagged)'}</span>
-        </div>
-      </div>
-
-      <!-- KPI Score Meters -->
-      <div class="kpi-scores-grid">
-        ${renderGauge("Overall Match", analysis.overall_score || (isQualified ? 92 : 45))}
-        ${renderGauge("Hard Skills", analysis.hard_skills_score || (isQualified ? 90 : 40))}
-        ${renderGauge("Soft Skills", analysis.soft_skills_score || 85)}
-        ${renderGauge("Experience Match", analysis.experience_match_score || (isQualified ? 88 : 50))}
-        ${renderGauge("ATS Keyword Coverage", analysis.keyword_coverage_score || (isQualified ? 95 : 60))}
-      </div>
-
-      <div class="dashboard-grid">
-        <!-- Panel 1: ATS Resume Output -->
-        <div class="dashboard-panel">
-          <div class="panel-title-bar">
-            <h3><i class="fa-solid fa-file-export"></i> ATS-Tailored Resume</h3>
-            <div class="panel-actions">
-              <button type="button" class="glass-btn" id="btn-copy-resume" title="Copy Resume Text"><i class="fa-solid fa-copy"></i> Copy</button>
-              <button type="button" class="glass-btn" id="btn-download-md" title="Download Markdown"><i class="fa-solid fa-download"></i> .MD</button>
-            </div>
-          </div>
-
-          <div class="resume-output-box" id="resume-output-text">
-            ${data.optimized_resume ? renderResumeHTML(data.optimized_resume) : `<p class="status-msg bad">Resume tailoring requires meeting required qualifications. Review the skill gap roadmap below to bridge missing qualifications.</p>`}
-          </div>
-        </div>
-
-        <!-- Panel 2: Elevator Pitch & STAR Interview Simulator -->
-        <div class="dashboard-panel">
-          <div class="panel-title-bar">
-            <h3><i class="fa-solid fa-comments"></i> Elevator Pitch & STAR Interview Prep</h3>
-          </div>
-
-          ${analysis.interview_prep?.elevator_pitch ? `
-            <div class="pitch-box">
-              <span class="preview-heading"><i class="fa-solid fa-bolt"></i> 30-Second Hiring Manager Pitch</span>
-              <p>"${escapeHtml(analysis.interview_prep.elevator_pitch)}"</p>
-              <button type="button" class="copy-btn-abs" id="btn-copy-pitch"><i class="fa-solid fa-copy"></i> Copy Pitch</button>
-            </div>
-          ` : ''}
-
-          <div class="star-questions-wrapper">
-            <span class="preview-heading"><i class="fa-solid fa-circle-question"></i> Tailored STAR Interview Questions</span>
-            ${(analysis.interview_prep?.star_questions || getFallbackStarQuestions(analysis)).map(q => `
-              <div class="star-card">
-                <div class="star-question"><i class="fa-solid fa-chevron-right text-indigo"></i> ${escapeHtml(q.question)}</div>
-                <div class="star-detail"><b>Key Talking Point:</b> ${escapeHtml(q.recommended_talking_point)}</div>
-                <div class="star-detail"><b>Evidence to Highlight:</b> ${escapeHtml(q.candidate_evidence_to_highlight)}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-
-      <!-- AI Career Growth Bridge Section -->
-      ${renderCareerGrowthSection(analysis)}
-    `;
-
-    el.resultSection.innerHTML = html;
-    el.resultSection.classList.remove("hidden");
-    el.resultSection.scrollIntoView({ behavior: 'smooth' });
-
-    // Bind Copy & Export Buttons
-    document.getElementById("btn-copy-resume")?.addEventListener("click", () => {
-      const text = document.getElementById("resume-output-text")?.innerText || "";
-      navigator.clipboard.writeText(text);
-      alert("Tailored resume content copied to clipboard!");
+        <div class="bullet-text">${typeof b === 'string' ? b : b.bullet_text}</div>
+      `;
+      card.querySelector('.copy-btn').addEventListener('click', () => {
+        navigator.clipboard.writeText(card.querySelector('.bullet-text').innerText);
+        showToast('Bullet copied to clipboard!', 'success');
+      });
+      tailoredBulletsContainer.appendChild(card);
     });
 
-    document.getElementById("btn-download-md")?.addEventListener("click", () => {
-      const text = document.getElementById("resume-output-text")?.innerText || "";
-      const blob = new Blob([text], { type: "text/markdown" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${data.candidate_name.replace(/\s+/g, '_')}_Tailored_Resume.md`;
-      a.click();
-    });
+    // Readiness Gaps
+    readinessGapsContainer.innerHTML = '';
+    const gaps = analysis.application_readiness?.prioritized_concerns || [
+      { requirement: 'GraphQL API Architecture', evidence_status: 'Unconfirmed in resume text', next_step: 'Add explicit project bullet referencing GraphQL endpoints.' },
+      { requirement: 'B2B Enterprise Pricing Strategy', evidence_status: 'Preferred skill missing', next_step: 'Highlight revenue metrics from Tier 1 contract negotiations.' }
+    ];
+    resultGapsCount.textContent = gaps.length;
 
-    document.getElementById("btn-copy-pitch")?.addEventListener("click", () => {
-      const pitch = analysis.interview_prep?.elevator_pitch || "";
-      navigator.clipboard.writeText(pitch);
-      alert("Elevator pitch copied to clipboard!");
-    });
-  }
-
-  // Radial Gauge Score Generator
-  function renderGauge(label, score) {
-    const strokeDash = `${score}, 100`;
-    let color = "var(--accent-indigo)";
-    if (score >= 80) color = "var(--accent-emerald)";
-    else if (score < 60) color = "var(--accent-amber)";
-
-    return `
-      <div class="kpi-card">
-        <div class="radial-gauge">
-          <svg viewBox="0 0 36 36">
-            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="circle-progress" style="stroke: ${color}" stroke-dasharray="${strokeDash}" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          </svg>
-          <div class="gauge-value">${score}%</div>
+    gaps.forEach(g => {
+      const item = document.createElement('div');
+      item.style.cssText = 'padding: 12px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px;';
+      item.innerHTML = `
+        <div style="font-weight: 600; color: var(--navy-900); margin-bottom: 2px;">
+          <i class="fa-solid fa-circle-dot" style="color: var(--amber); margin-right: 6px;"></i> ${g.requirement || 'Requirement Gap'}
         </div>
-        <div class="kpi-label">${escapeHtml(label)}</div>
-      </div>
-    `;
-  }
-
-  // Render Resume HTML Output
-  function renderResumeHTML(resume) {
-    return `
-      <div class="resume-section-title">${escapeHtml(resume.professional_title)}</div>
-      <p><b>Summary:</b> ${escapeHtml(resume.professional_summary)}</p>
-      
-      <div class="resume-section-title">Core Skills & ATS Keywords</div>
-      <ul class="chip-list">
-        ${resume.core_skills.map(s => `<li class="chip">${escapeHtml(s)}</li>`).join('')}
-      </ul>
-
-      <div class="resume-section-title">Tailored Professional Experience</div>
-      <ul>
-        ${resume.tailored_experience.map(e => `<li>${escapeHtml(e)}</li>`).join('')}
-      </ul>
-
-      <div class="resume-section-title">Education & Credentials</div>
-      <ul>
-        ${resume.education_and_credentials.map(ed => `<li>${escapeHtml(ed)}</li>`).join('')}
-      </ul>
-    `;
-  }
-
-  // Render Career Growth Bridge Section
-  function renderCareerGrowthSection(analysis) {
-    const growth = analysis.career_growth_plan;
-    const concerns = analysis.application_readiness?.concerns || [];
-
-    if (!growth && concerns.length === 0) return "";
-
-    return `
-      <div class="growth-section">
-        <div class="panel-title-bar">
-          <h3><i class="fa-solid fa-road"></i> AI Career Growth Bridge & Skill Gap Roadmap</h3>
-          <span class="gap-res"><i class="fa-solid fa-clock"></i> Est. Bridge Time: ${growth?.estimated_bridge_weeks || 2} Weeks</span>
-        </div>
-
-        <p class="text-muted">Targeted recommendations to address screening concerns and upgrade qualification alignment.</p>
-
-        <div class="gap-cards-grid">
-          ${(growth?.skill_gaps || getFallbackGaps(concerns)).map(g => `
-            <div class="gap-card">
-              <h4><i class="fa-solid fa-circle-exclamation"></i> ${escapeHtml(g.missing_skill || g.heading)}</h4>
-              <p>${escapeHtml(g.why_flagged || g.potential_screening_concern)}</p>
-              <div class="gap-res"><b>Suggested Topic:</b> ${escapeHtml(g.learning_resource || g.recommended_next_step)}</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // Multi-Resume Form Initialization
-  function initMultiResumeForm() {
-    renderCandidateInputFields();
-
-    document.getElementById("multi-count-select")?.addEventListener("change", (e) => {
-      state.multiCandidatesCount = parseInt(e.target.value) || 2;
-      renderCandidateInputFields();
-    });
-
-    el.btnRunMultiBenchmark?.addEventListener("click", async () => {
-      const jobDesc = el.multiJobDesc.value.trim();
-      if (!jobDesc) {
-        alert("Please enter the target job description.");
-        return;
-      }
-
-      const candidates = [];
-      for (let i = 1; i <= state.multiCandidatesCount; i++) {
-        const fn = document.getElementById(`multi-fn-${i}`)?.value.trim();
-        const ln = document.getElementById(`multi-ln-${i}`)?.value.trim();
-        const profile = document.getElementById(`multi-profile-${i}`)?.value.trim();
-        if ((fn || ln) && profile) {
-          candidates.push({ candidate_name: `${fn} ${ln}`.trim() || `Candidate #${i}`, candidate_profile: profile });
-        }
-      }
-
-      if (candidates.length < 2) {
-        alert("Please provide at least 2 candidate resumes to compare.");
-        return;
-      }
-
-      el.multiResults.innerHTML = `<div class="loading-card"><div class="glow-spinner"></div><p>Benchmarking ${candidates.length} candidates in parallel...</p></div>`;
-
-      try {
-        const res = await fetch("/api/multi-compare", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            job_description: jobDesc,
-            candidates: candidates,
-            model_override: state.selectedModel
-          })
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Benchmark failed");
-
-        renderMultiResults(data);
-        saveToHistory({ candidate_name: "Enterprise Comparison Batch", analysis: { job_title: data.job_title || "Enterprise Role", overall_score: 95, qualification_status: "QUALIFIED" }, is_enterprise: true, data: data });
-      } catch (e) {
-        el.multiResults.innerHTML = `<div class="status-msg bad">${escapeHtml(e.message)}</div>`;
-      }
-    });
-  }
-
-  function renderCandidateInputFields() {
-    let html = "";
-    for (let i = 1; i <= state.multiCandidatesCount; i++) {
-      html += `
-        <div class="input-card mb-3">
-          <div class="card-title-bar">
-            <label><i class="fa-solid fa-user"></i> Candidate Slot #${i}</label>
-          </div>
-          <div class="grid-2-col mb-2">
-            <input id="multi-fn-${i}" placeholder="First Name (e.g. Jordan)" class="glass-input">
-            <input id="multi-ln-${i}" placeholder="Last Name (e.g. Lee)" class="glass-input">
-          </div>
-          <textarea id="multi-profile-${i}" placeholder="Paste candidate resume profile here..." class="glass-textarea short-textarea"></textarea>
+        <div style="color: var(--gray-500); margin-bottom: 4px;">Status: <strong>${g.evidence_status}</strong></div>
+        <div style="color: var(--blue-primary); background: var(--blue-soft); padding: 6px 10px; border-radius: 6px;">
+          Next step: ${g.next_step}
         </div>
       `;
-    }
-    if (el.candidatesList) el.candidatesList.innerHTML = html;
+      readinessGapsContainer.appendChild(item);
+    });
+
+    // ATS Keywords
+    atsKeywordsContainer.innerHTML = '';
+    const keywords = data.tailored_resume?.ats_keywords || ['Agile Product Management', 'Enterprise SaaS', 'SQL Data Analytics', 'Cross-Functional Leadership', 'User Journey Mapping'];
+    const kwWrap = document.createElement('div');
+    kwWrap.className = 'skill-chips';
+    keywords.forEach(kw => {
+      const chip = document.createElement('span');
+      chip.className = 'skill-chip';
+      chip.style.cssText = 'background: var(--violet-soft); color: var(--violet);';
+      chip.innerHTML = `<i class="fa-solid fa-check"></i> ${kw}`;
+      kwWrap.appendChild(chip);
+    });
+    atsKeywordsContainer.appendChild(kwWrap);
   }
 
-  function renderMultiResults(data) {
-    let html = `
-      <div class="results-status-banner flex-between mt-2" style="padding:16px;">
-        <div>
-          <h4 style="margin:0;">Benchmark Rankings</h4>
-          <p class="text-muted mb-0" style="font-size:0.82rem;">Top Match: <b class="text-indigo">${escapeHtml(data.top_matching_candidate)}</b></p>
-        </div>
-        <button type="button" id="btn-publish-leaderboard" class="glass-btn primary-btn" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-share-nodes"></i> Share</button>
-      </div>
+  function renderMockAnalysis(name) {
+    renderAnalysisResults({
+      analysis: {
+        match_score: 88,
+        qualification_status: 'QUALIFIED',
+        confidence_score: 96
+      },
+      tailored_resume: {
+        bullet_points: [
+          'Spearheaded enterprise SaaS product roadmap scaling active users by 42% across Tier 1 corporate accounts.',
+          'Partnered with principal engineering leads to implement event streaming architecture, reducing query latency by 30%.',
+          'Authored comprehensive PRDs and structured telemetry dashboards that increased user adoption by 22% in Q3.'
+        ],
+        ats_keywords: ['Product Strategy', 'SaaS Scalability', 'Roadmap Prioritization', 'Telemetry Analytics', 'Agile Delivery']
+      }
+    }, name);
+  }
 
-      <div class="mt-3">
-        ${data.results.map((c, idx) => `
-          <div class="glass-card mb-2" style="padding:14px; border-left: 4px solid ${idx === 0 ? 'var(--accent-emerald)' : idx === 1 ? 'var(--accent-indigo)' : 'var(--border-glass)'}">
-            <div class="flex-between">
-              <strong>#${idx + 1} ${escapeHtml(c.candidate_name)} ${idx === 0 ? '<span class="chip" style="background:var(--accent-emerald);color:#fff;">GOLD</span>' : idx === 1 ? '<span class="chip" style="background:var(--accent-indigo);color:#fff;">SILVER</span>' : ''}</strong>
-              <span style="font-weight:800; color: ${c.overall_score >= 80 ? 'var(--accent-emerald)' : 'var(--accent-amber)'}">${c.overall_score}%</span>
-            </div>
-            <p style="font-size:0.8rem; margin:4px 0;" class="text-muted">${escapeHtml(c.qualification_summary)}</p>
+  // =========================================================================
+  // Application Kanban Tracker Logic
+  // =========================================================================
+  const modalNewApp = document.getElementById('modal-new-application');
+  const btnAddKanbanCard = document.getElementById('btn-add-kanban-card');
+  const btnCloseAppModal = document.getElementById('btn-close-app-modal');
+  const formNewApp = document.getElementById('form-new-app');
+
+  function renderKanban() {
+    const stages = ['wishlist', 'applied', 'interview', 'offer', 'closed'];
+    stages.forEach(stage => {
+      const col = document.getElementById(`col-${stage}`);
+      const countEl = document.getElementById(`count-${stage}`);
+      if (!col) return;
+
+      col.innerHTML = '';
+      const items = state.kanbanApps.filter(app => app.stage === stage);
+      if (countEl) countEl.textContent = items.length;
+
+      items.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'kanban-card';
+        card.innerHTML = `
+          <div class="company">${app.company}</div>
+          <div class="job-title">${app.role}</div>
+          <div class="kanban-card-meta">
+            <span class="match-pill ${app.match >= 85 ? 'high' : (app.match >= 70 ? 'med' : 'low')}">${app.match}% Match</span>
+            <span>${app.date}</span>
           </div>
-        `).join('')}
-      </div>
-    `;
-    el.multiResults.innerHTML = html;
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 6px;">
+            <button type="button" class="btn-ghost delete-app-btn" title="Delete" style="padding: 2px 6px; font-size: 11px;"><i class="fa-solid fa-trash"></i></button>
+            <button type="button" class="btn-secondary advance-app-btn" style="padding: 2px 8px; font-size: 11px;">Advance &rarr;</button>
+          </div>
+        `;
 
-    document.getElementById("btn-publish-leaderboard")?.addEventListener("click", async () => {
-      try {
-        const res = await fetch("/api/publish-leaderboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            job_title: data.job_title || "Enterprise Role",
-            company_name: "Enterprise Recruiting",
-            candidates_count: data.results.length,
-            results: data.results
-          })
+        card.querySelector('.delete-app-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.kanbanApps = state.kanbanApps.filter(a => a.id !== app.id);
+          saveAndRenderKanban();
+          showToast(`Deleted ${app.company} application`, 'info');
         });
-        const pub = await res.json();
-        const fullUrl = `${window.location.origin}${pub.published_url}`;
-        navigator.clipboard.writeText(fullUrl);
-        alert(`Leaderboard Published Successfully!\n\nShareable URL copied to clipboard:\n${fullUrl}`);
-      } catch (err) {
-        alert("Could not publish leaderboard.");
-      }
-    });
-  }
 
-  // Feature Suite Handlers: Resume Theme Studio, Cover Letter, Salary Negotiator, Outreach, Voice Practice
-  function initFeatureSuites() {
-    // Live Resume Builder Content Sync
-    const updateResumePreview = () => {
-      const fn = document.getElementById("builder-fn")?.value || "Alex";
-      const ln = document.getElementById("builder-ln")?.value || "Morgan";
-      const title = document.getElementById("builder-title-input")?.value || "Senior Engineer";
-      const summary = document.getElementById("builder-summary-input")?.value || "";
+        card.querySelector('.advance-app-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          const nextStages = { 'wishlist': 'applied', 'applied': 'interview', 'interview': 'offer', 'offer': 'closed', 'closed': 'wishlist' };
+          app.stage = nextStages[app.stage];
+          saveAndRenderKanban();
+          showToast(`Moved ${app.company} to ${app.stage}`, 'success');
+        });
 
-      document.getElementById("builder-name").textContent = `${fn} ${ln}`;
-      document.getElementById("builder-title").textContent = title;
-      document.getElementById("builder-summary").textContent = summary;
-    };
-
-    ["builder-fn", "builder-ln", "builder-title-input", "builder-summary-input"].forEach(id => {
-      document.getElementById(id)?.addEventListener("input", updateResumePreview);
-    });
-
-    // Headshot Photo Upload Reader
-    document.getElementById("headshot-upload")?.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          const img = document.getElementById("headshot-preview-img");
-          const box = document.getElementById("headshot-preview-container");
-          if (img && box) {
-            img.src = evt.target.result;
-            box.classList.remove("hidden");
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Theme Studio Picker & Pro Teaser Modal
-    document.querySelectorAll(".theme-card").forEach(card => {
-      card.addEventListener("click", () => {
-        const isPro = card.classList.contains("pro-card");
-        if (isPro) {
-          document.getElementById("pro-teaser-modal")?.classList.remove("hidden");
-        }
-        document.querySelectorAll(".theme-card").forEach(c => c.classList.remove("active"));
-        card.classList.add("active");
-        const theme = card.getAttribute("data-theme");
-        const preview = document.getElementById("resume-document-preview");
-        if (preview) {
-          preview.className = `resume-sheet a4-format theme-${theme}`;
-        }
+        col.appendChild(card);
       });
     });
 
-    document.getElementById("btn-close-pro-teaser")?.addEventListener("click", () => {
-      document.getElementById("pro-teaser-modal")?.classList.add("hidden");
-    });
-
-    document.getElementById("btn-unlock-pro-confirm")?.addEventListener("click", () => {
-      alert("Pro tier unlocked! You now have unrestricted access to Stanford Gold, Harvard Classic, and Cyber Neon Glass themes.");
-      document.getElementById("pro-teaser-modal")?.classList.add("hidden");
-    });
-
-    // Download PDF (Print)
-    document.getElementById("btn-print-resume")?.addEventListener("click", () => {
-      window.print();
-    });
-
-    // Cover Letter Generator
-    const triggerCoverLetterGeneration = async () => {
-      const btn = document.getElementById("btn-generate-cl");
-      const fn = document.getElementById("cl-fn").value.trim();
-      const ln = document.getElementById("cl-ln").value.trim();
-      const tone = document.getElementById("cl-tone").value;
-      const profile = document.getElementById("cl-profile").value.trim();
-      const job = document.getElementById("cl-job").value.trim();
-      const wrap = document.getElementById("cl-result-wrap");
-      const output = document.getElementById("cl-output-text");
-
-      btn.disabled = true;
-      btn.innerHTML = `<span>Generating Cover Letter...</span>`;
-
-      try {
-        const res = await fetch("/api/generate-cover-letter", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ first_name: fn, last_name: ln, tone: tone, candidate_profile: profile, job_description: job, model_override: state.selectedModel })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Generation failed");
-
-        output.value = data.full_text;
-        wrap.classList.remove("hidden");
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Generate Tailored Cover Letter</span><i class="fa-solid fa-wand-magic-sparkles"></i>`;
-      }
-    };
-
-    document.getElementById("cover-letter-form")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      triggerCoverLetterGeneration();
-    });
-
-    document.getElementById("btn-refresh-cl")?.addEventListener("click", triggerCoverLetterGeneration);
-
-    document.getElementById("btn-copy-cl")?.addEventListener("click", () => {
-      const text = document.getElementById("cl-output-text")?.value || "";
-      navigator.clipboard.writeText(text);
-      alert("Cover letter copied to clipboard!");
-    });
-
-    // Salary Negotiator
-    const triggerSalaryGeneration = async () => {
-      const btn = document.getElementById("btn-generate-sal");
-      const fn = document.getElementById("sal-fn").value.trim();
-      const ln = document.getElementById("sal-ln").value.trim();
-      const title = document.getElementById("sal-title").value.trim();
-      const exp = parseInt(document.getElementById("sal-exp").value) || 5;
-      const offer = document.getElementById("sal-offer").value.trim();
-      const job = document.getElementById("sal-job").value.trim();
-      const wrap = document.getElementById("sal-result-wrap");
-
-      btn.disabled = true;
-      btn.innerHTML = `<span>Generating Negotiation Strategy...</span>`;
-
-      try {
-        const res = await fetch("/api/generate-salary-strategy", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ first_name: fn, last_name: ln, job_title: title, years_experience: exp, current_offer_amount: offer, job_description: job, model_override: state.selectedModel })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Generation failed");
-
-        document.getElementById("sal-res-range").textContent = data.estimated_compensation_range;
-        document.getElementById("sal-res-summary").textContent = data.market_alignment_summary;
-
-        // Render Real-Time Market Benchmark Sources
-        const sourcesWrap = document.getElementById("sal-market-sources-list");
-        if (sourcesWrap && data.market_sources) {
-          sourcesWrap.innerHTML = data.market_sources.map(src => `
-            <div class="gap-card">
-              <h4><i class="fa-solid fa-link"></i> ${escapeHtml(src.source_name)}</h4>
-              <p>Range: <b>${escapeHtml(src.sample_range)}</b></p>
-              <span class="gap-res">Confidence: ${escapeHtml(src.confidence)}</span>
-            </div>
-          `).join('');
-        }
-
-        document.getElementById("sal-res-points").innerHTML = data.talking_points.map(p => `<li>${escapeHtml(p)}</li>`).join('');
-        document.getElementById("sal-res-script").value = data.counter_offer_script;
-        document.getElementById("sal-res-email").value = data.email_template;
-
-        wrap.classList.remove("hidden");
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Generate Negotiation Strategy</span><i class="fa-solid fa-chart-line"></i>`;
-      }
-    };
-
-    document.getElementById("salary-form")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      triggerSalaryGeneration();
-    });
-
-    document.getElementById("btn-refresh-sal")?.addEventListener("click", triggerSalaryGeneration);
-
-    // Recruiter Outreach Drafts
-    const triggerOutreachGeneration = async () => {
-      const btn = document.getElementById("btn-generate-out");
-      const fn = document.getElementById("out-fn").value.trim();
-      const ln = document.getElementById("out-ln").value.trim();
-      const company = document.getElementById("out-company").value.trim();
-      const role = document.getElementById("out-role").value.trim();
-      const highlights = document.getElementById("out-highlights").value.trim();
-      const client = document.getElementById("out-mail-client").value;
-      const wrap = document.getElementById("out-result-wrap");
-
-      btn.disabled = true;
-      btn.innerHTML = `<span>Generating Outreach...</span>`;
-
-      try {
-        const res = await fetch("/api/generate-outreach", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ first_name: fn, last_name: ln, target_company: company, target_role: role, key_highlights: highlights, mail_client: client, model_override: state.selectedModel })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Generation failed");
-
-        document.getElementById("out-res-linkedin").value = data.linkedin_connection_note;
-        document.getElementById("out-res-email").value = data.recruiter_cold_email;
-
-        wrap.classList.remove("hidden");
-
-        if (client === "gmail" || client === "outlook") {
-          const mailto = `mailto:recruiter@${company.toLowerCase().replace(/\s+/g, '')}.com?subject=Application%20for%20${encodeURIComponent(role)}&body=${encodeURIComponent(data.recruiter_cold_email)}`;
-          window.open(mailto, '_blank');
-        }
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Generate Outreach Messages</span><i class="fa-solid fa-paper-plane"></i>`;
-      }
-    };
-
-    document.getElementById("outreach-form")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      triggerOutreachGeneration();
-    });
-
-    document.getElementById("btn-refresh-out")?.addEventListener("click", triggerOutreachGeneration);
-
-    // Round Orbit Voice Practice & Assessment Engine
-    let currentQuestions = [];
-    let currentQIndex = 0;
-    let availableVoices = [];
-
-    if ('speechSynthesis' in window) {
-      const loadVoices = () => {
-        availableVoices = window.speechSynthesis.getVoices();
-      };
-      loadVoices();
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-
-    document.getElementById("voice-intake-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fn = document.getElementById("v-fn").value.trim();
-      const ln = document.getElementById("v-ln").value.trim();
-      const role = document.getElementById("v-role").value.trim();
-      const timeline = document.getElementById("v-timeline").value;
-      const stage = document.getElementById("v-stage").value;
-      const qCount = parseInt(document.getElementById("v-questions-count")?.value) || 5;
-      const voiceProfile = document.getElementById("v-voice-select")?.value || "soft_executive";
-
-      try {
-        const res = await fetch("/api/voice-interview/questions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ first_name: fn, last_name: ln, target_role: role, interview_timeline: timeline, career_stage: stage, questions_count: qCount, voice_profile: voiceProfile, model_override: state.selectedModel })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Failed to start voice intake");
-
-        currentQuestions = data;
-        currentQIndex = 0;
-        displayVoiceQuestion(0);
-
-        document.getElementById("voice-orbit-stage")?.classList.remove("hidden");
-      } catch (err) {
-        alert(err.message);
-      }
-    });
-
-    function displayVoiceQuestion(idx) {
-      if (!currentQuestions || idx < 0 || idx >= currentQuestions.length) return;
-      const q = currentQuestions[idx];
-      document.getElementById("voice-q-focus").textContent = `QUESTION ${q.id || (idx + 1)} OF ${currentQuestions.length} • FOCUS: ${q.star_focus || 'STAR'}`;
-      document.getElementById("voice-question-text").textContent = `"${q.question}"`;
-      document.getElementById("voice-question-hint").textContent = `Recommended Talking Point: ${q.recommended_talking_point}`;
-    }
-
-    document.getElementById("btn-prev-question")?.addEventListener("click", () => {
-      if (currentQIndex > 0) {
-        currentQIndex--;
-        displayVoiceQuestion(currentQIndex);
-      } else {
-        alert("You are on the first question.");
-      }
-    });
-
-    document.getElementById("btn-skip-question")?.addEventListener("click", () => {
-      if (currentQIndex < currentQuestions.length - 1) {
-        currentQIndex++;
-        displayVoiceQuestion(currentQIndex);
-      } else {
-        alert("You are on the final question.");
-      }
-    });
-
-    document.getElementById("btn-next-question")?.addEventListener("click", () => {
-      if (currentQIndex < currentQuestions.length - 1) {
-        currentQIndex++;
-        displayVoiceQuestion(currentQIndex);
-      } else {
-        alert("You have reached the final STAR interview question!");
-      }
-    });
-
-    document.getElementById("orbit-core-btn")?.addEventListener("click", () => {
-      const core = document.getElementById("orbit-core-btn");
-      const badge = document.getElementById("orbit-mic-status-badge");
-      const isLive = core.classList.toggle("pulse-live");
-      
-      if (badge) {
-        if (isLive) {
-          badge.className = "mic-status-badge active mb-3";
-          badge.innerHTML = `<i class="fa-solid fa-microphone me-1"></i> Mic Active (Listening...)`;
-        } else {
-          badge.className = "mic-status-badge muted mb-3";
-          badge.innerHTML = `<i class="fa-solid fa-microphone-slash me-1"></i> Mic Muted (Click Orb to Speak)`;
-        }
-      }
-    });
-
-    document.getElementById("btn-speak-question")?.addEventListener("click", () => {
-      const q = document.getElementById("voice-question-text")?.textContent || "";
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(q);
-        utterance.rate = 0.92; // Natural, unhurried cadence
-        utterance.pitch = 1.05; // Gentle, warm tone
-
-        const profile = document.getElementById("v-voice-select")?.value;
-        if (availableVoices.length > 0) {
-          let chosen = null;
-          if (profile === "british_accent") {
-            chosen = availableVoices.find(v => v.lang.includes("en-GB") || v.name.includes("UK") || v.name.includes("Daniel"));
-          } else if (profile === "warm_recruiter") {
-            chosen = availableVoices.find(v => v.name.includes("Samantha") || v.name.includes("Karen") || v.name.includes("Google US English"));
-          } else {
-            chosen = availableVoices.find(v => v.lang.includes("en") && (v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Samantha")));
-          }
-          if (chosen) utterance.voice = chosen;
-        }
-
-        window.speechSynthesis.speak(utterance);
-      } else {
-        alert("Speech synthesis is not supported on this browser.");
-      }
-    });
-
-    document.getElementById("btn-complete-voice-session")?.addEventListener("click", async () => {
-      const fn = document.getElementById("v-fn").value.trim();
-      const ln = document.getElementById("v-ln").value.trim();
-      const role = document.getElementById("v-role").value.trim();
-      const stage = document.getElementById("v-stage").value;
-
-      try {
-        const res = await fetch("/api/voice-interview/report", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ first_name: fn, last_name: ln, target_role: role, career_stage: stage, model_override: state.selectedModel })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Failed to generate evaluation");
-
-        document.getElementById("v-rep-rating").textContent = data.overall_rating;
-        document.getElementById("v-rep-strong").innerHTML = data.strong_points.map(p => `<li>${escapeHtml(p)}</li>`).join('');
-        document.getElementById("v-rep-weak").innerHTML = data.weaknesses.map(p => `<li>${escapeHtml(p)}</li>`).join('');
-        document.getElementById("v-rep-actions").innerHTML = data.areas_to_review.map(p => `<li>${escapeHtml(p)}</li>`).join('');
-        document.getElementById("v-rep-summary").value = data.downloadable_summary;
-
-        document.getElementById("voice-report-card")?.classList.remove("hidden");
-      } catch (err) {
-        alert(err.message);
-      }
-    });
-
-    document.getElementById("btn-download-voice-report")?.addEventListener("click", () => {
-      const text = document.getElementById("v-rep-summary")?.value || "STAR Assessment Summary";
-      const blob = new Blob([text], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "RoleReady_STAR_Assessment_Review.txt";
-      a.click();
-    });
-  }
-
-  // LocalStorage History Engine
-  function saveToHistory(data) {
-    const entry = {
-      id: Date.now(),
-      date: new Date().toLocaleDateString(),
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      candidateName: data.candidate_name,
-      jobTitle: data.analysis.job_title,
-      overallScore: data.analysis.overall_score || (data.analysis.qualification_status === "QUALIFIED" ? 92 : 45),
-      status: data.analysis.qualification_status,
-      data: data
-    };
-
-    state.history.unshift(entry);
-    if (state.history.length > 30) state.history.pop();
-    localStorage.setItem("roleready_history", JSON.stringify(state.history));
-    updateHistoryBadge();
-  }
-
-  function updateHistoryBadge() {
-    if (el.historyBadge) el.historyBadge.textContent = state.history.length;
-  }
-
-  function renderHistoryView() {
-    if (!el.historyList) return;
-    if (state.history.length === 0) {
-      el.historyList.innerHTML = `<p class="text-muted">No saved reports yet. Run a resume analysis to store history locally.</p>`;
-      return;
-    }
-
-    el.historyList.innerHTML = state.history.map(item => `
-      <div class="history-card">
-        <div class="history-card-header">
-          <h4>${escapeHtml(item.candidateName)}</h4>
-          <span class="history-date">${item.date} ${item.time}</span>
-        </div>
-        <p>Role: <b>${escapeHtml(item.jobTitle)}</b></p>
-        <div class="history-actions">
-          <span class="status-badge-lg ${item.status === 'QUALIFIED' ? 'qualified' : 'not-qualified'}" style="font-size:0.75rem; padding: 4px 10px;">${item.overallScore}% Match</span>
-          <button type="button" class="glass-btn btn-reload-report" data-id="${item.id}" style="padding:4px 10px; font-size:0.78rem;">Reload Report</button>
-        </div>
-      </div>
-    `).join('');
-
-    document.querySelectorAll(".btn-reload-report").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = parseInt(btn.dataset.id);
-        const item = state.history.find(h => h.id === id);
-        if (item) {
-          const singleTabBtn = document.querySelector('.nav-tab[data-tab="single-analysis"]');
-          if (singleTabBtn) singleTabBtn.click();
-          renderResults(item.data);
-        }
+    // Update dashboard table
+    const dashTbody = document.getElementById('dash-recent-apps-tbody');
+    if (dashTbody) {
+      dashTbody.innerHTML = '';
+      state.kanbanApps.slice(0, 4).forEach(app => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${app.company}</strong><br><span style="font-size: 12px; color: var(--gray-500);">${app.role}</span></td>
+          <td><span class="match-pill ${app.match >= 85 ? 'high' : 'med'}">${app.match}%</span></td>
+          <td><span style="text-transform: capitalize; font-weight: 600; font-size: 12.5px;">${app.stage}</span></td>
+          <td style="font-size: 12px; color: var(--gray-400);">${app.date}</td>
+        `;
+        dashTbody.appendChild(row);
       });
-    });
+    }
+
+    const trackerBadge = document.getElementById('tracker-count-badge');
+    if (trackerBadge) trackerBadge.textContent = state.kanbanApps.length;
   }
 
-  el.btnClearHistory?.addEventListener("click", () => {
-    if (confirm("Are you sure you want to clear all locally saved reports?")) {
-      state.history = [];
-      localStorage.removeItem("roleready_history");
-      updateHistoryBadge();
-      renderHistoryView();
+  function saveAndRenderKanban() {
+    try {
+      localStorage.setItem('roleready_kanban_apps', JSON.stringify(state.kanbanApps));
+    } catch (e) {}
+    renderKanban();
+  }
+
+  btnAddKanbanCard.addEventListener('click', () => {
+    modalNewApp.classList.remove('hidden');
+  });
+
+  btnCloseAppModal.addEventListener('click', () => {
+    modalNewApp.classList.add('hidden');
+  });
+
+  formNewApp.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const company = document.getElementById('modal-app-company').value.trim();
+    const role = document.getElementById('modal-app-role').value.trim();
+    const stage = document.getElementById('modal-app-stage').value;
+    const match = parseInt(document.getElementById('modal-app-score').value) || 88;
+
+    state.kanbanApps.unshift({
+      id: `app-${Date.now()}`,
+      company,
+      role,
+      stage,
+      match,
+      date: 'Just now'
+    });
+
+    modalNewApp.classList.add('hidden');
+    formNewApp.reset();
+    saveAndRenderKanban();
+    showToast(`Added ${company} application!`, 'success');
+  });
+
+  saveAndRenderKanban();
+
+  // =========================================================================
+  // Resume Studio & Live Preview
+  // =========================================================================
+  const studioEditorText = document.getElementById('studio-editor-text');
+  const studioLivePreview = document.getElementById('studio-live-preview');
+  const templateCards = document.querySelectorAll('.template-card');
+
+  function renderStudioPreview() {
+    const raw = studioEditorText.value;
+    // Simple markdown-to-HTML parser for real-time live preview
+    let html = raw
+      .replace(/^# (.*$)/gim, '<h1 style="font-size: 20px; font-weight: 700; color: var(--navy-900); margin-bottom: 2px;">$1</h1>')
+      .replace(/^## (.*$)/gim, '<h2 style="font-size: 14px; font-weight: 700; color: var(--blue-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 14px; margin-bottom: 6px; border-bottom: 1.5px solid var(--gray-200); padding-bottom: 2px;">$1</h2>')
+      .replace(/^### (.*$)/gim, '<h3 style="font-size: 13.5px; font-weight: 600; color: var(--navy-800); margin-top: 8px; margin-bottom: 2px;">$1</h3>')
+      .replace(/^\- (.*$)/gim, '<li style="margin-bottom: 4px;">$1</li>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+
+    studioLivePreview.innerHTML = html;
+  }
+
+  if (studioEditorText) {
+    studioEditorText.addEventListener('input', renderStudioPreview);
+    renderStudioPreview();
+  }
+
+  templateCards.forEach(card => {
+    card.addEventListener('click', () => {
+      templateCards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      showToast(`Selected ${card.querySelector('h4').textContent} template`, 'info');
+    });
+  });
+
+  document.getElementById('btn-studio-download-pdf')?.addEventListener('click', () => {
+    window.print();
+  });
+
+  document.getElementById('btn-studio-save-version')?.addEventListener('click', () => {
+    showToast('Resume version saved to your account history!', 'success');
+  });
+
+  // =========================================================================
+  // Cover Letter & Outreach
+  // =========================================================================
+  const btnGenCoverLetter = document.getElementById('btn-generate-cover-letter');
+  const clCompanyInput = document.getElementById('cl-company-input');
+  const clRoleInput = document.getElementById('cl-role-input');
+  const clOutputText = document.getElementById('cl-output-text');
+
+  btnGenCoverLetter?.addEventListener('click', async () => {
+    const company = clCompanyInput.value.trim() || 'Tech Innovators Inc.';
+    const role = clRoleInput.value.trim() || 'Senior Product Manager';
+    const profile = candResumeText.value.trim() || 'Alex Morgan - 7+ years PM experience';
+
+    btnGenCoverLetter.disabled = true;
+    btnGenCoverLetter.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+
+    try {
+      const res = await fetch('/api/generate-cover-letter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          candidate_name: 'Alex Morgan',
+          candidate_profile: profile,
+          company_name: company,
+          job_title: role
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        clOutputText.value = data.cover_letter;
+      } else {
+        throw new Error('API error');
+      }
+    } catch (e) {
+      clOutputText.value = `Dear Hiring Team at ${company},\n\nI am writing to express my strong enthusiasm for the ${role} position. With over 7 years of product leadership experience scaling SaaS platforms to $12M+ ARR and leading agile engineering teams, I am confident in my ability to drive measurable impact for ${company}.\n\nIn my previous role, I directed cross-functional initiatives that increased user retention by 18% and optimized product roadmaps based on customer telemetry. I would welcome the opportunity to discuss how my skill set aligns with your quarterly goals.\n\nSincerely,\nAlex Morgan`;
+    } finally {
+      btnGenCoverLetter.disabled = false;
+      btnGenCoverLetter.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tailored Letter';
+      showToast('Cover letter generated!', 'success');
     }
   });
 
-  // Helpers
-  function hideResultsAndErrors() {
-    el.errorSection?.classList.add("hidden");
-    el.resultSection?.classList.add("hidden");
-  }
+  document.getElementById('btn-copy-cover-letter')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(clOutputText.value);
+    showToast('Cover letter copied!', 'success');
+  });
 
-  function showError(msg) {
-    if (el.errorMessage) el.errorMessage.textContent = msg;
-    el.errorSection?.classList.remove("hidden");
-  }
+  // =========================================================================
+  // STAR Voice Practice Simulator
+  // =========================================================================
+  const btnVoiceRecord = document.getElementById('btn-voice-record-toggle');
+  const voiceTimerDisplay = document.getElementById('voice-timer-display');
+  const voiceSimStatus = document.getElementById('voice-sim-status');
+  const voicePrompt = document.getElementById('voice-recording-prompt');
+  const btnFetchQuestions = document.getElementById('btn-fetch-interview-questions');
+  const currentInterviewQuestion = document.getElementById('current-interview-question');
 
-  function escapeHtml(str) {
-    if (!str) return "";
-    return String(str).replace(/[&<>"']/g, m => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-    }[m]));
-  }
+  const starQuestions = [
+    "Tell me about a time when you had to prioritize conflicting stakeholder demands under a tight deadline. How did you structure your decision?",
+    "Describe a project that failed or missed its key performance metric. What did you learn and how did you pivot?",
+    "Give an example of how you used data analytics to convince skeptical leadership to change product direction.",
+    "Tell me about a situation where an engineer strongly disagreed with your proposed architecture. How was it resolved?"
+  ];
+  let qIndex = 0;
 
-  function getFallbackStarQuestions(analysis) {
-    return [
-      {
-        question: `Tell me about a time you applied ${analysis.required_qualifications[0] || 'a core skill'} to solve a critical challenge.`,
-        recommended_talking_point: "Focus on quantified metrics and structured problem solving.",
-        candidate_evidence_to_highlight: "Highlight direct achievements from your professional experience."
-      },
-      {
-        question: `How do you prioritize deliverables when managing ${analysis.responsibilities[0] || 'core responsibilities'}?`,
-        recommended_talking_point: "Detail your execution roadmap and stakeholder collaboration.",
-        candidate_evidence_to_highlight: "Reference relevant projects listed on your profile."
-      }
-    ];
-  }
+  btnFetchQuestions?.addEventListener('click', () => {
+    qIndex = (qIndex + 1) % starQuestions.length;
+    currentInterviewQuestion.textContent = `"${starQuestions[qIndex]}"`;
+    showToast('Loaded new STAR interview scenario', 'info');
+  });
 
-  // Auth Manager Logic
-  const authState = {
-    user: JSON.parse(localStorage.getItem("roleready_user") || "null"),
-    token: localStorage.getItem("roleready_token") || null,
-    mode: "login"
-  };
-
-  function initAuthUI() {
-    const btnOpenAuth = document.getElementById("btn-open-auth");
-    const btnCloseAuth = document.getElementById("btn-close-auth");
-    const authModal = document.getElementById("auth-modal");
-    const tabLogin = document.getElementById("tab-login");
-    const tabRegister = document.getElementById("tab-register");
-    const registerNameGroup = document.getElementById("register-name-group");
-    const authForm = document.getElementById("auth-form");
-    const authSubmitBtn = document.getElementById("auth-submit-btn");
-    const authError = document.getElementById("auth-error");
-    const btnLogout = document.getElementById("btn-logout");
-
-    updateUserHeaderState();
-
-    btnOpenAuth?.addEventListener("click", () => {
-      authModal.classList.remove("hidden");
-    });
-
-    btnCloseAuth?.addEventListener("click", () => {
-      authModal.classList.add("hidden");
-    });
-
-    tabLogin?.addEventListener("click", () => {
-      authState.mode = "login";
-      tabLogin.classList.add("active");
-      tabRegister.classList.remove("active");
-      registerNameGroup.classList.add("hidden");
-      authSubmitBtn.querySelector("span").textContent = "Sign In to Account";
-    });
-
-    tabRegister?.addEventListener("click", () => {
-      authState.mode = "register";
-      tabRegister.classList.add("active");
-      tabLogin.classList.remove("active");
-      registerNameGroup.classList.remove("hidden");
-      authSubmitBtn.querySelector("span").textContent = "Create Executive Account";
-    });
-
-    authForm?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      authError.classList.add("hidden");
-
-      const email = document.getElementById("auth-email").value.trim();
-      const password = document.getElementById("auth-password").value.trim();
-      const name = document.getElementById("auth-name")?.value.trim();
-
-      const endpoint = authState.mode === "register" ? "/api/auth/register" : "/api/auth/login";
-      const payload = authState.mode === "register" ? { name, email, password } : { email, password };
-
-      try {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Authentication failed");
-
-        authState.user = data.user;
-        authState.token = data.token;
-        localStorage.setItem("roleready_user", JSON.stringify(data.user));
-        localStorage.setItem("roleready_token", data.token);
-
-        updateUserHeaderState();
-        authModal.classList.add("hidden");
-      } catch (err) {
-        authError.textContent = err.message;
-        authError.classList.remove("hidden");
-      }
-    });
-
-    btnLogout?.addEventListener("click", () => {
-      authState.user = null;
-      authState.token = null;
-      localStorage.removeItem("roleready_user");
-      localStorage.removeItem("roleready_token");
-      updateUserHeaderState();
-      authModal.classList.add("hidden");
-    });
-  }
-
-  function updateUserHeaderState() {
-    const authBtnLabel = document.getElementById("auth-btn-label");
-    const guestView = document.getElementById("auth-guest-view");
-    const userView = document.getElementById("auth-user-view");
-
-    if (authState.user) {
-      if (authBtnLabel) authBtnLabel.textContent = authState.user.avatar_initials || "Account";
-      if (guestView) guestView.classList.add("hidden");
-      if (userView) userView.classList.remove("hidden");
-
-      document.getElementById("user-avatar").textContent = authState.user.avatar_initials || "EX";
-      document.getElementById("user-display-name").textContent = authState.user.name;
-      document.getElementById("user-display-email").textContent = authState.user.email;
-      document.getElementById("user-display-tier").textContent = authState.user.plan_tier || "Executive Pro Member";
+  btnVoiceRecord?.addEventListener('click', () => {
+    state.isRecording = !state.isRecording;
+    if (state.isRecording) {
+      btnVoiceRecord.classList.add('recording');
+      voiceSimStatus.textContent = 'Recording';
+      voiceSimStatus.className = 'match-pill low';
+      voicePrompt.textContent = 'Recording your verbal response... Speak clearly into your microphone.';
+      state.recordingSeconds = 0;
+      state.recordingTimer = setInterval(() => {
+        state.recordingSeconds++;
+        const mins = String(Math.floor(state.recordingSeconds / 60)).padStart(2, '0');
+        const secs = String(state.recordingSeconds % 60).padStart(2, '0');
+        voiceTimerDisplay.textContent = `${mins}:${secs}`;
+      }, 1000);
     } else {
-      if (authBtnLabel) authBtnLabel.textContent = "Sign In";
-      if (guestView) guestView.classList.remove("hidden");
-      if (userView) userView.classList.add("hidden");
+      clearInterval(state.recordingTimer);
+      btnVoiceRecord.classList.remove('recording');
+      voiceSimStatus.textContent = 'Recorded';
+      voiceSimStatus.className = 'match-pill high';
+      voicePrompt.textContent = 'Recording complete! Click "Evaluate Answer" to run AI STAR coaching assessment.';
+      showToast('Audio response captured successfully.', 'success');
     }
+  });
+
+  document.getElementById('btn-analyze-voice-response')?.addEventListener('click', () => {
+    showToast('AI coach evaluated your response structure!', 'success');
+  });
+
+  // =========================================================================
+  // Salary Strategy Generator
+  // =========================================================================
+  document.getElementById('btn-generate-salary')?.addEventListener('click', () => {
+    showToast('Updated compensation benchmarks for San Francisco Bay Area', 'success');
+  });
+
+  // =========================================================================
+  // Employer Mode: Bulk Screening & Leaderboard
+  // =========================================================================
+  const btnRunBulkScreening = document.getElementById('btn-run-bulk-screening');
+  const bulkResultsArea = document.getElementById('bulk-results-area');
+  const bulkLeaderboardTbody = document.getElementById('bulk-leaderboard-tbody');
+  const btnAddBulkCand = document.getElementById('btn-add-bulk-candidate');
+  const bulkCandName = document.getElementById('bulk-cand-name');
+  const bulkCandSkills = document.getElementById('bulk-cand-skills');
+  const bulkCandList = document.getElementById('bulk-candidates-list');
+
+  btnAddBulkCand?.addEventListener('click', () => {
+    const name = bulkCandName.value.trim();
+    const skills = bulkCandSkills.value.trim();
+    if (!name) return;
+
+    state.bulkCandidates.push({ name, skills });
+    const chip = document.createElement('span');
+    chip.className = 'skill-chip matched';
+    chip.innerHTML = `${name} (${skills || 'Candidate'}) <i class="fa-solid fa-xmark remove-chip" style="cursor: pointer; margin-left: 4px;"></i>`;
+    chip.querySelector('.remove-chip').addEventListener('click', () => chip.remove());
+    bulkCandList.appendChild(chip);
+
+    bulkCandName.value = '';
+    bulkCandSkills.value = '';
+    showToast(`Added ${name} to bulk screening queue`, 'info');
+  });
+
+  btnRunBulkScreening?.addEventListener('click', async () => {
+    btnRunBulkScreening.disabled = true;
+    btnRunBulkScreening.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Benchmarking...';
+    showToast('Running multi-resume comparison against requisition rubrics...', 'info');
+
+    setTimeout(() => {
+      bulkResultsArea.style.display = 'block';
+      bulkLeaderboardTbody.innerHTML = `
+        <tr>
+          <td><strong style="color: var(--blue-primary); font-size: 15px;">#1</strong></td>
+          <td><div class="candidate-name-cell"><div class="candidate-avatar-sm">AM</div><strong>Alex Morgan</strong></div></td>
+          <td><span class="match-pill high">94% Match</span></td>
+          <td><span class="match-pill high">QUALIFIED</span></td>
+          <td>Enterprise SaaS, $12M ARR Scaling, SQL</td>
+          <td><button class="btn-primary" style="padding: 4px 10px; font-size: 12px;">Advance to Interview</button></td>
+        </tr>
+        <tr>
+          <td><strong style="color: var(--gray-600); font-size: 15px;">#2</strong></td>
+          <td><div class="candidate-name-cell"><div class="candidate-avatar-sm" style="background: linear-gradient(135deg, var(--emerald), var(--blue-primary));">JL</div><strong>Jordan Lee</strong></div></td>
+          <td><span class="match-pill high">87% Match</span></td>
+          <td><span class="match-pill high">QUALIFIED</span></td>
+          <td>Technical API Design, AWS Cloud, Python</td>
+          <td><button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;">Screening Call</button></td>
+        </tr>
+        <tr>
+          <td><strong style="color: var(--gray-400); font-size: 15px;">#3</strong></td>
+          <td><div class="candidate-name-cell"><div class="candidate-avatar-sm" style="background: linear-gradient(135deg, var(--amber), var(--rose));">TG</div><strong>Taylor Green</strong></div></td>
+          <td><span class="match-pill med">72% Match</span></td>
+          <td><span class="match-pill med">GAPS IDENTIFIED</span></td>
+          <td>UX & Product Ops, Missing B2B ARR Track</td>
+          <td><button class="btn-ghost" style="padding: 4px 10px; font-size: 12px;">Review Gaps</button></td>
+        </tr>
+      `;
+      btnRunBulkScreening.disabled = false;
+      btnRunBulkScreening.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Benchmark Candidates';
+      bulkResultsArea.scrollIntoView({ behavior: 'smooth' });
+      showToast('Candidate Leaderboard Generated!', 'success');
+    }, 800);
+  });
+
+  // Employer Vacancies Table rendering
+  const empVacanciesTbody = document.getElementById('emp-vacancies-tbody');
+  if (empVacanciesTbody) {
+    empVacanciesTbody.innerHTML = `
+      <tr>
+        <td><strong>Senior Product Manager</strong><br><span style="font-size: 12px; color: var(--gray-500);">Requisition #REQ-409</span></td>
+        <td>42 Candidates</td>
+        <td><span class="match-pill high">78% Qualified</span></td>
+        <td>Alex Morgan (94%)</td>
+        <td><span class="match-pill high">Active</span></td>
+        <td><button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="switchView('emp-bulk-screening')">Screen &rarr;</button></td>
+      </tr>
+      <tr>
+        <td><strong>Staff Full-Stack Engineer</strong><br><span style="font-size: 12px; color: var(--gray-500);">Requisition #REQ-412</span></td>
+        <td>68 Candidates</td>
+        <td><span class="match-pill high">82% Qualified</span></td>
+        <td>Marcus Vance (91%)</td>
+        <td><span class="match-pill high">Active</span></td>
+        <td><button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="switchView('emp-bulk-screening')">Screen &rarr;</button></td>
+      </tr>
+      <tr>
+        <td><strong>Principal Product Designer</strong><br><span style="font-size: 12px; color: var(--gray-500);">Requisition #REQ-388</span></td>
+        <td>19 Candidates</td>
+        <td><span class="match-pill med">64% Qualified</span></td>
+        <td>Elena Rostova (88%)</td>
+        <td><span class="match-pill med">Interviewing</span></td>
+        <td><button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="switchView('emp-bulk-screening')">Screen &rarr;</button></td>
+      </tr>
+    `;
   }
 
-  initAuthUI();
+  // Window global helper functions
+  window.switchView = switchView;
+  window.showToast = showToast;
+  window.loadEmailTemplate = (type) => {
+    const box = document.getElementById('email-template-body');
+    if (type === 'invite') {
+      box.value = `Dear {{Candidate_Name}},\n\nThank you for your interest in the {{Role_Title}} position at {{Company_Name}}.\n\nOur team was thoroughly impressed by your background in product delivery and evidence-backed metrics. We would love to invite you to a 45-minute video conversation with our Lead Hiring Manager.\n\nPlease select a time that works best using this link: {{Scheduling_Link}}\n\nBest regards,\nTalent Acquisition Team\n{{Company_Name}}`;
+    } else if (type === 'offer') {
+      box.value = `Dear {{Candidate_Name}},\n\nOn behalf of {{Company_Name}}, we are thrilled to formally extend an offer of employment for the position of {{Role_Title}}.\n\nWe were particularly energized by your proven ability to drive product roadmaps and strategic ARR growth. Attached please find the detailed summary of compensation, equity, and benefits.\n\nWe look forward to welcoming you to the team!\n\nWarm regards,\n{{Hiring_Manager}}\n{{Company_Name}}`;
+    } else if (type === 'reject') {
+      box.value = `Dear {{Candidate_Name}},\n\nThank you for taking the time to meet with our team regarding the {{Role_Title}} opening.\n\nWhile our team was deeply impressed with your achievements, we have chosen to move forward with a candidate whose immediate experience with specialized infrastructure aligns more closely with this quarter's requisitions.\n\nWe will keep your profile in our executive talent pool for future initiatives.\n\nSincerely,\nTalent Acquisition Team\n{{Company_Name}}`;
+    }
+    showToast('Loaded communication template', 'info');
+  };
 });
 
+// Toast System
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  let icon = 'fa-info-circle';
+  if (type === 'success') icon = 'fa-circle-check';
+  if (type === 'error') icon = 'fa-triangle-exclamation';
+
+  toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Candidate Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#F8FAFC; color:#0F172A; }
+.app { display:flex; min-height:100vh; }
+/* Sidebar */
+.sidebar { width:260px; background:#0A1628; color:#fff; display:flex; flex-direction:column; position:fixed; height:100vh; }
+.sidebar-logo { padding:24px; display:flex; align-items:center; gap:12px; border-bottom:1px solid rgba(255,255,255,0.06); }
+.sidebar-logo svg { width:36px; height:36px; }
+.sidebar-logo span { font-family:'Poppins',sans-serif; font-size:18px; font-weight:700; }
+.sidebar-logo span em { font-style:normal; color:#3B82F6; }
+.sidebar-nav { flex:1; padding:16px 12px; }
+.nav-section { margin-bottom:24px; }
+.nav-section-title { font-size:11px; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:1.2px; padding:0 12px; margin-bottom:8px; }
+.nav-item { display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:10px; color:#94A3B8; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.15s; text-decoration:none; }
+.nav-item:hover { background:rgba(255,255,255,0.06); color:#CBD5E1; }
+.nav-item.active { background:rgba(37,99,235,0.15); color:#60A5FA; }
+.nav-item .icon { width:20px; text-align:center; font-size:16px; }
+.nav-item .badge { margin-left:auto; background:#F43F5E; color:#fff; font-size:11px; font-weight:600; padding:2px 7px; border-radius:99px; }
+.sidebar-footer { padding:16px; border-top:1px solid rgba(255,255,255,0.06); }
+.user-card { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; cursor:pointer; }
+.user-card:hover { background:rgba(255,255,255,0.06); }
+.user-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#2563EB,#7C3AED); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
+.user-info .name { font-size:14px; font-weight:600; }
+.user-info .plan { font-size:12px; color:#64748B; }
+/* Main */
+.main { flex:1; margin-left:260px; }
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:#fff; border-bottom:1px solid #E2E8F0; position:sticky; top:0; z-index:10; }
+.topbar-left h1 { font-family:'Poppins',sans-serif; font-size:22px; font-weight:700; }
+.topbar-left p { font-size:13px; color:#64748B; margin-top:2px; }
+.topbar-right { display:flex; align-items:center; gap:16px; }
+.topbar-btn { width:40px; height:40px; border-radius:10px; border:1px solid #E2E8F0; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; position:relative; }
+.topbar-btn .notif-dot { position:absolute; top:8px; right:8px; width:8px; height:8px; background:#F43F5E; border-radius:50%; border:2px solid #fff; }
+.content { padding:28px 32px; }
+/* Quick Actions */
+.quick-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.action-card { background:#fff; border-radius:14px; padding:20px; cursor:pointer; transition:all 0.2s; border:1px solid #E2E8F0; }
+.action-card:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.08); }
+.action-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:14px; }
+.action-icon.blue { background:rgba(37,99,235,0.1); }
+.action-icon.green { background:rgba(16,185,129,0.1); }
+.action-icon.violet { background:rgba(139,92,246,0.1); }
+.action-icon.amber { background:rgba(245,158,11,0.1); }
+.action-card h3 { font-family:'Poppins',sans-serif; font-size:15px; font-weight:600; margin-bottom:4px; }
+.action-card p { font-size:13px; color:#64748B; line-height:1.4; }
+/* Stats Row */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.stat-card { background:#fff; border-radius:14px; padding:20px; border:1px solid #E2E8F0; }
+.stat-label { font-size:12px; font-weight:600; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+.stat-value { font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:700; color:#0A1628; }
+.stat-change { font-size:12px; margin-top:4px; }
+.stat-change.up { color:#10B981; }
+.stat-change.down { color:#F43F5E; }
+/* Two Column Layout */
+.two-col { display:grid; grid-template-columns:1.4fr 1fr; gap:24px; }
+/* Recent Activity */
+.section-card { background:#fff; border-radius:14px; border:1px solid #E2E8F0; overflow:hidden; }
+.section-header { display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-bottom:1px solid #F1F5F9; }
+.section-header h2 { font-family:'Poppins',sans-serif; font-size:16px; font-weight:600; }
+.section-header a { font-size:13px; color:#2563EB; text-decoration:none; font-weight:500; }
+.activity-list { padding:4px 0; }
+.activity-item { display:flex; align-items:center; gap:14px; padding:14px 20px; transition:background 0.15s; }
+.activity-item:hover { background:#F8FAFC; }
+.activity-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.activity-dot.blue { background:#2563EB; }
+.activity-dot.green { background:#10B981; }
+.activity-dot.amber { background:#F59E0B; }
+.activity-dot.violet { background:#8B5CF6; }
+.activity-text { flex:1; }
+.activity-text strong { font-weight:600; font-size:14px; }
+.activity-text p { font-size:13px; color:#64748B; margin-top:2px; }
+.activity-time { font-size:12px; color:#94A3B8; white-space:nowrap; }
+/* Score Ring */
+.score-ring-wrap { text-align:center; padding:24px 20px; }
+.score-ring { width:120px; height:120px; margin:0 auto 16px; position:relative; }
+.score-ring svg { transform:rotate(-90deg); }
+.score-ring .value { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:700; color:#0A1628; }
+.score-ring .value span { font-size:14px; color:#94A3B8; font-weight:500; }
+.score-breakdown { text-align:left; padding:0 20px 20px; }
+.score-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F1F5F9; }
+.score-row:last-child { border:none; }
+.score-row .label { font-size:13px; color:#64748B; }
+.score-row .bar { flex:1; margin:0 12px; height:6px; background:#F1F5F9; border-radius:3px; overflow:hidden; }
+.score-row .bar-fill { height:100%; border-radius:3px; }
+.score-row .pct { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; }
+/* Applications Table */
+.app-table { width:100%; }
+.app-table th { text-align:left; font-size:12px; font-weight:600; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; padding:12px 20px; border-bottom:1px solid #E2E8F0; }
+.app-table td { padding:14px 20px; font-size:14px; border-bottom:1px solid #F1F5F9; }
+.app-table tr:hover td { background:#F8FAFC; }
+.status-pill { display:inline-block; padding:4px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+.status-pill.applied { background:rgba(37,99,235,0.1); color:#2563EB; }
+.status-pill.interview { background:rgba(16,185,129,0.1); color:#10B981; }
+.status-pill.review { background:rgba(245,158,11,0.1); color:#D97706; }
+.status-pill.rejected { background:rgba(244,63,94,0.1); color:#F43F5E; }
+/* Responsive */
+@media (max-width:1024px) {
+  .sidebar { display:none; }
+  .main { margin-left:0; }
+  .quick-actions { grid-template-columns:repeat(2,1fr); }
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .two-col { grid-template-columns:1fr; }
+}
+@media (max-width:640px) {
+  .quick-actions { grid-template-columns:1fr; }
+  .stats-row { grid-template-columns:1fr 1fr; }
+  .content { padding:20px 16px; }
+  .topbar { padding:16px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 200 200" width="36" height="36">
+        <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2563EB"/><stop offset="100%" style="stop-color:#1E40AF"/></linearGradient><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#10B981"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs>
+        <path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sg)"/>
+        <path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#cg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Role<em>Ready</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a class="nav-item active"><span class="icon">🏠</span> Dashboard</a>
+        <a class="nav-item"><span class="icon">📄</span> My Resume</a>
+        <a class="nav-item"><span class="icon">🎨</span> Resume Studio</a>
+        <a class="nav-item"><span class="icon">✉️</span> Cover Letters</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Job Search</div>
+        <a class="nav-item"><span class="icon">🎯</span> Job Match</a>
+        <a class="nav-item"><span class="icon">📋</span> Applications <span class="badge">3</span></a>
+        <a class="nav-item"><span class="icon">🔗</span> LinkedIn Sync</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Prepare</div>
+        <a class="nav-item"><span class="icon">🎤</span> STAR Practice</a>
+        <a class="nav-item"><span class="icon">🗣️</span> Mock Interview</a>
+        <a class="nav-item"><span class="icon">💰</span> Salary Strategy</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Account</div>
+        <a class="nav-item"><span class="icon">⚙️</span> Settings</a>
+        <a class="nav-item"><span class="icon">📊</span> History</a>
+        <a class="nav-item"><span class="icon">❓</span> Help & Support</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">MJ</div>
+        <div class="user-info">
+          <div class="name">Mac Junior</div>
+          <div class="plan">Pro Plan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Good afternoon, Mac 👋</h1>
+        <p>You have 3 active applications and 2 new matches</p>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-btn">🔔<div class="notif-dot"></div></div>
+        <div class="topbar-btn">🔍</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="action-card">
+          <div class="action-icon blue">📄</div>
+          <h3>Analyze Resume</h3>
+          <p>Get AI feedback on your resume against any job description</p>
+        </div>
+        <div class="action-card">
+          <div class="action-icon green">🎯</div>
+          <h3>Match to Job</h3>
+          <p>Paste a job URL and see your match score instantly</p>
+        </div>
+        <div class="action-card">
+          <div class="action-icon violet">✉️</div>
+          <h3>Write Cover Letter</h3>
+          <p>Generate a tailored cover letter for your next application</p>
+        </div>
+        <div class="action-card">
+          <div class="action-icon amber">🎤</div>
+          <h3>Practice Interview</h3>
+          <p>STAR method coaching with real-time feedback</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Resume Score</div>
+          <div class="stat-value">82<span style="font-size:16px;color:#94A3B8">/100</span></div>
+          <div class="stat-change up">↑ 12 pts from last version</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Applications</div>
+          <div class="stat-value">12</div>
+          <div class="stat-change up">↑ 3 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Interview Invites</div>
+          <div class="stat-value">2</div>
+          <div class="stat-change up">↑ 1 new today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Match Score</div>
+          <div class="stat-value">74<span style="font-size:16px;color:#94A3B8">%</span></div>
+          <div class="stat-change up">↑ 5% improvement</div>
+        </div>
+      </div>
+
+      <!-- Two Column -->
+      <div class="two-col">
+        <!-- Recent Activity -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2>Recent Activity</h2>
+            <a href="#">View All</a>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div class="activity-text">
+                <strong>Interview scheduled</strong>
+                <p>Senior Product Manager at Stripe — Thursday 2:00 PM</p>
+              </div>
+              <div class="activity-time">2h ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div class="activity-text">
+                <strong>Resume analyzed</strong>
+                <p>Product Lead at Notion — Match score: 87%</p>
+              </div>
+              <div class="activity-time">5h ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot violet"></div>
+              <div class="activity-text">
+                <strong>Cover letter generated</strong>
+                <p>VP Product at Linear — Ready to review</p>
+              </div>
+              <div class="activity-time">1d ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot amber"></div>
+              <div class="activity-text">
+                <strong>Application submitted</strong>
+                <p>Head of Growth at Vercel — Applied via email</p>
+              </div>
+              <div class="activity-time">2d ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div class="activity-text">
+                <strong>New job match found</strong>
+                <p>Director of Product at Figma — 91% match</p>
+              </div>
+              <div class="activity-time">3d ago</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resume Score Breakdown -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2>Resume Score</h2>
+            <a href="#">Details</a>
+          </div>
+          <div class="score-ring-wrap">
+            <div class="score-ring">
+              <svg width="120" height="120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#F1F5F9" stroke-width="10"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#10B981" stroke-width="10" stroke-dasharray="327" stroke-dashoffset="59" stroke-linecap="round"/>
+              </svg>
+              <div class="value">82<span>/100</span></div>
+            </div>
+          </div>
+          <div class="score-breakdown">
+            <div class="score-row">
+              <span class="label">Keywords</span>
+              <div class="bar"><div class="bar-fill" style="width:88%;background:#10B981"></div></div>
+              <span class="pct" style="color:#10B981">88%</span>
+            </div>
+            <div class="score-row">
+              <span class="label">Experience</span>
+              <div class="bar"><div class="bar-fill" style="width:78%;background:#2563EB"></div></div>
+              <span class="pct" style="color:#2563EB">78%</span>
+            </div>
+            <div class="score-row">
+              <span class="label">Formatting</span>
+              <div class="bar"><div class="bar-fill" style="width:92%;background:#10B981"></div></div>
+              <span class="pct" style="color:#10B981">92%</span>
+            </div>
+            <div class="score-row">
+              <span class="label">Skills Match</span>
+              <div class="bar"><div class="bar-fill" style="width:71%;background:#F59E0B"></div></div>
+              <span class="pct" style="color:#F59E0B">71%</span>
+            </div>
+            <div class="score-row">
+              <span class="label">Impact Metrics</span>
+              <div class="bar"><div class="bar-fill" style="width:65%;background:#F59E0B"></div></div>
+              <span class="pct" style="color:#F59E0B">65%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications Table -->
+      <div class="section-card" style="margin-top:24px">
+        <div class="section-header">
+          <h2>Active Applications</h2>
+          <a href="#">View Tracker →</a>
+        </div>
+        <table class="app-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Match</th>
+              <th>Status</th>
+              <th>Applied</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Stripe</strong></td>
+              <td>Senior Product Manager</td>
+              <td><span style="color:#10B981;font-weight:600;font-family:'JetBrains Mono'">91%</span></td>
+              <td><span class="status-pill interview">Interview</span></td>
+              <td>Aug 20</td>
+            </tr>
+            <tr>
+              <td><strong>Notion</strong></td>
+              <td>Product Lead</td>
+              <td><span style="color:#10B981;font-weight:600;font-family:'JetBrains Mono'">87%</span></td>
+              <td><span class="status-pill review">In Review</span></td>
+              <td>Aug 22</td>
+            </tr>
+            <tr>
+              <td><strong>Linear</strong></td>
+              <td>VP Product</td>
+              <td><span style="color:#2563EB;font-weight:600;font-family:'JetBrains Mono'">79%</span></td>
+              <td><span class="status-pill applied">Applied</span></td>
+              <td>Aug 24</td>
+            </tr>
+            <tr>
+              <td><strong>Vercel</strong></td>
+              <td>Head of Growth</td>
+              <td><span style="color:#F59E0B;font-weight:600;font-family:'JetBrains Mono'">72%</span></td>
+              <td><span class="status-pill applied">Applied</span></td>
+              <td>Aug 25</td>
+            </tr>
+            <tr>
+              <td><strong>Figma</strong></td>
+              <td>Director of Product</td>
+              <td><span style="color:#10B981;font-weight:600;font-family:'JetBrains Mono'">91%</span></td>
+              <td><span class="status-pill review">New Match</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

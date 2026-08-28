@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Scoring Rubric Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F8FAFC;color:#0F172A}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#0A1628;color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh}
+.sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar-logo svg{width:36px;height:36px}
+.sidebar-logo span{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.sidebar-logo span em{font-style:normal;color:#8B5CF6}
+.sidebar-nav{flex:1;padding:16px 12px}
+.nav-section{margin-bottom:20px}
+.nav-section-title{font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:1.2px;padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#94A3B8;font-size:14px;font-weight:500;cursor:pointer}
+.nav-item.active{background:rgba(139,92,246,.15);color:#A78BFA}
+.nav-item .icon{width:20px;text-align:center;font-size:16px}
+.main{flex:1;margin-left:260px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:10}
+.topbar-left h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700}
+.topbar-left p{font-size:13px;color:#64748B;margin-top:2px}
+.topbar-right{display:flex;gap:12px}
+.btn-action{padding:10px 20px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#8B5CF6;color:#fff}
+.btn-secondary{background:#fff;color:#64748B;border:1px solid #E2E8F0}
+.content{padding:28px 32px}
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+.section-card{background:#fff;border-radius:14px;border:1px solid #E2E8F0;overflow:hidden}
+.section-header{padding:18px 20px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.section-header h2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600}
+/* Rubric Builder */
+.rubric-item{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid #F1F5F9}
+.rubric-item:last-child{border:none}
+.rubric-handle{cursor:grab;color:#CBD5E1;font-size:16px}
+.rubric-info{flex:1}
+.rubric-info input{width:100%;border:none;font-size:14px;font-weight:600;padding:4px 0;background:transparent}
+.rubric-info input:focus{outline:none}
+.rubric-controls{display:flex;align-items:center;gap:10px}
+.rubric-type{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid #E2E8F0;background:#fff}
+.rubric-type.active-essential{border-color:#F43F5E;background:rgba(244,63,94,.06);color:#F43F5E}
+.rubric-type.active-preferred{border-color:#2563EB;background:rgba(37,99,235,.06);color:#2563EB}
+.rubric-type.active-nice{border-color:#94A3B8;background:rgba(148,163,184,.06);color:#64748B}
+.weight-input{width:56px;padding:6px 8px;border:1.5px solid #E2E8F0;border-radius:6px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
+.weight-input:focus{outline:none;border-color:#8B5CF6}
+.rubric-delete{width:28px;height:28px;border-radius:6px;border:1px solid #E2E8F0;background:#fff;cursor:pointer;font-size:12px;color:#94A3B8;display:flex;align-items:center;justify-content:center}
+.rubric-delete:hover{border-color:#F43F5E;color:#F43F5E}
+.add-criteria{padding:14px 20px;text-align:center;cursor:pointer;color:#8B5CF6;font-size:14px;font-weight:600;border-top:1px solid #F1F5F9}
+.add-criteria:hover{background:rgba(139,92,246,.04)}
+/* Weight Bar */
+.weight-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin:16px 20px}
+.weight-bar div{height:100%}
+.weight-total{padding:0 20px 16px;display:flex;justify-content:space-between;font-size:12px}
+.weight-total .ok{color:#10B981}
+.weight-total .over{color:#F43F5E}
+/* Preview */
+.preview-card{padding:20px}
+.preview-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F1F5F9}
+.preview-row:last-child{border:none}
+.preview-row .name{font-size:14px;font-weight:500}
+.preview-row .type{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px}
+.preview-row .type.essential{background:rgba(244,63,94,.1);color:#F43F5E}
+.preview-row .type.preferred{background:rgba(37,99,235,.1);color:#2563EB}
+.preview-row .type.nice{background:rgba(148,163,184,.1);color:#64748B}
+.preview-row .weight{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#8B5CF6}
+/* Templates */
+.template-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:20px}
+.template-card{padding:16px;border:1.5px solid #E2E8F0;border-radius:10px;cursor:pointer;transition:all .15s}
+.template-card:hover{border-color:#8B5CF6}
+.template-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.template-card p{font-size:12px;color:#64748B}
+.template-card .criteria-count{font-size:11px;color:#8B5CF6;font-weight:600;margin-top:6px}
+@media(max-width:1024px){.sidebar{display:none}.main{margin-left:0}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 200 200" width="36" height="36"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8B5CF6"/><stop offset="100%" style="stop-color:#7C3AED"/></linearGradient><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#10B981"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs><path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sg)"/><path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#cg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Role<em>Ready</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Config</div>
+        <a class="nav-item active"><span class="icon">📐</span> Scoring Rubrics</a>
+        <a class="nav-item"><span class="icon">📧</span> Email Templates</a>
+        <a class="nav-item"><span class="icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>📐 Scoring Rubric Builder</h1>
+        <p>Senior Product Manager · 7 criteria · Last updated Aug 25</p>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-action btn-secondary">📋 Duplicate</button>
+        <button class="btn-action btn-primary">💾 Save Rubric</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="two-col">
+        <!-- Builder -->
+        <div>
+          <div class="section-card" style="margin-bottom:20px">
+            <div class="section-header"><h2>Criteria & Weights</h2><span style="font-size:13px;color:#64748B">Total: 100%</span></div>
+            <div class="rubric-item">
+              <span class="rubric-handle">⠿</span>
+              <div class="rubric-info"><input value="Product Strategy"></div>
+              <div class="rubric-controls">
+                <span class="rubric-type active-essential">Essential</span>
+                <input class="weight-input" value="30">%
+                <button class="rubric-delete">✕</button>
+              </div>
+            </div>
+            <div class="rubric-item">
+              <span class="rubric-handle">⠿</span>
+              <div class="rubric-info"><input value="Team Leadership"></div>
+              <div class="rubric-controls">
+                <span class="rubric-type active-essential">Essential</span>
+                <input class="weight-input" value="25">%
+                <button class="rubric-delete">✕</button>
+              </div>
+            </div>
+            <div class="rubric-item">
+              <span class="rubric-handle">⠿</span>
+              <div class="rubric-info"><input value="Technical Fluency"></div>
+              <div class="rubric-controls">
+                <span class="rubric-type active-preferred">Preferred</span>
+                <input class="weight-input" value="20">%
+                <button class="rubric-delete">✕</button>
+              </div>
+            </div>
+            <div class="rubric-item">
+              <span class="rubric-handle">⠿</span>
+              <div class="rubric-info"><input value="Data Analysis"></div>
+              <div class="rubric-controls">
+                <span class="rubric-type active-preferred">Preferred</span>
+                <input class="weight-input" value="15">%
+                <button class="rubric-delete">✕</button>
+              </div>
+            </div>
+            <div class="rubric-item">
+              <span class="rubric-handle">⠿</span>
+              <div class="rubric-info"><input value="Industry Experience"></div>
+              <div class="rubric-controls">
+                <span class="rubric-type active-nice">Nice-to-have</span>
+                <input class="weight-input" value="10">%
+                <button class="rubric-delete">✕</button>
+              </div>
+            </div>
+            <div class="add-criteria">+ Add Criterion</div>
+            <div class="weight-bar">
+              <div style="width:30%;background:#F43F5E"></div>
+              <div style="width:25%;background:#F43F5E;opacity:.7"></div>
+              <div style="width:20%;background:#2563EB"></div>
+              <div style="width:15%;background:#2563EB;opacity:.7"></div>
+              <div style="width:10%;background:#94A3B8"></div>
+            </div>
+            <div class="weight-total">
+              <span>Essential: 55%</span>
+              <span>Preferred: 35%</span>
+              <span class="ok">Total: 100% ✓</span>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-header"><h2>Rubric Templates</h2></div>
+            <div class="template-grid">
+              <div class="template-card">
+                <h3>💼 Product Manager</h3>
+                <p>Strategy, leadership, technical, data</p>
+                <div class="criteria-count">7 criteria</div>
+              </div>
+              <div class="template-card">
+                <h3>💻 Software Engineer</h3>
+                <p>Algorithms, system design, coding, communication</p>
+                <div class="criteria-count">6 criteria</div>
+              </div>
+              <div class="template-card">
+                <h3>📊 Data Scientist</h3>
+                <p>Statistics, ML, SQL, communication, domain</p>
+                <div class="criteria-count">8 criteria</div>
+              </div>
+              <div class="template-card">
+                <h3>🎨 Designer</h3>
+                <p>Portfolio, process, tools, communication</p>
+                <div class="criteria-count">6 criteria</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div>
+          <div class="section-card">
+            <div class="section-header"><h2>How Candidates Will Be Scored</h2></div>
+            <div class="preview-card">
+              <div class="preview-row">
+                <span class="name">Product Strategy</span>
+                <span class="type essential">Essential</span>
+                <span class="weight">30%</span>
+              </div>
+              <div class="preview-row">
+                <span class="name">Team Leadership</span>
+                <span class="type essential">Essential</span>
+                <span class="weight">25%</span>
+              </div>
+              <div class="preview-row">
+                <span class="name">Technical Fluency</span>
+                <span class="type preferred">Preferred</span>
+                <span class="weight">20%</span>
+              </div>
+              <div class="preview-row">
+                <span class="name">Data Analysis</span>
+                <span class="type preferred">Preferred</span>
+                <span class="weight">15%</span>
+              </div>
+              <div class="preview-row">
+                <span class="name">Industry Experience</span>
+                <span class="type nice">Nice-to-have</span>
+                <span class="weight">10%</span>
+              </div>
+            </div>
+            <div style="padding:16px 20px;border-top:1px solid #F1F5F9">
+              <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">Example Scoring</h3>
+              <div style="background:#F8FAFC;border-radius:8px;padding:14px;font-size:13px;line-height:1.6">
+                <p><strong>Candidate: Sarah Johnson</strong></p>
+                <p>Product Strategy: <span style="color:#10B981;font-weight:600">5/5</span> × 30% = 1.50</p>
+                <p>Team Leadership: <span style="color:#10B981;font-weight:600">5/5</span> × 25% = 1.25</p>
+                <p>Technical Fluency: <span style="color:#10B981;font-weight:600">5/5</span> × 20% = 1.00</p>
+                <p>Data Analysis: <span style="color:#10B981;font-weight:600">5/5</span> × 15% = 0.75</p>
+                <p>Industry: <span style="color:#2563EB;font-weight:600">4/5</span> × 10% = 0.80</p>
+                <p style="margin-top:8px;font-weight:700;color:#10B981">Total: 5.30 / 5.00 = 94%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

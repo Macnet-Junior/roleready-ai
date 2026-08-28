@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Application Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F8FAFC;color:#0F172A}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#0A1628;color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh}
+.sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar-logo svg{width:36px;height:36px}
+.sidebar-logo span{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.sidebar-logo span em{font-style:normal;color:#3B82F6}
+.sidebar-nav{flex:1;padding:16px 12px}
+.nav-section{margin-bottom:24px}
+.nav-section-title{font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:1.2px;padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#94A3B8;font-size:14px;font-weight:500;cursor:pointer}
+.nav-item.active{background:rgba(37,99,235,.15);color:#60A5FA}
+.nav-item .icon{width:20px;text-align:center;font-size:16px}
+.nav-item .badge{margin-left:auto;background:#F43F5E;color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px}
+.main{flex:1;margin-left:260px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:10}
+.topbar-left h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700}
+.topbar-left p{font-size:13px;color:#64748B;margin-top:2px}
+.topbar-right{display:flex;gap:12px}
+.btn-action{padding:10px 20px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#2563EB;color:#fff}
+.btn-secondary{background:#fff;color:#64748B;border:1px solid #E2E8F0}
+.content{padding:28px 32px}
+/* Pipeline Stats */
+.pipeline-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.pipeline-stat{background:#fff;border-radius:12px;padding:16px;border:1px solid #E2E8F0;text-align:center;cursor:pointer;transition:all .15s}
+.pipeline-stat:hover{border-color:#3B82F6}
+.pipeline-stat.active{border-color:#2563EB;background:rgba(37,99,235,.04)}
+.pipeline-stat .num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700}
+.pipeline-stat .lbl{font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;margin-top:2px}
+/* View Toggle + Filters */
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap}
+.view-toggle{display:flex;background:#F1F5F9;border-radius:8px;padding:3px}
+.view-btn{padding:8px 14px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;color:#64748B}
+.view-btn.active{background:#fff;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter-chip{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid #E2E8F0;background:#fff}
+.filter-chip.active{border-color:#2563EB;background:rgba(37,99,235,.06);color:#2563EB}
+.search-box{padding:8px 14px;border-radius:8px;border:1.5px solid #E2E8F0;font-size:13px;width:220px}
+/* Kanban Board */
+.kanban{display:flex;gap:16px;overflow-x:auto;padding-bottom:16px}
+.kanban-col{min-width:260px;flex:1}
+.kanban-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin-bottom:12px}
+.kanban-header h3{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.kanban-header .count{font-family:'JetBrains Mono',monospace;font-size:12px;background:#F1F5F9;padding:2px 8px;border-radius:4px}
+.kanban-card{background:#fff;border-radius:12px;border:1px solid #E2E8F0;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.kanban-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.kanban-card .company{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.kanban-card .company-logo{width:36px;height:36px;border-radius:8px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#64748B}
+.kanban-card .company-name{font-weight:600;font-size:14px}
+.kanban-card .role{font-size:13px;color:#64748B;margin-bottom:10px}
+.kanban-card .meta{display:flex;align-items:center;justify-content:space-between}
+.kanban-card .match{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+.kanban-card .date{font-size:12px;color:#94A3B8}
+.kanban-card .tags{display:flex;gap:6px;margin-top:10px}
+.kanban-card .tag{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:500}
+.kanban-card .tag.remote{background:rgba(139,92,246,.1);color:#7C3AED}
+.kanban-card .tag.urgent{background:rgba(244,63,94,.1);color:#F43F5E}
+.kanban-card .tag.new{background:rgba(37,99,235,.1);color:#2563EB}
+/* Detail Panel */
+.detail-panel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:#fff;border-left:1px solid #E2E8F0;z-index:100;transition:right .3s;overflow-y:auto;box-shadow:-4px 0 20px rgba(0,0,0,.1)}
+.detail-panel.open{right:0}
+.detail-header{padding:20px 24px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between}
+.detail-header h2{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.detail-close{width:32px;height:32px;border-radius:8px;border:1px solid #E2E8F0;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.detail-body{padding:24px}
+.detail-section{margin-bottom:24px}
+.detail-section h3{font-size:13px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:14px}
+.detail-row .label{color:#64748B}
+.detail-row .value{font-weight:600}
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:#E2E8F0}
+.timeline-item{position:relative;padding-bottom:16px}
+.timeline-item::before{content:'';position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid #E2E8F0;background:#fff}
+.timeline-item.active::before{border-color:#2563EB;background:#2563EB}
+.timeline-item .time{font-size:12px;color:#94A3B8}
+.timeline-item .event{font-size:14px;font-weight:500;margin-top:2px}
+@media(max-width:1024px){.sidebar{display:none}.main{margin-left:0}.pipeline-stats{grid-template-columns:repeat(3,1fr)}.kanban{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 200 200" width="36" height="36"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2563EB"/><stop offset="100%" style="stop-color:#1E40AF"/></linearGradient><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#10B981"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs><path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sg)"/><path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#cg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Role<em>Ready</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Main</div>
+        <a class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+        <a class="nav-item"><span class="icon">📄</span> My Resume</a>
+        <a class="nav-item"><span class="icon">✉️</span> Cover Letters</a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Job Search</div>
+        <a class="nav-item"><span class="icon">🎯</span> Job Match</a>
+        <a class="nav-item active"><span class="icon">📋</span> Applications <span class="badge">5</span></a>
+        <a class="nav-item"><span class="icon">🔗</span> LinkedIn Sync</a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Prepare</div>
+        <a class="nav-item"><span class="icon">🎤</span> STAR Practice</a>
+        <a class="nav-item"><span class="icon">💰</span> Salary Strategy</a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Account</div>
+        <a class="nav-item"><span class="icon">🎨</span> Themes</a>
+        <a class="nav-item"><span class="icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>📋 Application Tracker</h1>
+        <p>12 total applications · 3 this week</p>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-action btn-secondary">📥 Export CSV</button>
+        <button class="btn-action btn-primary">+ Add Application</button>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Pipeline Stats -->
+      <div class="pipeline-stats">
+        <div class="pipeline-stat"><div class="num" style="color:#94A3B8">4</div><div class="lbl">Saved</div></div>
+        <div class="pipeline-stat active"><div class="num" style="color:#2563EB">3</div><div class="lbl">Applied</div></div>
+        <div class="pipeline-stat"><div class="num" style="color:#D97706">2</div><div class="lbl">Screening</div></div>
+        <div class="pipeline-stat"><div class="num" style="color:#8B5CF6">2</div><div class="lbl">Interview</div></div>
+        <div class="pipeline-stat"><div class="num" style="color:#F59E0B">1</div><div class="lbl">Offer</div></div>
+        <div class="pipeline-stat"><div class="num" style="color:#10B981">0</div><div class="lbl">Hired</div></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="view-toggle">
+          <div class="view-btn active">📋 Board</div>
+          <div class="view-btn">📊 List</div>
+          <div class="view-btn">📅 Calendar</div>
+        </div>
+        <div class="filters">
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip">Remote</div>
+          <div class="filter-chip">This Week</div>
+          <div class="filter-chip">High Match</div>
+          <input class="search-box" type="text" placeholder="🔍 Search applications...">
+        </div>
+      </div>
+
+      <!-- Kanban Board -->
+      <div class="kanban">
+        <div class="kanban-col">
+          <div class="kanban-header"><h3>📌 Saved <span class="count">4</span></h3></div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">A</div><div class="company-name">Airbnb</div></div>
+            <div class="role">Director of Product</div>
+            <div class="meta"><span class="match" style="color:#10B981">88%</span><span class="date">Saved Aug 25</span></div>
+            <div class="tags"><span class="tag remote">Remote</span><span class="tag new">New</span></div>
+          </div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">D</div><div class="company-name">Datadog</div></div>
+            <div class="role">VP Product</div>
+            <div class="meta"><span class="match" style="color:#2563EB">76%</span><span class="date">Saved Aug 24</span></div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-header"><h3>✈️ Applied <span class="count">3</span></h3></div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">V</div><div class="company-name">Vercel</div></div>
+            <div class="role">Head of Growth</div>
+            <div class="meta"><span class="match" style="color:#F59E0B">72%</span><span class="date">Applied Aug 25</span></div>
+          </div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">L</div><div class="company-name">Linear</div></div>
+            <div class="role">VP Product</div>
+            <div class="meta"><span class="match" style="color:#2563EB">79%</span><span class="date">Applied Aug 24</span></div>
+          </div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">F</div><div class="company-name">Figma</div></div>
+            <div class="role">Director of Product</div>
+            <div class="meta"><span class="match" style="color:#10B981">91%</span><span class="date">Applied Aug 23</span></div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-header"><h3>🔍 Screening <span class="count">2</span></h3></div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">N</div><div class="company-name">Notion</div></div>
+            <div class="role">Product Lead</div>
+            <div class="meta"><span class="match" style="color:#10B981">87%</span><span class="date">Updated Aug 26</span></div>
+          </div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">C</div><div class="company-name">Coinbase</div></div>
+            <div class="role">Sr. PM, DeFi</div>
+            <div class="meta"><span class="match" style="color:#2563EB">74%</span><span class="date">Updated Aug 25</span></div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-header"><h3>🎤 Interview <span class="count">2</span></h3></div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">S</div><div class="company-name">Stripe</div></div>
+            <div class="role">Senior Product Manager</div>
+            <div class="meta"><span class="match" style="color:#10B981">91%</span><span class="date">Thu 2:00 PM</span></div>
+            <div class="tags"><span class="tag urgent">Tomorrow</span></div>
+          </div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">A</div><div class="company-name">Anthropic</div></div>
+            <div class="role">PM, Safety</div>
+            <div class="meta"><span class="match" style="color:#10B981">85%</span><span class="date">Mon 10:00 AM</span></div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-header"><h3>💰 Offer <span class="count">1</span></h3></div>
+          <div class="kanban-card">
+            <div class="company"><div class="company-logo">O</div><div class="company-name">OpenAI</div></div>
+            <div class="role">PM, Platform</div>
+            <div class="meta"><span class="match" style="color:#10B981">93%</span><span class="date">Offer Aug 26</span></div>
+            <div class="tags"><span class="tag" style="background:rgba(16,185,129,.1);color:#10B981">$280K TC</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Panel -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-header">
+      <h2>Stripe — Sr. PM</h2>
+      <button class="detail-close" onclick="document.getElementById('detailPanel').classList.remove('open')">✕</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <h3>Application Details</h3>
+        <div class="detail-row"><span class="label">Company</span><span class="value">Stripe</span></div>
+        <div class="detail-row"><span class="label">Role</span><span class="value">Senior Product Manager</span></div>
+        <div class="detail-row"><span class="label">Location</span><span class="value">San Francisco / Remote</span></div>
+        <div class="detail-row"><span class="label">Salary Range</span><span class="value">$190K–$240K</span></div>
+        <div class="detail-row"><span class="label">Match Score</span><span class="value" style="color:#10B981">91%</span></div>
+        <div class="detail-row"><span class="label">Resume Used</span><span class="value">v3 (Aug 20)</span></div>
+        <div class="detail-row"><span class="label">Cover Letter</span><span class="value">Generated</span></div>
+      </div>
+      <div class="detail-section">
+        <h3>Timeline</h3>
+        <div class="timeline">
+          <div class="timeline-item"><div class="time">Aug 20</div><div class="event">Applied via email</div></div>
+          <div class="timeline-item"><div class="time">Aug 22</div><div class="event">Resume reviewed by recruiter</div></div>
+          <div class="timeline-item"><div class="time">Aug 24</div><div class="event">Phone screen scheduled</div></div>
+          <div class="timeline-item active"><div class="time">Aug 28 · 2:00 PM</div><div class="event">Technical interview</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h3>Notes</h3>
+        <textarea style="width:100%;padding:12px;border:1px solid #E2E8F0;border-radius:8px;font-size:14px;min-height:80px;resize:vertical" placeholder="Add notes about this application...">Recruiter mentioned they value product-led growth experience. Prepare examples of PLG initiatives.</textarea>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

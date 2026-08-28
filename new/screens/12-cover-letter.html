@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Cover Letter Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F8FAFC;color:#0F172A}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#0A1628;color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh}
+.sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar-logo svg{width:36px;height:36px}
+.sidebar-logo span{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.sidebar-logo span em{font-style:normal;color:#3B82F6}
+.sidebar-nav{flex:1;padding:16px 12px}
+.nav-section{margin-bottom:24px}
+.nav-section-title{font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:1.2px;padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#94A3B8;font-size:14px;font-weight:500;cursor:pointer}
+.nav-item.active{background:rgba(37,99,235,.15);color:#60A5FA}
+.nav-item .icon{width:20px;text-align:center;font-size:16px}
+.main{flex:1;margin-left:260px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:10}
+.topbar-left h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700}
+.topbar-right{display:flex;gap:12px}
+.btn-action{padding:10px 20px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#2563EB;color:#fff}
+.btn-secondary{background:#fff;color:#64748B;border:1px solid #E2E8F0}
+.content{padding:28px 32px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.section-card{background:#fff;border-radius:14px;border:1px solid #E2E8F0;overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #F1F5F9}
+.section-header h2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600}
+.form-group{margin-bottom:20px}
+.form-label{font-size:13px;font-weight:600;color:#475569;margin-bottom:6px;display:block}
+.form-input{width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px}
+.form-input:focus{outline:none;border-color:#3B82F6}
+.form-select{width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;background:#fff}
+.tone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.tone-chip{padding:10px;text-align:center;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid #E2E8F0;transition:all .15s}
+.tone-chip:hover{border-color:#3B82F6}
+.tone-chip.active{border-color:#2563EB;background:rgba(37,99,235,.06);color:#2563EB}
+.letter-preview{padding:24px;font-size:14px;line-height:1.8;color:#334155}
+.letter-preview p{margin-bottom:16px}
+.letter-preview .greeting{font-weight:600}
+.letter-preview .highlight{background:rgba(37,99,235,.08);padding:2px 6px;border-radius:4px}
+.version-list{padding:0}
+.version-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #F1F5F9;cursor:pointer}
+.version-item:hover{background:#F8FAFC}
+.version-item.active{background:rgba(37,99,235,.04);border-left:3px solid #2563EB}
+.version-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.version-info{flex:1}
+.version-info .name{font-size:14px;font-weight:600}
+.version-info .meta{font-size:12px;color:#64748B}
+.version-actions{display:flex;gap:6px}
+.version-btn{padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #E2E8F0;background:#fff}
+@media(max-width:1024px){.sidebar{display:none}.main{margin-left:0}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 200 200" width="36" height="36"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2563EB"/><stop offset="100%" style="stop-color:#1E40AF"/></linearGradient><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#10B981"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs><path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sg)"/><path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#cg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Role<em>Ready</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Main</div>
+        <a class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+        <a class="nav-item"><span class="icon">📄</span> My Resume</a>
+        <a class="nav-item active"><span class="icon">✉️</span> Cover Letters</a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Job Search</div>
+        <a class="nav-item"><span class="icon">🎯</span> Job Match</a>
+        <a class="nav-item"><span class="icon">📋</span> Applications</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>✉️ Cover Letter Generator</h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-action btn-secondary">📥 Export PDF</button>
+        <button class="btn-action btn-primary">🔄 Regenerate</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="two-col">
+        <!-- Left: Config -->
+        <div>
+          <div class="section-card" style="margin-bottom:20px">
+            <div class="section-header"><h2>Configuration</h2></div>
+            <div style="padding:20px">
+              <div class="form-group">
+                <label class="form-label">Target Role</label>
+                <input class="form-input" value="Senior Product Manager at Stripe">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hiring Manager (optional)</label>
+                <input class="form-input" placeholder="e.g., Sarah Chen, VP of Product">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Voice / Tone</label>
+                <div class="tone-grid">
+                  <div class="tone-chip active">Professional</div>
+                  <div class="tone-chip">Direct</div>
+                  <div class="tone-chip">Warm</div>
+                  <div class="tone-chip">Executive</div>
+                  <div class="tone-chip">Technical</div>
+                  <div class="tone-chip">Concise</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Key Emphasis</label>
+                <select class="form-select">
+                  <option>Auto-detect from job description</option>
+                  <option>Leadership & Strategy</option>
+                  <option>Technical Skills</option>
+                  <option>Revenue Impact</option>
+                  <option>Team Building</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Special Instructions (optional)</label>
+                <textarea class="form-input" rows="3" placeholder="e.g., Mention my experience with fintech products..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-header"><h2>Version History</h2></div>
+            <div class="version-list">
+              <div class="version-item active">
+                <div class="version-dot" style="background:#10B981"></div>
+                <div class="version-info">
+                  <div class="name">v3 — Professional</div>
+                  <div class="meta">Generated Aug 27 · Stripe PM</div>
+                </div>
+              </div>
+              <div class="version-item">
+                <div class="version-dot" style="background:#2563EB"></div>
+                <div class="version-info">
+                  <div class="name">v2 — Direct</div>
+                  <div class="meta">Generated Aug 25 · Stripe PM</div>
+                </div>
+              </div>
+              <div class="version-item">
+                <div class="version-dot" style="background:#8B5CF6"></div>
+                <div class="version-info">
+                  <div class="name">v1 — Warm</div>
+                  <div class="meta">Generated Aug 24 · Notion Lead</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Preview -->
+        <div>
+          <div class="section-card">
+            <div class="section-header">
+              <h2>Preview — v3 Professional</h2>
+              <span style="font-size:12px;color:#64748B">382 words</span>
+            </div>
+            <div class="letter-preview">
+              <p class="greeting">Dear Hiring Team,</p>
+              <p>I'm writing to express my interest in the Senior Product Manager role at Stripe. With <span class="highlight">8 years of product leadership experience</span> across B2B SaaS and fintech, I'm excited about the opportunity to contribute to Stripe's mission of increasing the GDP of the internet.</p>
+              <p>In my current role, I led the development and launch of a <span class="highlight">product-led growth initiative that increased self-serve revenue by 40%</span> within 6 months. I managed a cross-functional team of 12 across engineering, design, and data science, delivering a product roadmap that prioritized 40+ features based on customer feedback and revenue impact.</p>
+              <p>What draws me to Stripe is the emphasis on <span class="highlight">developer experience and infrastructure reliability</span>. My background in technical product management, combined with my experience running A/B tests and analyzing product metrics using SQL, aligns well with the data-driven culture described in the job posting.</p>
+              <p>I'm particularly proud of building a product analytics framework that reduced time-to-insight from days to hours, enabling the team to make faster decisions on feature prioritization. This experience taught me the importance of <span class="highlight">making data accessible to everyone, not just analysts</span>.</p>
+              <p>I'd welcome the opportunity to discuss how my experience in product strategy, team leadership, and data-driven decision making can contribute to Stripe's product team.</p>
+              <p class="greeting">Best regards,<br>Mac Junior</p>
+            </div>
+            <div style="padding:16px 20px;border-top:1px solid #F1F5F9;display:flex;gap:8px">
+              <button class="btn-action btn-primary" style="flex:1">✏️ Edit Letter</button>
+              <button class="btn-action btn-secondary" style="flex:1">📋 Copy to Clipboard</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

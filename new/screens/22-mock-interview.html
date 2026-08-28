@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Mock Interview</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0A1628;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+/* Top Bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.08)}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-left .back{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.topbar-left h1{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.topbar-center{display:flex;align-items:center;gap:8px}
+.timer{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#3B82F6}
+.question-count{font-size:13px;color:#94A3B8}
+.topbar-right{display:flex;gap:8px}
+.topbar-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#94A3B8}
+.topbar-btn.end{background:#F43F5E;color:#fff;border:none}
+/* Main Area */
+.interview-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.interviewer{margin-bottom:32px}
+.interviewer .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px}
+.interviewer .name{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600}
+.interviewer .style{font-size:13px;color:#94A3B8}
+.question-bubble{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px 32px;max-width:600px;margin-bottom:32px;position:relative}
+.question-bubble::before{content:'🎤';position:absolute;top:-16px;left:24px;font-size:24px}
+.question-bubble .category{font-size:11px;font-weight:600;color:#8B5CF6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.question-bubble .question{font-family:'Poppins',sans-serif;font-size:20px;font-weight:600;line-height:1.4}
+/* Recording */
+.recording-controls{display:flex;flex-direction:column;align-items:center;gap:16px}
+.record-btn{width:72px;height:72px;border-radius:50%;border:3px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:28px;transition:all .2s;position:relative}
+.record-btn.recording{border-color:#F43F5E;background:rgba(244,63,94,.1)}
+.record-btn .pulse{position:absolute;width:100%;height:100%;border-radius:50%;border:2px solid #F43F5E;animation:pulse-ring 1.5s infinite;opacity:0}
+.record-btn.recording .pulse{opacity:1}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.5);opacity:0}}
+.record-status{font-size:14px;color:#94A3B8}
+.record-timer{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700}
+.record-actions{display:flex;gap:12px}
+.action-btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.action-btn.skip{background:rgba(255,255,255,.1);color:#94A3B8;border:1px solid rgba(255,255,255,.1)}
+.action-btn.submit{background:#2563EB;color:#fff}
+.action-btn.tips{background:rgba(139,92,246,.15);color:#A78BFA}
+/* Live Feedback Sidebar */
+.feedback-sidebar{position:fixed;right:0;top:60px;width:320px;height:calc(100vh - 60px);background:rgba(255,255,255,.03);border-left:1px solid rgba(255,255,255,.06);padding:20px;overflow-y:auto;backdrop-filter:blur(10px)}
+.feedback-sidebar h3{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.live-indicator{width:8px;height:8px;border-radius:50%;background:#10B981;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.feedback-item{padding:12px;background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:10px;border-left:3px solid transparent}
+.feedback-item.good{border-left-color:#10B981}
+.feedback-item.warn{border-left-color:#F59E0B}
+.feedback-item.bad{border-left-color:#F43F5E}
+.feedback-item .label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.feedback-item.good .label{color:#10B981}
+.feedback-item.warn .label{color:#F59E0B}
+.feedback-item.bad .label{color:#F43F5E}
+.feedback-item p{font-size:13px;color:#CBD5E1;line-height:1.4}
+/* Progress */
+.progress-dots{display:flex;gap:6px;margin-bottom:20px}
+.progress-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15)}
+.progress-dot.done{background:#10B981}
+.progress-dot.active{background:#2563EB}
+/* Score Preview */
+.score-preview{text-align:center;padding:16px;background:rgba(255,255,255,.04);border-radius:10px;margin-top:16px}
+.score-preview .label{font-size:11px;color:#94A3B8;margin-bottom:4px}
+.score-preview .score{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#10B981}
+</style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back">←</button>
+      <h1>Mock Interview</h1>
+    </div>
+    <div class="topbar-center">
+      <div class="timer">12:34</div>
+      <div class="question-count">Question 3 of 5</div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn">⏸ Pause</button>
+      <button class="topbar-btn end">End Interview</button>
+    </div>
+  </div>
+
+  <!-- Main Interview Area -->
+  <div class="interview-area">
+    <div class="interviewer">
+      <div class="avatar">🤖</div>
+      <div class="name">Alex — Interview Coach</div>
+      <div class="style">Style: Challenging · Tech Focus</div>
+    </div>
+
+    <div class="question-bubble">
+      <div class="category">Product Sense · Follow-up to Q2</div>
+      <div class="question">You mentioned prioritizing features based on customer feedback. How would you handle a situation where the CEO wants a feature that customers haven't asked for?</div>
+    </div>
+
+    <div class="recording-controls">
+      <div class="record-btn recording" id="recordBtn">
+        <span>⏹</span>
+        <div class="pulse"></div>
+      </div>
+      <div class="record-status">Recording... Speak your answer</div>
+      <div class="record-timer">0:47</div>
+      <div class="record-actions">
+        <button class="action-btn tips">💡 Tips</button>
+        <button class="action-btn skip">⏭ Skip</button>
+        <button class="action-btn submit">✓ Submit Answer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Feedback Sidebar -->
+  <div class="feedback-sidebar">
+    <h3><div class="live-indicator"></div> Live Feedback</h3>
+
+    <div class="progress-dots">
+      <div class="progress-dot done"></div>
+      <div class="progress-dot done"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+
+    <div class="feedback-item good">
+      <div class="label">✓ Structure</div>
+      <p>Good use of STAR framework. You're clearly setting up the situation before diving into your answer.</p>
+    </div>
+
+    <div class="feedback-item good">
+      <div class="label">✓ Clarity</div>
+      <p>Your answer is easy to follow. Good pacing and logical flow.</p>
+    </div>
+
+    <div class="feedback-item warn">
+      <div class="label">⚠ Evidence</div>
+      <p>Consider adding a specific example. "In my previous role..." would strengthen this point.</p>
+    </div>
+
+    <div class="feedback-item warn">
+      <div class="label">⚠ Filler Words</div>
+      <p>Detected 3 instances of "um" or "uh". Try pausing instead — it sounds more confident.</p>
+    </div>
+
+    <div class="score-preview">
+      <div class="label">Current Score</div>
+      <div class="score">3.6/5</div>
+    </div>
+  </div>
+</body>
+</html>

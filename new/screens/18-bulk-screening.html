@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Employer: Bulk Screening</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F8FAFC;color:#0F172A}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#0A1628;color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh}
+.sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar-logo svg{width:36px;height:36px}
+.sidebar-logo span{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.sidebar-logo span em{font-style:normal;color:#8B5CF6}
+.sidebar-nav{flex:1;padding:16px 12px}
+.nav-section{margin-bottom:20px}
+.nav-section-title{font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:1.2px;padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#94A3B8;font-size:14px;font-weight:500;cursor:pointer}
+.nav-item.active{background:rgba(139,92,246,.15);color:#A78BFA}
+.nav-item .icon{width:20px;text-align:center;font-size:16px}
+.main{flex:1;margin-left:260px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:10}
+.topbar-left h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700}
+.topbar-left p{font-size:13px;color:#64748B;margin-top:2px}
+.topbar-right{display:flex;gap:12px}
+.btn-action{padding:10px 20px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#8B5CF6;color:#fff}
+.btn-secondary{background:#fff;color:#64748B;border:1px solid #E2E8F0}
+.content{padding:28px 32px}
+/* Upload Zone */
+.upload-card{background:#fff;border-radius:16px;border:2px dashed #CBD5E1;padding:40px;text-align:center;margin-bottom:28px;cursor:pointer}
+.upload-card:hover{border-color:#8B5CF6;background:rgba(139,92,246,.02)}
+.upload-card .icon{font-size:48px;margin-bottom:12px}
+.upload-card h2{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+.upload-card p{font-size:14px;color:#64748B;margin-bottom:16px}
+.upload-card .formats{font-size:12px;color:#94A3B8}
+/* Progress */
+.progress-card{background:#fff;border-radius:14px;border:1px solid #E2E8F0;padding:24px;margin-bottom:28px}
+.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.progress-header h3{font-size:16px;font-weight:600}
+.progress-header .pct{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:#8B5CF6}
+.progress-bar{height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden;margin-bottom:16px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#8B5CF6,#A78BFA);border-radius:4px;transition:width .3s}
+.progress-steps{display:flex;gap:20px}
+.progress-step{display:flex;align-items:center;gap:8px;font-size:13px}
+.progress-step .dot{width:8px;height:8px;border-radius:50%}
+.progress-step .dot.done{background:#10B981}
+.progress-step .dot.active{background:#8B5CF6;animation:pulse 1s infinite}
+.progress-step .dot.pending{background:#CBD5E1}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* Results Table */
+.results-card{background:#fff;border-radius:14px;border:1px solid #E2E8F0;overflow:hidden;margin-bottom:28px}
+.results-header{padding:18px 20px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between}
+.results-header h2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600}
+.results-header .count{font-size:13px;color:#64748B}
+.results-toolbar{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid #F1F5F9;background:#F8FAFC}
+.toolbar-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #E2E8F0;background:#fff}
+.toolbar-btn.active{border-color:#8B5CF6;background:rgba(139,92,246,.06);color:#8B5CF6}
+.candidate-table{width:100%}
+.candidate-table th{text-align:left;font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;padding:12px 16px;border-bottom:1px solid #E2E8F0}
+.candidate-table td{padding:14px 16px;font-size:14px;border-bottom:1px solid #F1F5F9}
+.candidate-table tr:hover td{background:#F8FAFC}
+.candidate-name{display:flex;align-items:center;gap:10px}
+.candidate-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.match-score{font-family:'JetBrains Mono',monospace;font-weight:700}
+.evidence-btn{padding:6px 12px;background:rgba(139,92,246,.1);color:#8B5CF6;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.action-btns{display:flex;gap:6px}
+.action-btn{width:32px;height:32px;border-radius:8px;border:1px solid #E2E8F0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+.action-btn.approve{border-color:#10B981;color:#10B981}
+.action-btn.reject{border-color:#F43F5E;color:#F43F5E}
+/* Email Preview */
+.email-preview{background:#fff;border-radius:14px;border:1px solid #E2E8F0;overflow:hidden}
+.email-preview .header{padding:18px 20px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.email-preview .header h2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600}
+.email-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #F1F5F9}
+.email-item:last-child{border:none}
+.email-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.email-icon.invite{background:rgba(16,185,129,.1)}
+.email-icon.reject{background:rgba(244,63,94,.1)}
+.email-icon.pending{background:rgba(245,158,11,.1)}
+.email-text{flex:1}
+.email-text strong{font-size:14px}
+.email-text p{font-size:12px;color:#64748B;margin-top:2px}
+.email-status{font-size:12px;font-weight:600}
+.email-status.sent{color:#10B981}
+.email-status.pending{color:#D97706}
+.email-status.draft{color:#94A3B8}
+@media(max-width:1024px){.sidebar{display:none}.main{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 200 200" width="36" height="36"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8B5CF6"/><stop offset="100%" style="stop-color:#7C3AED"/></linearGradient><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#10B981"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs><path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sg)"/><path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#cg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Role<em>Ready</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Hiring</div>
+        <a class="nav-item"><span class="icon">📋</span> Vacancies</a>
+        <a class="nav-item"><span class="icon">👥</span> Candidates</a>
+        <a class="nav-item active"><span class="icon">⚡</span> Bulk Screening</a>
+        <a class="nav-item"><span class="icon">📧</span> Communications</a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Config</div>
+        <a class="nav-item"><span class="icon">📐</span> Scoring Rubrics</a>
+        <a class="nav-item"><span class="icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>⚡ Bulk Candidate Screening</h1>
+        <p>Senior Product Manager · 15 resumes uploaded</p>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-action btn-secondary">📥 Export Results</button>
+        <button class="btn-action btn-primary">+ Upload More</button>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Upload -->
+      <div class="upload-card">
+        <div class="icon">📄</div>
+        <h2>Drop resumes here to screen</h2>
+        <p>Upload up to 100 resumes at once. AI will score each against your rubric.</p>
+        <div class="formats">PDF, DOCX, or ZIP · Max 10MB per file</div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-card">
+        <div class="progress-header">
+          <h3>Screening in Progress</h3>
+          <span class="pct">73%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:73%"></div></div>
+        <div class="progress-steps">
+          <div class="progress-step"><div class="dot done"></div> Upload complete</div>
+          <div class="progress-step"><div class="dot done"></div> Parsing resumes</div>
+          <div class="progress-step"><div class="dot active"></div> Scoring candidates</div>
+          <div class="progress-step"><div class="dot pending"></div> Generating emails</div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-card">
+        <div class="results-header">
+          <h2>Screening Results</h2>
+          <span class="count">11 of 15 scored</span>
+        </div>
+        <div class="results-toolbar">
+          <div class="toolbar-btn active">All (11)</div>
+          <div class="toolbar-btn">Shortlisted (4)</div>
+          <div class="toolbar-btn">Maybe (3)</div>
+          <div class="toolbar-btn">Needs Review (2)</div>
+          <div class="toolbar-btn">Below Threshold (2)</div>
+        </div>
+        <table class="candidate-table">
+          <thead><tr><th>Candidate</th><th>Score</th><th>Key Skills</th><th>Experience</th><th>Evidence</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="candidate-name"><div class="candidate-avatar" style="background:#2563EB">SJ</div><div><strong>Sarah Johnson</strong><div style="font-size:12px;color:#64748B">Ex-Google, 8 yrs PM</div></div></div></td>
+              <td><span class="match-score" style="color:#10B981">94%</span></td>
+              <td><span style="font-size:12px">Strategy, SQL, A/B, Leadership</span></td>
+              <td>8 years</td>
+              <td><button class="evidence-btn">View</button></td>
+              <td><div class="action-btns"><button class="action-btn approve">✓</button><button class="action-btn">?</button><button class="action-btn reject">✕</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="candidate-name"><div class="candidate-avatar" style="background:#8B5CF6">MC</div><div><strong>Michael Chen</strong><div style="font-size:12px;color:#64748B">Ex-Meta, 6 yrs PM</div></div></div></td>
+              <td><span class="match-score" style="color:#10B981">89%</span></td>
+              <td><span style="font-size:12px">Strategy, Analytics, GTM</span></td>
+              <td>6 years</td>
+              <td><button class="evidence-btn">View</button></td>
+              <td><div class="action-btns"><button class="action-btn approve">✓</button><button class="action-btn">?</button><button class="action-btn reject">✕</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="candidate-name"><div class="candidate-avatar" style="background:#F59E0B">EW</div><div><strong>Emily Williams</strong><div style="font-size:12px;color:#64748B">Startup PM, 5 yrs</div></div></div></td>
+              <td><span class="match-score" style="color:#2563EB">78%</span></td>
+              <td><span style="font-size:12px">Strategy, Research, Roadmap</span></td>
+              <td>5 years</td>
+              <td><button class="evidence-btn">View</button></td>
+              <td><div class="action-btns"><button class="action-btn approve">✓</button><button class="action-btn">?</button><button class="action-btn reject">✕</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="candidate-name"><div class="candidate-avatar" style="background:#94A3B8">DK</div><div><strong>David Kim</strong><div style="font-size:12px;color:#64748B">Career switch, 3 yrs PM</div></div></div></td>
+              <td><span class="match-score" style="color:#F59E0B">62%</span></td>
+              <td><span style="font-size:12px">Strategy, Agile</span></td>
+              <td>3 years</td>
+              <td><button class="evidence-btn">View</button></td>
+              <td><div class="action-btns"><button class="action-btn approve">✓</button><button class="action-btn">?</button><button class="action-btn reject">✕</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Email Queue -->
+      <div class="email-preview">
+        <div class="header"><h2>📧 Email Queue</h2><button class="btn-action btn-secondary">Edit Templates</button></div>
+        <div class="email-item">
+          <div class="email-icon invite">✉️</div>
+          <div class="email-text"><strong>Sarah Johnson — Interview Invite</strong><p>Sent today at 10:30 AM</p></div>
+          <span class="email-status sent">Sent</span>
+        </div>
+        <div class="email-item">
+          <div class="email-icon invite">✉️</div>
+          <div class="email-text"><strong>Michael Chen — Interview Invite</strong><p>Scheduled for tomorrow 9:00 AM</p></div>
+          <span class="email-status pending">Pending</span>
+        </div>
+        <div class="email-item">
+          <div class="email-icon reject">✉️</div>
+          <div class="email-text"><strong>David Kim — Thank You</strong><p>Draft — awaiting your approval</p></div>
+          <span class="email-status draft">Draft</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Email Templates</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F8FAFC;color:#0F172A}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#0A1628;color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh}
+.sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar-logo svg{width:36px;height:36px}
+.sidebar-logo span{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.sidebar-logo span em{font-style:normal;color:#8B5CF6}
+.sidebar-nav{flex:1;padding:16px 12px}
+.nav-section{margin-bottom:20px}
+.nav-section-title{font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:1.2px;padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#94A3B8;font-size:14px;font-weight:500;cursor:pointer}
+.nav-item.active{background:rgba(139,92,246,.15);color:#A78BFA}
+.nav-item .icon{width:20px;text-align:center;font-size:16px}
+.main{flex:1;margin-left:260px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:10}
+.topbar-left h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700}
+.topbar-right{display:flex;gap:12px}
+.btn-action{padding:10px 20px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#8B5CF6;color:#fff}
+.btn-secondary{background:#fff;color:#64748B;border:1px solid #E2E8F0}
+.content{padding:28px 32px}
+.two-col{display:grid;grid-template-columns:1fr 1.2fr;gap:24px}
+.section-card{background:#fff;border-radius:14px;border:1px solid #E2E8F0;overflow:hidden}
+.section-header{padding:18px 20px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.section-header h2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600}
+.template-list{padding:0}
+.template-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #F1F5F9;cursor:pointer;transition:all .15s}
+.template-item:hover{background:#F8FAFC}
+.template-item.active{background:rgba(139,92,246,.04);border-left:3px solid #8B5CF6}
+.template-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.template-icon.invite{background:rgba(16,185,129,.1)}
+.template-icon.reject{background:rgba(244,63,94,.1)}
+.template-icon.followup{background:rgba(37,99,235,.1)}
+.template-icon.thanks{background:rgba(245,158,11,.1)}
+.template-info{flex:1}
+.template-info h3{font-size:14px;font-weight:600;margin-bottom:2px}
+.template-info p{font-size:12px;color:#64748B}
+.template-actions{display:flex;gap:6px}
+.template-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid #E2E8F0;background:#fff}
+/* Editor */
+.editor-body{padding:20px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:13px;font-weight:600;color:#475569;margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:14px}
+.form-input:focus{outline:none;border-color:#8B5CF6}
+textarea.form-input{min-height:200px;resize:vertical;font-family:'Inter',sans-serif;line-height:1.6}
+.variables{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.var-chip{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:#F1F5F9;color:#475569;border:1px solid #E2E8F0}
+.var-chip:hover{border-color:#8B5CF6;color:#8B5CF6}
+.preview-card{background:#F8FAFC;border-radius:10px;padding:16px;margin-top:16px}
+.preview-card h4{font-size:12px;font-weight:600;color:#64748B;margin-bottom:8px}
+.preview-card .email-body{font-size:13px;line-height:1.7;color:#334155}
+.preview-card .email-body .var{background:rgba(139,92,246,.1);padding:1px 6px;border-radius:4px;color:#8B5CF6;font-weight:600}
+.sent-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px}
+.sent-stat{text-align:center}
+.sent-stat .num{font-size:24px;font-weight:700}
+.sent-stat .lbl{font-size:12px;color:#64748B}
+@media(max-width:1024px){.sidebar{display:none}.main{margin-left:0}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 200 200" width="36" height="36"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8B5CF6"/><stop offset="100%" style="stop-color:#7C3AED"/></linearGradient><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#10B981"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs><path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sg)"/><path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#cg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Role<em>Ready</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Hiring</div>
+        <a class="nav-item"><span class="icon">📋</span> Vacancies</a>
+        <a class="nav-item"><span class="icon">👥</span> Candidates</a>
+        <a class="nav-item active"><span class="icon">📧</span> Communications</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left"><h1>📧 Email Templates</h1></div>
+      <div class="topbar-right">
+        <button class="btn-action btn-secondary">📊 Sent History</button>
+        <button class="btn-action btn-primary">+ New Template</button>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Stats -->
+      <div class="section-card" style="margin-bottom:24px">
+        <div class="sent-stats">
+          <div class="sent-stat"><div class="num" style="color:#10B981">47</div><div class="lbl">Emails Sent</div></div>
+          <div class="sent-stat"><div class="num" style="color:#D97706">5</div><div class="lbl">Pending Approval</div></div>
+          <div class="sent-stat"><div class="num" style="color:#8B5CF6">89%</div><div class="lbl">Open Rate</div></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Template List -->
+        <div class="section-card">
+          <div class="section-header"><h2>Templates</h2></div>
+          <div class="template-list">
+            <div class="template-item active">
+              <div class="template-icon invite">✉️</div>
+              <div class="template-info"><h3>Interview Invitation</h3><p>Send when shortlisting a candidate</p></div>
+            </div>
+            <div class="template-item">
+              <div class="template-icon reject">✉️</div>
+              <div class="template-info"><h3>Polite Rejection</h3><p>Send when not moving forward</p></div>
+            </div>
+            <div class="template-item">
+              <div class="template-icon followup">✉️</div>
+              <div class="template-info"><h3>Follow-up Reminder</h3><p>Send 3 days after application</p></div>
+            </div>
+            <div class="template-item">
+              <div class="template-icon thanks">✉️</div>
+              <div class="template-info"><h3>Thank You After Interview</h3><p>Send post-interview acknowledgment</p></div>
+            </div>
+            <div class="template-item">
+              <div class="template-icon invite">✉️</div>
+              <div class="template-info"><h3>Offer Letter</h3><p>Send when extending an offer</p></div>
+            </div>
+            <div class="template-item">
+              <div class="template-icon followup">✉️</div>
+              <div class="template-info"><h3>Schedule Request</h3><p>Ask for availability</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editor -->
+        <div class="section-card">
+          <div class="section-header"><h2>Edit — Interview Invitation</h2></div>
+          <div class="editor-body">
+            <div class="form-group">
+              <label class="form-label">Subject Line</label>
+              <input class="form-input" value="Interview Invitation — {{role}} at {{company}}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Body</label>
+              <textarea class="form-input">Dear {{candidate_name}},
+
+Thank you for applying for the {{role}} position at {{company}}. We were impressed by your background and would like to invite you for an interview.
+
+Interview Details:
+- Date: {{interview_date}}
+- Time: {{interview_time}}
+- Format: {{interview_format}}
+- Duration: {{interview_duration}}
+
+Please confirm your availability by replying to this email. If the proposed time doesn't work, let us know and we'll find an alternative.
+
+We look forward to speaking with you.
+
+Best regards,
+{{recruiter_name}}
+{{company}} Recruiting Team</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Available Variables</label>
+              <div class="variables">
+                <span class="var-chip">{{candidate_name}}</span>
+                <span class="var-chip">{{role}}</span>
+                <span class="var-chip">{{company}}</span>
+                <span class="var-chip">{{interview_date}}</span>
+                <span class="var-chip">{{interview_time}}</span>
+                <span class="var-chip">{{interview_format}}</span>
+                <span class="var-chip">{{recruiter_name}}</span>
+                <span class="var-chip">{{match_score}}</span>
+              </div>
+            </div>
+            <div class="preview-card">
+              <h4>PREVIEW</h4>
+              <div class="email-body">
+                <p>Dear <span class="var">Sarah Johnson</span>,</p>
+                <p>Thank you for applying for the <span class="var">Senior Product Manager</span> position at <span class="var">Stripe</span>. We were impressed by your background and would like to invite you for an interview.</p>
+                <p>Interview Details:<br>Date: <span class="var">Thursday, Aug 28</span><br>Time: <span class="var">2:00 PM PT</span><br>Format: <span class="var">Video (Google Meet)</span><br>Duration: <span class="var">45 minutes</span></p>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:16px">
+              <button class="btn-action btn-primary" style="flex:1">💾 Save Template</button>
+              <button class="btn-action btn-secondary" style="flex:1">👁️ Full Preview</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Onboarding: Choose Your Path</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#F8FAFC; color:#0F172A; min-height:100vh; }
+.onboarding { max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+.progress-bar { display:flex; gap:6px; padding:20px 24px; }
+.progress-dot { flex:1; height:4px; border-radius:2px; background:#E2E8F0; transition:all 0.3s; }
+.progress-dot.active { background:#2563EB; }
+.progress-dot.done { background:#10B981; }
+.content { flex:1; padding:24px; display:flex; flex-direction:column; }
+.step-label { font-size:12px; font-weight:600; color:#2563EB; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.step-title { font-family:'Poppins',sans-serif; font-size:26px; font-weight:700; color:#0A1628; margin-bottom:8px; line-height:1.2; }
+.step-desc { font-size:15px; color:#64748B; margin-bottom:32px; line-height:1.5; }
+.role-cards { display:flex; flex-direction:column; gap:16px; margin-bottom:32px; }
+.role-card { display:flex; align-items:center; gap:16px; padding:24px; background:#fff; border:2px solid #E2E8F0; border-radius:16px; cursor:pointer; transition:all 0.2s; }
+.role-card:hover { border-color:#3B82F6; box-shadow:0 4px 12px rgba(37,99,235,0.1); }
+.role-card.selected { border-color:#2563EB; background:rgba(37,99,235,0.04); }
+.role-icon { width:60px; height:60px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+.role-icon.candidate { background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(59,130,246,0.08)); }
+.role-icon.employer { background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(168,85,247,0.08)); }
+.role-info h3 { font-family:'Poppins',sans-serif; font-size:18px; font-weight:600; margin-bottom:4px; }
+.role-info p { font-size:14px; color:#64748B; line-height:1.5; }
+.role-info .features { margin-top:10px; display:flex; flex-wrap:wrap; gap:6px; }
+.role-info .feature-tag { font-size:12px; padding:4px 10px; background:#F1F5F9; border-radius:6px; color:#475569; }
+.check-icon { width:28px; height:28px; border-radius:50%; border:2px solid #E2E8F0; margin-left:auto; display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
+.role-card.selected .check-icon { background:#2563EB; border-color:#2563EB; }
+.role-card.selected .check-icon::after { content:'✓'; color:#fff; font-size:14px; font-weight:700; }
+.or-divider { display:flex; align-items:center; gap:16px; margin:8px 0 24px; color:#94A3B8; font-size:13px; }
+.or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background:#E2E8F0; }
+.nav-buttons { display:flex; gap:12px; padding:20px 24px; }
+.btn-back { flex:1; padding:16px; background:#fff; border:1.5px solid #E2E8F0; border-radius:12px; font-family:'Poppins',sans-serif; font-size:15px; font-weight:600; color:#64748B; cursor:pointer; }
+.btn-next { flex:2; padding:16px; background:#2563EB; color:#fff; border:none; border-radius:12px; font-family:'Poppins',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.btn-next:hover { background:#1D4ED8; }
+.btn-next:disabled { background:#CBD5E1; cursor:not-allowed; }
+</style>
+</head>
+<body>
+<div class="onboarding">
+  <div class="progress-bar">
+    <div class="progress-dot active"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+  </div>
+
+  <div class="content">
+    <div class="step-label">Step 1 of 4</div>
+    <div class="step-title">How will you use RoleReady?</div>
+    <div class="step-desc">Choose your path. You can switch between modes anytime.</div>
+
+    <div class="role-cards">
+      <div class="role-card selected" onclick="selectRole(this)">
+        <div class="role-icon candidate">🎯</div>
+        <div class="role-info">
+          <h3>I'm Job Searching</h3>
+          <p>Optimize my resume, match to jobs, practice interviews, and track applications</p>
+          <div class="features">
+            <span class="feature-tag">Resume Analysis</span>
+            <span class="feature-tag">Job Matching</span>
+            <span class="feature-tag">Cover Letters</span>
+            <span class="feature-tag">Interview Prep</span>
+            <span class="feature-tag">Application Tracker</span>
+          </div>
+        </div>
+        <div class="check-icon"></div>
+      </div>
+
+      <div class="role-card" onclick="selectRole(this)">
+        <div class="role-icon employer">👥</div>
+        <div class="role-info">
+          <h3>I'm Hiring / Recruiting</h3>
+          <p>Screen candidates, compare resumes, manage shortlists, and automate communications</p>
+          <div class="features">
+            <span class="feature-tag">Bulk Screening</span>
+            <span class="feature-tag">Scoring Rubrics</span>
+            <span class="feature-tag">Candidate Comparison</span>
+            <span class="feature-tag">Email Automation</span>
+            <span class="feature-tag">Hiring Analytics</span>
+          </div>
+        </div>
+        <div class="check-icon"></div>
+      </div>
+    </div>
+
+    <div class="or-divider">or</div>
+
+    <div style="text-align:center;padding:16px;background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;cursor:pointer">
+      <div style="font-size:24px;margin-bottom:8px">🔗</div>
+      <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:600;margin-bottom:4px">Continue with LinkedIn</div>
+      <div style="font-size:13px;color:#64748B">Auto-fill your profile and resume</div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn-back" style="visibility:hidden">Back</button>
+    <button class="btn-next">Continue</button>
+  </div>
+</div>
+
+<script>
+function selectRole(card) {
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+</script>
+</body>
+</html>

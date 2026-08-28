@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoleReady — Job Match</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F8FAFC;color:#0F172A}
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#0A1628;color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh}
+.sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar-logo svg{width:36px;height:36px}
+.sidebar-logo span{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.sidebar-logo span em{font-style:normal;color:#3B82F6}
+.sidebar-nav{flex:1;padding:16px 12px}
+.nav-section{margin-bottom:24px}
+.nav-section-title{font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:1.2px;padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#94A3B8;font-size:14px;font-weight:500;cursor:pointer}
+.nav-item.active{background:rgba(37,99,235,.15);color:#60A5FA}
+.nav-item .icon{width:20px;text-align:center;font-size:16px}
+.main{flex:1;margin-left:260px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:10}
+.topbar-left h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700}
+.topbar-left p{font-size:13px;color:#64748B;margin-top:2px}
+.content{padding:28px 32px}
+/* Match Input */
+.match-input-card{background:linear-gradient(135deg,#2563EB,#1E40AF);border-radius:16px;padding:32px;color:#fff;margin-bottom:28px}
+.match-input-card h2{font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px}
+.match-input-card p{font-size:14px;opacity:.85;margin-bottom:20px}
+.input-row{display:flex;gap:12px}
+.input-row input{flex:1;padding:14px 18px;border-radius:10px;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:15px;backdrop-filter:blur(4px)}
+.input-row input::placeholder{color:rgba(255,255,255,.6)}
+.input-row button{padding:14px 28px;background:#fff;color:#2563EB;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer}
+.input-tabs{display:flex;gap:8px;margin-top:14px}
+.input-tab{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
+.input-tab.active{background:rgba(255,255,255,.3);color:#fff}
+/* Results */
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.results-header h2{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700}
+.results-header .count{font-size:14px;color:#64748B}
+.two-col{display:grid;grid-template-columns:1.2fr 1fr;gap:24px}
+.section-card{background:#fff;border-radius:14px;border:1px solid #E2E8F0;overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #F1F5F9}
+.section-header h2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600}
+/* Score Ring */
+.score-section{text-align:center;padding:28px 20px}
+.score-ring{width:140px;height:140px;margin:0 auto 16px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .value{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700}
+.score-ring .value span{font-size:16px;color:#94A3B8;font-weight:500}
+.match-label{font-size:16px;font-weight:600;color:#0F172A;margin-bottom:4px}
+.match-sub{font-size:13px;color:#64748B}
+/* Skills */
+.skills-section{padding:20px}
+.skills-group{margin-bottom:16px}
+.skills-group h3{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.skill-chips{display:flex;flex-wrap:wrap;gap:6px}
+.skill-chip{padding:5px 10px;border-radius:6px;font-size:12px;font-weight:500}
+.skill-chip.matched{background:rgba(16,185,129,.1);color:#059669}
+.skill-chip.missing{background:rgba(244,63,94,.1);color:#F43F5E}
+.skill-chip.transferable{background:rgba(245,158,11,.1);color:#D97706}
+/* Gap Analysis */
+.gap-item{padding:14px 20px;border-bottom:1px solid #F1F5F9}
+.gap-item:last-child{border:none}
+.gap-item h4{font-size:14px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.gap-item p{font-size:13px;color:#64748B;line-height:1.5}
+.gap-item .severity{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px}
+.severity.critical{background:rgba(244,63,94,.1);color:#F43F5E}
+.severity.important{background:rgba(245,158,11,.1);color:#D97706}
+.severity.nice{background:rgba(37,99,235,.1);color:#2563EB}
+/* Actions */
+.match-actions{display:flex;gap:10px;padding:20px}
+.match-btn{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;text-align:center}
+.match-btn.primary{background:#2563EB;color:#fff}
+.match-btn.secondary{background:#fff;color:#64748B;border:1px solid #E2E8F0}
+.match-btn.success{background:#10B981;color:#fff}
+@media(max-width:1024px){.sidebar{display:none}.main{margin-left:0}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 200 200" width="36" height="36"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2563EB"/><stop offset="100%" style="stop-color:#1E40AF"/></linearGradient><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#10B981"/><stop offset="100%" style="stop-color:#059669"/></linearGradient></defs><path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sg)"/><path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#cg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Role<em>Ready</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-section-title">Main</div>
+        <a class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+        <a class="nav-item"><span class="icon">📄</span> My Resume</a>
+        <a class="nav-item"><span class="icon">✉️</span> Cover Letters</a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Job Search</div>
+        <a class="nav-item active"><span class="icon">🎯</span> Job Match</a>
+        <a class="nav-item"><span class="icon">📋</span> Applications</a>
+      </div>
+      <div class="nav-section"><div class="nav-section-title">Prepare</div>
+        <a class="nav-item"><span class="icon">🎤</span> STAR Practice</a>
+        <a class="nav-item"><span class="icon">💰</span> Salary Strategy</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>🎯 Job Match</h1>
+        <p>Paste a job URL or description to see your match score</p>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Match Input -->
+      <div class="match-input-card">
+        <h2>🔍 Analyze Job Match</h2>
+        <p>Paste a job posting URL, description, or upload a PDF</p>
+        <div class="input-row">
+          <input type="text" placeholder="https://stripe.com/careers/senior-pm...">
+          <button>Analyze Match</button>
+        </div>
+        <div class="input-tabs">
+          <div class="input-tab active">URL</div>
+          <div class="input-tab">Paste Description</div>
+          <div class="input-tab">Upload PDF</div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-header">
+        <h2>Match Results — Senior PM at Stripe</h2>
+        <span class="count">Analyzed Aug 27, 2026</span>
+      </div>
+
+      <div class="two-col">
+        <!-- Left: Score + Skills -->
+        <div>
+          <div class="section-card" style="margin-bottom:20px">
+            <div class="score-section">
+              <div class="score-ring">
+                <svg width="140" height="140">
+                  <circle cx="70" cy="70" r="60" fill="none" stroke="#F1F5F9" stroke-width="12"/>
+                  <circle cx="70" cy="70" r="60" fill="none" stroke="#10B981" stroke-width="12" stroke-dasharray="377" stroke-dashoffset="34" stroke-linecap="round"/>
+                </svg>
+                <div class="value">91<span>%</span></div>
+              </div>
+              <div class="match-label">Strong Match</div>
+              <div class="match-sub">You meet 14 of 18 requirements</div>
+            </div>
+            <div class="skills-section">
+              <div class="skills-group">
+                <h3>✅ Matched Skills (14)</h3>
+                <div class="skill-chips">
+                  <span class="skill-chip matched">Product Strategy</span>
+                  <span class="skill-chip matched">Agile</span>
+                  <span class="skill-chip matched">User Research</span>
+                  <span class="skill-chip matched">Roadmapping</span>
+                  <span class="skill-chip matched">Stakeholder Mgmt</span>
+                  <span class="skill-chip matched">Analytics</span>
+                  <span class="skill-chip matched">Team Leadership</span>
+                  <span class="skill-chip matched">Go-to-Market</span>
+                  <span class="skill-chip matched">OKRs</span>
+                  <span class="skill-chip matched">Cross-functional</span>
+                  <span class="skill-chip matched">Pricing</span>
+                  <span class="skill-chip matched">Sprint Planning</span>
+                  <span class="skill-chip matched">Wireframing</span>
+                  <span class="skill-chip matched">Customer Interviews</span>
+                </div>
+              </div>
+              <div class="skills-group">
+                <h3>❌ Missing Skills (4)</h3>
+                <div class="skill-chips">
+                  <span class="skill-chip missing">SQL</span>
+                  <span class="skill-chip missing">A/B Testing</span>
+                  <span class="skill-chip missing">Python</span>
+                  <span class="skill-chip missing">Figma</span>
+                </div>
+              </div>
+              <div class="skills-group">
+                <h3>🔄 Transferable (3)</h3>
+                <div class="skill-chips">
+                  <span class="skill-chip transferable">Data Analysis → SQL</span>
+                  <span class="skill-chip transferable">UX Design → Figma</span>
+                  <span class="skill-chip transferable">Excel → Python</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Gap Analysis + Actions -->
+        <div>
+          <div class="section-card" style="margin-bottom:20px">
+            <div class="section-header"><h2>Gap Analysis</h2></div>
+            <div class="gap-item">
+              <h4><span class="severity critical">Critical</span> SQL Required</h4>
+              <p>Job lists "strong SQL skills" as essential. You have data analysis experience but SQL isn't on your resume. Consider adding it if you have the skill, or taking a course.</p>
+            </div>
+            <div class="gap-item">
+              <h4><span class="severity critical">Critical</span> A/B Testing</h4>
+              <p>"Experience running A/B tests" is listed as essential. Your resume mentions experimentation but doesn't specifically call out A/B testing methodology.</p>
+            </div>
+            <div class="gap-item">
+              <h4><span class="severity important">Important</span> Python</h4>
+              <p>"Python for data analysis" is preferred, not required. Your Excel/BI tools experience is transferable.</p>
+            </div>
+            <div class="gap-item">
+              <h4><span class="severity nice">Nice-to-have</span> Figma</h4>
+              <p>"Figma for wireframing" is optional. Your wireframing experience covers the concept.</p>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-header"><h2>Recommended Actions</h2></div>
+            <div class="match-actions">
+              <button class="match-btn primary">📄 Tailor Resume</button>
+              <button class="match-btn success">✉️ Write Cover Letter</button>
+            </div>
+            <div class="match-actions" style="padding-top:0">
+              <button class="match-btn secondary">📋 Add to Tracker</button>
+              <button class="match-btn secondary">🎤 Practice Interview</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

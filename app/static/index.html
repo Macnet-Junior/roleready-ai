@@ -1,871 +1,1323 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="RoleReady AI - Premium Job Matching, ATS Resume Optimization, Multi-Resume Benchmarking, and AI STAR Interview Simulator.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RoleReady AI - Executive Career Intelligence Platform, Job Matching, ATS Resume Optimization, Multi-Resume Benchmark, and STAR Voice Interview Simulator.">
   <title>RoleReady AI | Executive Career Intelligence Platform</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="/static/assets/logo.svg">
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Design System Stylesheet -->
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <div class="ambient-glow bg-glow-1"></div>
-  <div class="ambient-glow bg-glow-2"></div>
-
-  <!-- Executive Header -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="brand">
-        <div class="brand-icon">
-          <i class="fa-solid fa-bolt-lightning"></i>
-        </div>
-        <div class="brand-text">
-          <span class="brand-title">RoleReady <span class="brand-badge">AI 2.0</span></span>
-          <span class="brand-sub">Career Intelligence Suite</span>
-        </div>
+  <div class="app-layout">
+    <!-- ==========================================================================
+         Fixed Deep Navy Sidebar
+         ========================================================================== -->
+    <aside class="sidebar" id="app-sidebar">
+      <!-- Logo Header -->
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 200 200" width="36" height="36">
+          <defs>
+            <linearGradient id="sbShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#2563EB;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="sbCheckGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <path d="M100 15 L170 45 L170 100 Q170 155 100 185 Q30 155 30 100 L30 45 Z" fill="url(#sbShieldGrad)" />
+          <path d="M100 30 L155 55 L155 100 Q155 145 100 170 Q45 145 45 100 L45 55 Z" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" />
+          <path d="M70 100 L90 120 L130 75" fill="none" stroke="url(#sbCheckGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M100 25 L100 45" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round" />
+          <path d="M92 35 L100 25 L108 35" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Role<em id="brand-tag">Ready</em></span>
       </div>
 
-      <div class="header-controls">
-        <div class="model-selector-wrapper">
-          <i class="fa-solid fa-microchip select-icon"></i>
-          <select id="model-select" class="glass-select" aria-label="Select AI Model">
-            <option value="models/gemini-2.5-flash">Gemini 2.5 Flash</option>
-            <option value="models/gemini-2.5-pro">Gemini 2.5 Pro</option>
-          </select>
-        </div>
-        <button id="btn-toggle-history" class="glass-btn icon-btn" title="View Saved History">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <span>History</span>
-          <span id="history-badge" class="badge">0</span>
-        </button>
-        <button id="btn-open-auth" class="glass-btn primary-btn" title="Sign In or Register">
-          <i class="fa-solid fa-user-circle"></i>
-          <span id="auth-btn-label">Sign In</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Auth Glassmorphic Modal -->
-  <div id="auth-modal" class="modal-overlay hidden">
-    <div class="glass-card modal-card">
-      <button type="button" class="modal-close" id="btn-close-auth">&times;</button>
-      
-      <div id="auth-guest-view">
-        <div class="form-header">
-          <h3><i class="fa-solid fa-lock text-indigo"></i> Member Portal</h3>
-          <p>Sign in to sync saved resumes, track score progress, and unlock Pro models.</p>
-        </div>
-
-        <div class="auth-toggle-tabs mb-3">
-          <button type="button" class="auth-tab active" id="tab-login">Login</button>
-          <button type="button" class="auth-tab" id="tab-register">Register</button>
-        </div>
-
-        <form id="auth-form">
-          <div id="register-name-group" class="form-group hidden">
-            <label for="auth-name">Full Name</label>
-            <input id="auth-name" placeholder="e.g. Jordan Lee" class="glass-input">
-          </div>
-          <div class="form-group">
-            <label for="auth-email">Email Address</label>
-            <input id="auth-email" type="email" required placeholder="name@company.com" class="glass-input">
-          </div>
-          <div class="form-group">
-            <label for="auth-password">Password</label>
-            <input id="auth-password" type="password" required placeholder="••••••••" class="glass-input">
-          </div>
-          <div id="auth-error" class="status-msg bad hidden"></div>
-          <button type="submit" id="auth-submit-btn" class="cta-button full-width mt-3">
-            <span>Sign In to Account</span>
+      <!-- Mode Switcher Pill -->
+      <div class="mode-switch-wrapper">
+        <div class="mode-switch">
+          <button type="button" class="mode-btn active" data-mode="candidate" id="btn-mode-candidate">
+            <i class="fa-solid fa-user-graduate"></i> Candidate
           </button>
-        </form>
-      </div>
-
-      <div id="auth-user-view" class="hidden">
-        <div class="user-profile-card">
-          <div class="user-avatar" id="user-avatar">EX</div>
-          <h3 id="user-display-name">Alex Morgan</h3>
-          <span class="user-tier" id="user-display-tier">Executive Pro Member</span>
-          <p id="user-display-email" class="text-muted">alex@executive.io</p>
-          <button type="button" id="btn-logout" class="glass-btn danger-btn mt-3"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+          <button type="button" class="mode-btn" data-mode="employer" id="btn-mode-employer">
+            <i class="fa-solid fa-building-user"></i> Employer
+          </button>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Hero Section -->
-  <section class="hero-banner">
-    <div class="hero-content">
-      <span class="hero-tag"><i class="fa-solid fa-sparkles"></i> ATS RESUME OPTIMIZATION & AI BENCHMARKING</span>
-      <h1>Outperform the Competition with <br><span class="gradient-text">Precision AI Job Matching</span></h1>
-      <p>Analyze requirements, measure ATS keyword density, simulate STAR interviews, and bridge qualification gaps in seconds.</p>
-    </div>
-  </section>
+      <!-- CANDIDATE NAV -->
+      <nav class="sidebar-nav" id="candidate-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <button type="button" class="nav-item active" data-view="cand-dashboard">
+            <span class="icon"><i class="fa-solid fa-house"></i></span>
+            <span>Dashboard</span>
+          </button>
+        </div>
 
-  <!-- Workspace Navigation Tabs -->
-  <div class="workspace-tabs-container">
-    <div class="nav-tabs" role="tablist">
-      <button type="button" class="nav-tab active" data-tab="single-analysis">
-        <i class="fa-solid fa-file-signature"></i> <span>Single Resume</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="multi-benchmark">
-        <i class="fa-solid fa-users-viewfinder"></i> <span>Multi-Compare (10)</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="resume-builder">
-        <i class="fa-solid fa-palette"></i> <span>Resume Studio</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="cover-letter">
-        <i class="fa-solid fa-envelope-open-text"></i> <span>Cover Letter</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="salary-negotiator">
-        <i class="fa-solid fa-hand-holding-dollar"></i> <span>Salary Strategy</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="recruiter-outreach">
-        <i class="fa-solid fa-paper-plane"></i> <span>Outreach Drafts</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="voice-interview">
-        <i class="fa-solid fa-microphone-lines"></i> <span>Voice STAR Practice</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="history-view">
-        <i class="fa-solid fa-box-archive"></i> <span>Saved Reports</span>
-      </button>
-    </div>
-  </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Prepare</div>
+          <button type="button" class="nav-item" data-view="cand-resume-analysis">
+            <span class="icon"><i class="fa-solid fa-file-waveform"></i></span>
+            <span>Resume Analysis</span>
+            <span class="badge blue">AI</span>
+          </button>
+          <button type="button" class="nav-item" data-view="cand-resume-studio">
+            <span class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            <span>Resume Studio</span>
+          </button>
+          <button type="button" class="nav-item" data-view="cand-cover-letter">
+            <span class="icon"><i class="fa-solid fa-envelope-open-text"></i></span>
+            <span>Cover Letter</span>
+          </button>
+        </div>
 
-  <main class="main-container">
-    <!-- TAB 1: Single Resume Analysis Form -->
-    <div id="tab-single-analysis" class="tab-page active">
-      <section class="glass-card workspace-card">
-        <form id="form">
-          <div class="form-header">
-            <h3><i class="fa-solid fa-user-gear"></i> Target Role & Candidate Details</h3>
-            <p>Upload candidate resume and target job description for multi-dimensional matching.</p>
+        <div class="nav-section">
+          <div class="nav-section-title">Apply</div>
+          <button type="button" class="nav-item" data-view="cand-tracker">
+            <span class="icon"><i class="fa-solid fa-table-columns"></i></span>
+            <span>Application Tracker</span>
+            <span class="badge" id="tracker-count-badge">5</span>
+          </button>
+          <button type="button" class="nav-item" data-view="cand-outreach">
+            <span class="icon"><i class="fa-solid fa-paper-plane"></i></span>
+            <span>Outreach Drafts</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Interview</div>
+          <button type="button" class="nav-item" data-view="cand-interview">
+            <span class="icon"><i class="fa-solid fa-microphone-lines"></i></span>
+            <span>STAR Voice Practice</span>
+          </button>
+          <button type="button" class="nav-item" data-view="cand-salary">
+            <span class="icon"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+            <span>Salary Strategy</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Account</div>
+          <button type="button" class="nav-item" data-view="cand-settings">
+            <span class="icon"><i class="fa-solid fa-sliders"></i></span>
+            <span>Settings & Themes</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- EMPLOYER NAV -->
+      <nav class="sidebar-nav" id="employer-nav" style="display: none;">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <button type="button" class="nav-item active" data-view="emp-dashboard">
+            <span class="icon"><i class="fa-solid fa-chart-pie"></i></span>
+            <span>Hiring Dashboard</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Requisitions</div>
+          <button type="button" class="nav-item" data-view="emp-vacancies">
+            <span class="icon"><i class="fa-solid fa-briefcase"></i></span>
+            <span>Active Vacancies</span>
+            <span class="badge purple">4</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Candidates</div>
+          <button type="button" class="nav-item" data-view="emp-bulk-screening">
+            <span class="icon"><i class="fa-solid fa-users-viewfinder"></i></span>
+            <span>Bulk Screening</span>
+            <span class="badge purple">AI</span>
+          </button>
+          <button type="button" class="nav-item" data-view="emp-candidate-comparison">
+            <span class="icon"><i class="fa-solid fa-code-compare"></i></span>
+            <span>Candidate Matrix</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Operations</div>
+          <button type="button" class="nav-item" data-view="emp-email-templates">
+            <span class="icon"><i class="fa-solid fa-envelopes-bulk"></i></span>
+            <span>Email Templates</span>
+          </button>
+          <button type="button" class="nav-item" data-view="emp-scoring-rubrics">
+            <span class="icon"><i class="fa-solid fa-list-check"></i></span>
+            <span>Scoring Rubrics</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- User Card Footer -->
+      <div class="sidebar-footer">
+        <div class="user-card" id="btn-sidebar-user">
+          <div class="user-avatar" id="avatar-initials">AM</div>
+          <div class="user-info">
+            <div class="name" id="user-name-display">Alex Morgan</div>
+            <div class="plan" id="user-plan-display">Executive Pro</div>
           </div>
+          <i class="fa-solid fa-ellipsis-vertical" style="color: var(--gray-400); font-size: 13px;"></i>
+        </div>
+      </div>
+    </aside>
 
-          <div class="grid-2-col mb-3">
-            <div class="form-group">
-              <label for="first-name">Candidate First Name</label>
-              <div class="input-with-icon">
-                <i class="fa-solid fa-user"></i>
-                <input id="first-name" maxlength="60" required placeholder="e.g. Alex" autocomplete="given-name" class="glass-input">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="last-name">Candidate Last Name</label>
-              <div class="input-with-icon">
-                <i class="fa-solid fa-user"></i>
-                <input id="last-name" maxlength="60" required placeholder="e.g. Morgan" autocomplete="family-name" class="glass-input">
-              </div>
-            </div>
-          </div>
-
-          <div class="grid-2-col">
-            <!-- Left Column: Resume Input -->
-            <div class="input-card">
-              <div class="card-title-bar">
-                <label for="profile"><i class="fa-solid fa-file-lines"></i> Candidate Experience / Resume</label>
-                <div class="source-tabs" role="tablist">
-                  <button type="button" class="source-tab active" data-mode="upload">Upload file</button>
-                  <button type="button" class="source-tab" data-mode="paste">Paste text</button>
-                </div>
-              </div>
-
-              <div id="upload-panel" class="dropzone-wrapper">
-                <label class="dropzone" id="dropzone" for="resume-file">
-                  <input id="resume-file" type="file" accept=".pdf,.docx,.md,.markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown">
-                  <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                  <strong>Upload Resume Document</strong>
-                  <span>Drag & drop PDF, DOCX, or Markdown file</span>
-                  <small>Max 5 MB • Token-Optimized Parser</small>
-                </label>
-                <div id="upload-status" class="status-msg hidden"></div>
-              </div>
-
-              <div id="preview-wrap" class="review-preview">
-                <span id="preview-label" class="preview-heading">Extracted Resume Profile</span>
-                <textarea id="profile" minlength="100" maxlength="50000" required placeholder="Extracted resume text appears here. Review and edit before analysis..." class="glass-textarea"></textarea>
-                <div class="char-counter"><span id="pc">0</span> / 50,000</div>
-              </div>
-            </div>
-
-            <!-- Right Column: Job Description Input -->
-            <div class="input-card">
-              <div class="card-title-bar">
-                <label for="job-source"><i class="fa-solid fa-briefcase"></i> Target Job Description</label>
-                <div class="source-tabs" role="tablist">
-                  <button type="button" class="job-tab active" data-job-mode="paste">Paste Text</button>
-                  <button type="button" class="job-tab" data-job-mode="url">Public URL</button>
-                </div>
-              </div>
-
-              <div id="job-url-panel" class="job-url-wrapper hidden">
-                <div class="url-input-group">
-                  <label for="job-url" class="sr-only">Job Posting URL</label>
-                  <input id="job-url" type="url" placeholder="https://company.com/careers/job-role" class="glass-input">
-                  <button type="button" id="fetch-job" class="glass-btn primary-btn"><i class="fa-solid fa-download"></i> Extract</button>
-                </div>
-                <div id="job-url-status" class="status-msg hidden"></div>
-              </div>
-
-              <div class="job-text-wrapper">
-                <textarea id="job-source" maxlength="50000" placeholder="Paste full job description including responsibilities and requirements..." class="glass-textarea"></textarea>
-                <div class="char-counter"><span id="jsc">0</span> / 50,000</div>
-              </div>
-
-              <div id="job-preview-wrap" class="review-preview">
-                <span class="preview-heading">Job Description Preview</span>
-                <textarea id="job" minlength="100" maxlength="50000" required placeholder="Verified job description text appears here..." class="glass-textarea"></textarea>
-                <div class="char-counter"><span id="jc">0</span> / 50,000</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Optional Candidate Updates -->
-          <div class="updates-box">
-            <label for="updates"><i class="fa-solid fa-plus-circle"></i> Additional Facts & Recent Skill Updates <span class="optional">(Optional)</span></label>
-            <textarea id="updates" maxlength="10000" placeholder="Add verified facts not yet on your resume (e.g. recently completed certification, new tool proficiency, project metric)." class="glass-textarea short-textarea"></textarea>
-            <div class="char-counter"><span id="uc">0</span> / 10,000</div>
-          </div>
-
-          <div class="form-actions">
-            <div class="privacy-note">
-              <i class="fa-solid fa-shield-halved"></i> Privacy Protected: Text processed in-memory and excluded from logs.
-            </div>
-            <button type="submit" id="submit" class="cta-button">
-              <span>Analyze Match & Optimize Resume</span>
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-        </form>
-      </section>
-    </div>
-
-    <!-- TAB 2: Multi-Resume Benchmarking (Up to 10 Candidates) -->
-    <div id="tab-multi-benchmark" class="tab-page">
-      <section class="glass-card workspace-card">
-        <div class="form-header flex-between">
-          <div>
-            <h3><i class="fa-solid fa-users-rectangle"></i> Enterprise Multi-Resume Benchmarking</h3>
-            <p>Compare up to <b>10 candidate resumes</b> side-by-side against a single job description to rank top talent for large recruiting seasons.</p>
-          </div>
-          <div class="form-group flex-align-center">
-            <label for="multi-count-select" class="me-2 text-muted" style="white-space:nowrap;">Candidates Count:</label>
-            <select id="multi-count-select" class="glass-select">
-              <option value="2">2 Candidates</option>
-              <option value="3">3 Candidates</option>
-              <option value="4">4 Candidates</option>
-              <option value="5">5 Candidates</option>
-              <option value="6">6 Candidates</option>
-              <option value="7">7 Candidates</option>
-              <option value="8">8 Candidates</option>
-              <option value="9">9 Candidates</option>
-              <option value="10">10 Candidates</option>
+    <!-- ==========================================================================
+         Main Wrapper & Topbar
+         ========================================================================== -->
+    <main class="main-wrapper">
+      <!-- Sticky Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="topbar-title">Candidate Dashboard</h1>
+          <p id="topbar-subtitle">Welcome back, Alex. Your job matching pipeline is up to date.</p>
+        </div>
+        <div class="topbar-right">
+          <!-- AI Engine Speed Selector -->
+          <div class="ai-speed-badge" title="Configure AI Deep Reasoning level">
+            <i class="fa-solid fa-bolt" style="color: var(--blue-primary);"></i>
+            <span>Engine:</span>
+            <select id="model-speed-select" aria-label="AI Model speed">
+              <option value="models/gemini-2.5-flash">Fast (Flash)</option>
+              <option value="models/gemini-2.5-pro">Deep (Pro)</option>
             </select>
           </div>
+
+          <button class="topbar-btn" id="btn-notifications" title="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notif-dot"></span>
+          </button>
+
+          <button class="topbar-btn" id="btn-history-reports" title="Saved Analysis History">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </button>
+
+          <button class="btn-primary" id="btn-topbar-primary-action">
+            <i class="fa-solid fa-plus"></i> <span id="topbar-action-text">Optimize Resume</span>
+          </button>
         </div>
+      </header>
 
-        <div class="multi-workspace-grid">
-          <!-- Left Column: Inputs -->
-          <div class="multi-form-col">
-            <div class="input-card mb-4">
-              <div class="card-title-bar">
-                <label for="multi-job-desc"><i class="fa-solid fa-briefcase"></i> Job Description for Benchmark</label>
-                <div class="source-tabs" role="tablist">
-                  <button type="button" class="multi-job-tab active" data-mj-mode="paste">Paste Text</button>
-                  <button type="button" class="multi-job-tab" data-mj-mode="url">Public URL</button>
-                  <button type="button" class="multi-job-tab" data-mj-mode="upload">Upload File</button>
-                </div>
-              </div>
-              <textarea id="multi-job-desc" minlength="50" maxlength="50000" placeholder="Paste or extract the job description here..." class="glass-textarea"></textarea>
+      <!-- Content Area Views -->
+      <div class="content-area">
+
+        <!-- ====================================================================
+             VIEW 1: CANDIDATE DASHBOARD
+             ==================================================================== -->
+        <section class="view-page active" id="view-cand-dashboard">
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <div class="action-card" data-nav="cand-resume-analysis">
+              <div class="action-icon blue"><i class="fa-solid fa-file-circle-check"></i></div>
+              <h3>Analyze Resume</h3>
+              <p>Score resume against target job description with truth checks.</p>
             </div>
-
-            <div class="candidates-container">
-              <h4><i class="fa-solid fa-users"></i> Candidate Resumes to Compare</h4>
-              <div id="candidates-list" class="candidates-list">
-                <!-- Candidate entries inserted dynamically -->
-              </div>
+            <div class="action-card" data-nav="cand-tracker">
+              <div class="action-icon green"><i class="fa-solid fa-briefcase"></i></div>
+              <h3>Job Tracker</h3>
+              <p>Manage applications, deadlines, and follow-ups across 5 stages.</p>
             </div>
-
-            <div class="form-actions mt-4">
-              <button type="button" id="btn-run-multi-benchmark" class="cta-button full-width">
-                <span>Run Multi-Candidate Benchmark</span>
-                <i class="fa-solid fa-chart-simple"></i>
-              </button>
+            <div class="action-card" data-nav="cand-interview">
+              <div class="action-icon violet"><i class="fa-solid fa-microphone"></i></div>
+              <h3>STAR Practice</h3>
+              <p>Simulate voice interviews with real-time response coaching.</p>
             </div>
-          </div>
-
-          <!-- Right Column: Live Score Aggregator Beside Candidates -->
-          <div class="multi-results-col">
-            <div class="input-card">
-              <h4><i class="fa-solid fa-trophy text-amber"></i> Live Score Aggregator & Rankings</h4>
-              <p class="text-muted" style="font-size:0.82rem;">Top-ranked candidate profiles and match density scores will render here after analysis.</p>
-              <div id="multi-results" class="results-container mt-3">
-                <div class="text-center text-dim" style="padding:40px 10px;">
-                  <i class="fa-solid fa-chart-line" style="font-size:2rem; margin-bottom:10px; display:block;"></i>
-                  Ready for multi-candidate comparison
-                </div>
-              </div>
+            <div class="action-card" data-nav="cand-cover-letter">
+              <div class="action-icon amber"><i class="fa-solid fa-feather-pointed"></i></div>
+              <h3>Cover Letter</h3>
+              <p>Generate tailored, executive cover letters in seconds.</p>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
 
-    <!-- TAB 3: Resume Studio & Theme Builder -->
-    <div id="tab-resume-builder" class="tab-page">
-      <section class="glass-card workspace-card">
-        <div class="form-header flex-between">
-          <div>
-            <h3><i class="fa-solid fa-palette"></i> A4 Resume Theme Studio & Editor</h3>
-            <p>Select a modern theme, customize sections, upload your headshot photo, and export in A4 paper format.</p>
+          <!-- Metrics Row -->
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">Applications Active</div>
+              <div class="stat-value" id="dash-stat-active">14</div>
+              <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> 3 new this week</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Average Match Score</div>
+              <div class="stat-value" id="dash-stat-match">86%</div>
+              <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +8% vs baseline</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Interview Rate</div>
+              <div class="stat-value" id="dash-stat-interviews">42%</div>
+              <div class="stat-change up"><i class="fa-solid fa-check"></i> 6 invitations</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Readiness Index</div>
+              <div class="stat-value" id="dash-stat-readiness">92</div>
+              <div class="stat-change neutral"><i class="fa-solid fa-shield"></i> Truth-Verified</div>
+            </div>
           </div>
-          <button id="btn-print-resume" class="glass-btn primary-btn"><i class="fa-solid fa-file-pdf"></i> Download PDF (A4)</button>
-        </div>
 
-        <!-- Theme Picker Gallery -->
-        <div class="theme-gallery-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Select Resume Theme</div>
-        <div class="theme-picker-grid">
-          <div class="theme-card active" data-theme="modern_executive">
-            <span class="theme-badge free">Free</span>
-            <div class="theme-preview-box theme-exec"></div>
-            <strong>Modern Executive</strong>
-            <small>Deep navy headers & bold metrics</small>
-          </div>
-          <div class="theme-card" data-theme="minimalist_slate">
-            <span class="theme-badge free">Free</span>
-            <div class="theme-preview-box theme-slate"></div>
-            <strong>Minimalist Slate</strong>
-            <small>Clean monochrome & elegant grid</small>
-          </div>
-          <div class="theme-card" data-theme="clean_tech">
-            <span class="theme-badge free">Free</span>
-            <div class="theme-preview-box theme-tech"></div>
-            <strong>Clean Tech</strong>
-            <small>Emerald highlights & modern sans</small>
-          </div>
-          <div class="theme-card pro-card" data-theme="stanford_gold">
-            <span class="theme-badge pro">Pro 🔒</span>
-            <div class="theme-preview-box theme-gold"></div>
-            <strong>Stanford Gold</strong>
-            <small>Ivy League gold & serif (Pro Teaser)</small>
-          </div>
-          <div class="theme-card pro-card" data-theme="harvard_classic">
-            <span class="theme-badge pro">Pro 🔒</span>
-            <div class="theme-preview-box theme-harvard"></div>
-            <strong>Harvard Classic</strong>
-            <small>Timeless crimson & serif (Pro Teaser)</small>
-          </div>
-          <div class="theme-card pro-card" data-theme="cyber_neon">
-            <span class="theme-badge pro">Pro 🔒</span>
-            <div class="theme-preview-box theme-cyber"></div>
-            <strong>Cyber Neon Glass</strong>
-            <small>Futuristic violet & glow (Pro Teaser)</small>
-          </div>
-        </div>
-
-        <!-- Section-by-Section Realtime Form Editor & Photo Upload -->
-        <div class="grid-2-col mt-4">
-          <div class="input-card">
-            <h4><i class="fa-solid fa-pen-to-square"></i> Resume Content Editor</h4>
-            <div class="grid-2-col mb-2">
-              <div>
-                <label for="builder-fn">First Name</label>
-                <input id="builder-fn" value="Alex" class="glass-input">
+          <!-- Two Column: Readiness Score Ring + Recent Activity -->
+          <div class="two-col-layout">
+            <!-- Left: Application Pipeline preview -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-table-list" style="color: var(--blue-primary);"></i> Active Applications</h2>
+                <a class="link-btn" data-nav="cand-tracker">View Kanban Board &rarr;</a>
               </div>
-              <div>
-                <label for="builder-ln">Last Name</label>
-                <input id="builder-ln" value="Morgan" class="glass-input">
+              <div class="section-body" style="padding: 0;">
+                <table class="candidate-table">
+                  <thead>
+                    <tr>
+                      <th>Company & Role</th>
+                      <th>Match Score</th>
+                      <th>Stage</th>
+                      <th>Last Update</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dash-recent-apps-tbody">
+                    <!-- Populated dynamically via JS -->
+                  </tbody>
+                </table>
               </div>
             </div>
-            <div class="form-group mb-2">
-              <label for="builder-title-input">Professional Title</label>
-              <input id="builder-title-input" value="Senior Software Engineer & AI Architect" class="glass-input">
-            </div>
-            <div class="form-group mb-2">
-              <label for="headshot-upload"><i class="fa-solid fa-camera"></i> Profile Photo / Headshot Upload (Optional)</label>
-              <input type="file" id="headshot-upload" accept="image/*" class="glass-input">
-            </div>
-            <div class="form-group mb-2">
-              <label for="builder-summary-input">Professional Summary</label>
-              <textarea id="builder-summary-input" class="glass-textarea short-textarea">Results-driven Senior Engineer with 8+ years optimizing high-scale distributed systems and enterprise AI solutions.</textarea>
-            </div>
-          </div>
 
-          <!-- Live Styled A4 Resume Sheet Preview -->
-          <div class="builder-stage">
-            <div id="resume-document-preview" class="resume-sheet a4-format theme-modern_executive">
-              <header class="resume-header">
-                <div class="header-profile-wrap flex-between">
-                  <div>
-                    <h1 id="builder-name">Alex Morgan</h1>
-                    <p id="builder-title" class="resume-subtitle">Senior Software Engineer & AI Architect</p>
-                  </div>
-                  <div id="headshot-preview-container" class="headshot-box hidden">
-                    <img id="headshot-preview-img" src="" alt="Candidate Headshot" class="headshot-img">
+            <!-- Right: Application Readiness Ring -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-gauge-high" style="color: var(--emerald);"></i> Profile Readiness</h2>
+                <span class="match-pill high">Qualified</span>
+              </div>
+              <div class="score-ring-wrap">
+                <div class="score-ring">
+                  <svg viewBox="0 0 120 120">
+                    <circle class="bg-ring" cx="60" cy="60" r="54"></circle>
+                    <circle class="val-ring" id="dash-score-circle" cx="60" cy="60" r="54"></circle>
+                  </svg>
+                  <div class="value">
+                    <div class="num" id="dash-score-num">88%</div>
+                    <div class="lbl">Match Score</div>
                   </div>
                 </div>
-                <div id="builder-contact" class="resume-contact mt-1">
-                  alex.morgan@executive.io • (555) 019-2834 • San Francisco, CA
+              </div>
+              <div class="score-breakdown">
+                <div class="score-row">
+                  <span class="label">Skills Alignment</span>
+                  <div class="bar"><div class="bar-fill" style="width: 90%; background: var(--emerald);"></div></div>
+                  <span class="pct">90%</span>
                 </div>
-              </header>
-
-              <section class="resume-section">
-                <h2>Professional Summary</h2>
-                <p id="builder-summary">Results-driven Senior Engineer with 8+ years optimizing high-scale distributed systems and enterprise AI solutions. Proven track record boosting throughput by 40%.</p>
-              </section>
-
-              <section class="resume-section">
-                <h2>Core Technical Proficiencies</h2>
-                <div id="builder-skills" class="resume-tags">
-                  <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Docker</span><span class="tag">Gemini API</span><span class="tag">PostgreSQL</span><span class="tag">React</span>
+                <div class="score-row">
+                  <span class="label">Experience Level</span>
+                  <div class="bar"><div class="bar-fill" style="width: 85%; background: var(--blue-primary);"></div></div>
+                  <span class="pct">85%</span>
                 </div>
-              </section>
+                <div class="score-row">
+                  <span class="label">ATS Keywords</span>
+                  <div class="bar"><div class="bar-fill" style="width: 92%; background: var(--violet);"></div></div>
+                  <span class="pct">92%</span>
+                </div>
+                <div class="score-row">
+                  <span class="label">Truth & Evidence</span>
+                  <div class="bar"><div class="bar-fill" style="width: 100%; background: var(--emerald);"></div></div>
+                  <span class="pct">100%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-              <section class="resume-section">
-                <h2>Professional Experience</h2>
-                <div id="builder-experience" class="experience-list">
-                  <div class="exp-item">
-                    <div class="exp-header">
-                      <strong>Lead AI Systems Architect</strong> — <span>TechCorp Global</span>
-                      <span class="exp-dates">2022 – Present</span>
+        <!-- ====================================================================
+             VIEW 2: RESUME ANALYSIS & OPTIMIZATION (With Truth Protection)
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-resume-analysis">
+          <!-- Truth Protection Alert -->
+          <div class="truth-protection-banner">
+            <h4><i class="fa-solid fa-shield-halved"></i> Truth-First Verification Active</h4>
+            <p>RoleReady strictly prohibits hallucinated qualifications. The AI only aligns confirmed career facts against job requirements, flagging unverified claims and providing ATS-compliant bullets.</p>
+          </div>
+
+          <!-- Input Grid: Candidate Resume + Job Description -->
+          <div class="input-grid">
+            <!-- Left: Candidate Profile / Resume -->
+            <div class="input-box">
+              <div class="input-box-header">
+                <label for="cand-resume-text"><i class="fa-solid fa-file-lines"></i> Candidate Resume Profile</label>
+                <div class="tab-pill-group">
+                  <button type="button" class="tab-pill active" id="btn-tab-upload">Upload file</button>
+                  <button type="button" class="tab-pill" id="btn-tab-paste">Paste Text</button>
+                </div>
+              </div>
+
+              <div id="dropzone-area" class="dropzone mb-3">
+                <input type="file" id="resume-file-input" style="display: none;" accept=".pdf,.docx,.md,.txt">
+                <div class="icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <strong>Drag & drop resume (PDF, DOCX, MD)</strong>
+                <span>or click to browse files (max 5 MB)</span>
+              </div>
+
+              <textarea id="cand-resume-text" class="form-textarea" placeholder="Paste or review extracted resume text here (minimum 100 characters)..."></textarea>
+              <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color:var(--gray-500);">
+                <span id="resume-char-count">0 characters</span>
+                <span>Structured Memory Gated</span>
+              </div>
+            </div>
+
+            <!-- Right: Target Job Description -->
+            <div class="input-box">
+              <div class="input-box-header">
+                <label for="target-job-text"><i class="fa-solid fa-briefcase"></i> Target Job Description</label>
+                <div class="tab-pill-group">
+                  <button type="button" class="tab-pill active" id="btn-tab-job-text">Job Text</button>
+                  <button type="button" class="tab-pill" id="btn-tab-job-url">Fetch URL</button>
+                </div>
+              </div>
+
+              <div id="job-url-group" style="display: none; margin-bottom: 12px;">
+                <div style="display: flex; gap: 8px;">
+                  <input type="url" id="job-url-input" class="form-input" placeholder="https://company.com/careers/job-id">
+                  <button type="button" class="btn-secondary" id="btn-fetch-job-url">Fetch</button>
+                </div>
+              </div>
+
+              <textarea id="target-job-text" class="form-textarea" placeholder="Paste target job requisition, required qualifications, and responsibilities..."></textarea>
+              <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color:var(--gray-500);">
+                <span id="job-char-count">0 characters</span>
+                <span>ATS Parsing Model</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optimization Action Bar -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; background: var(--white); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--gray-200);">
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <label style="font-size: 13.5px; font-weight: 600; color: var(--gray-700);">Candidate Name:</label>
+              <input type="text" id="candidate-name-input" class="form-input" value="Alex Morgan" style="width: 220px;">
+            </div>
+            <button type="button" class="btn-primary" id="btn-run-analysis" style="font-size: 14.5px; padding: 12px 24px;">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Run AI Optimization
+            </button>
+          </div>
+
+          <!-- Analysis Results Container (Initially Hidden until run) -->
+          <div id="analysis-results-container" style="display: none;">
+            <!-- Header Card -->
+            <div class="analysis-header-card">
+              <div class="score-circle">
+                <div class="score-ring" style="width: 110px; height: 110px; margin: 0;">
+                  <svg viewBox="0 0 120 120">
+                    <circle class="bg-ring" cx="60" cy="60" r="54"></circle>
+                    <circle class="val-ring" id="result-score-circle" cx="60" cy="60" r="54" style="stroke: var(--emerald);"></circle>
+                  </svg>
+                  <div class="value">
+                    <div class="num" id="result-score-val">88%</div>
+                    <div class="lbl">Match</div>
+                  </div>
+                </div>
+              </div>
+              <div class="analysis-header-info">
+                <h2 id="result-target-role">Senior Product Manager Match Report</h2>
+                <div class="role-title" id="result-candidate-name">Candidate: Alex Morgan</div>
+                <div class="analysis-meta-tags">
+                  <span class="meta-pill"><i class="fa-solid fa-shield-check" style="color: var(--emerald);"></i> Status: <strong id="result-qualification-badge">QUALIFIED</strong></span>
+                  <span class="meta-pill"><i class="fa-solid fa-chart-simple" style="color: var(--blue-primary);"></i> Confidence: <strong id="result-confidence-val">95%</strong></span>
+                  <span class="meta-pill"><i class="fa-solid fa-list-check" style="color: var(--violet);"></i> Gaps Identified: <strong id="result-gaps-count">2</strong></span>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-secondary" id="btn-copy-tailored-resume"><i class="fa-solid fa-copy"></i> Copy Bullets</button>
+                <button type="button" class="btn-primary" id="btn-export-studio"><i class="fa-solid fa-palette"></i> Open Studio</button>
+              </div>
+            </div>
+
+            <!-- Two Column: Findings & Skills Breakdown -->
+            <div class="two-col-layout">
+              <!-- Left: Tailored ATS Content & Recommendations -->
+              <div>
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2><i class="fa-solid fa-file-code" style="color: var(--blue-primary);"></i> ATS-Tailored Experience Bullets</h2>
+                  </div>
+                  <div class="section-body" id="tailored-bullets-container">
+                    <!-- Bullets injected dynamically -->
+                  </div>
+                </div>
+
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2><i class="fa-solid fa-triangle-exclamation" style="color: var(--amber);"></i> Application Readiness & Gaps</h2>
+                  </div>
+                  <div class="section-body" id="readiness-gaps-container">
+                    <!-- Gaps injected dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Skills Matching Matrix & ATS Keywords -->
+              <div>
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2><i class="fa-solid fa-tags" style="color: var(--emerald);"></i> Skills Alignment</h2>
+                  </div>
+                  <div class="section-body">
+                    <h4 style="font-size: 13px; color: var(--emerald-dark); margin-bottom: 6px;"><i class="fa-solid fa-circle-check"></i> Matched Mandatory Skills</h4>
+                    <div class="skill-chips" id="matched-skills-chips">
+                      <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Product Strategy</span>
+                      <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Agile / Scrum</span>
+                      <span class="skill-chip matched"><i class="fa-solid fa-check"></i> Data Analytics</span>
                     </div>
-                    <ul>
-                      <li>Architected LLM caching pipeline reducing API cost by 35% across 200,000 monthly active users.</li>
-                    </ul>
+
+                    <h4 style="font-size: 13px; color: var(--rose-dark); margin-top: 16px; margin-bottom: 6px;"><i class="fa-solid fa-circle-xmark"></i> Missing / Unconfirmed Skills</h4>
+                    <div class="skill-chips" id="missing-skills-chips">
+                      <span class="skill-chip missing"><i class="fa-solid fa-xmark"></i> GraphQL API Architecture</span>
+                      <span class="skill-chip missing"><i class="fa-solid fa-xmark"></i> B2B SaaS Enterprise Pricing</span>
+                    </div>
                   </div>
                 </div>
-              </section>
+
+                <div class="section-card">
+                  <div class="section-header">
+                    <h2><i class="fa-solid fa-key" style="color: var(--violet);"></i> High-Density ATS Keywords</h2>
+                  </div>
+                  <div class="section-body" id="ats-keywords-container">
+                    <!-- Keywords injected dynamically -->
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
 
-    <!-- TAB 4: Cover Letter Studio -->
-    <div id="tab-cover-letter" class="tab-page">
-      <section class="glass-card workspace-card">
-        <div class="form-header">
-          <h3><i class="fa-solid fa-envelope-open-text"></i> AI Cover Letter Studio</h3>
-          <p>Generate a customized, persuasive cover letter targeted to specific job requirements.</p>
-        </div>
+        <!-- ====================================================================
+             VIEW 3: APPLICATION KANBAN TRACKER
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-tracker">
+          <div class="kanban-toolbar">
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 13px; font-weight: 600; color: var(--gray-600);">Filter:</span>
+              <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12.5px;" id="btn-filter-all">All Roles</button>
+              <button type="button" class="btn-ghost" style="padding: 6px 12px; font-size: 12.5px;">Remote Only</button>
+            </div>
+            <button type="button" class="btn-primary" id="btn-add-kanban-card">
+              <i class="fa-solid fa-plus"></i> New Application
+            </button>
+          </div>
 
-        <form id="cover-letter-form" class="grid-2-col">
-          <div class="input-card">
-            <div class="grid-2-col mb-3">
-              <div>
-                <label for="cl-fn">First Name</label>
-                <input id="cl-fn" required placeholder="Alex" class="glass-input">
+          <!-- Kanban Board (5 Stages) -->
+          <div class="kanban-board">
+            <!-- Stage 1: Wishlist -->
+            <div class="kanban-column" data-stage="wishlist">
+              <div class="kanban-col-header">
+                <h3><i class="fa-regular fa-bookmark" style="color: var(--gray-500);"></i> Wishlist</h3>
+                <span class="count" id="count-wishlist">2</span>
               </div>
-              <div>
-                <label for="cl-ln">Last Name</label>
-                <input id="cl-ln" required placeholder="Morgan" class="glass-input">
+              <div class="kanban-cards-list" id="col-wishlist"></div>
+            </div>
+
+            <!-- Stage 2: Applied -->
+            <div class="kanban-column" data-stage="applied">
+              <div class="kanban-col-header">
+                <h3><i class="fa-regular fa-paper-plane" style="color: var(--blue-primary);"></i> Applied</h3>
+                <span class="count" id="count-applied">4</span>
+              </div>
+              <div class="kanban-cards-list" id="col-applied"></div>
+            </div>
+
+            <!-- Stage 3: Interview -->
+            <div class="kanban-column" data-stage="interview">
+              <div class="kanban-col-header">
+                <h3><i class="fa-solid fa-microphone-lines" style="color: var(--violet);"></i> Interview</h3>
+                <span class="count" id="count-interview">3</span>
+              </div>
+              <div class="kanban-cards-list" id="col-interview"></div>
+            </div>
+
+            <!-- Stage 4: Offer -->
+            <div class="kanban-column" data-stage="offer">
+              <div class="kanban-col-header">
+                <h3><i class="fa-solid fa-award" style="color: var(--amber);"></i> Offer</h3>
+                <span class="count" id="count-offer">1</span>
+              </div>
+              <div class="kanban-cards-list" id="col-offer"></div>
+            </div>
+
+            <!-- Stage 5: Rejected / Closed -->
+            <div class="kanban-column" data-stage="closed">
+              <div class="kanban-col-header">
+                <h3><i class="fa-regular fa-circle-xmark" style="color: var(--gray-400);"></i> Closed</h3>
+                <span class="count" id="count-closed">1</span>
+              </div>
+              <div class="kanban-cards-list" id="col-closed"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 4: RESUME STUDIO & THEMES
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-resume-studio">
+          <div class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-palette" style="color: var(--blue-primary);"></i> Select Executive Template</h2>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-secondary" id="btn-studio-download-pdf"><i class="fa-solid fa-file-arrow-down"></i> Export PDF</button>
+                <button type="button" class="btn-primary" id="btn-studio-save-version"><i class="fa-solid fa-floppy-disk"></i> Save Version</button>
               </div>
             </div>
-            <div class="form-group mb-3">
-              <label for="cl-tone">Cover Letter Tone</label>
-              <select id="cl-tone" class="glass-select full-width">
-                <option value="executive">Executive & Leadership</option>
-                <option value="professional">Professional & Direct</option>
-                <option value="bold">Bold & High-Impact</option>
-                <option value="creative">Creative & Engaging</option>
+            <div class="section-body">
+              <div class="template-grid">
+                <div class="template-card selected" data-template="executive">
+                  <div class="template-preview-thumb">
+                    <div class="template-mock-line title"></div>
+                    <div class="template-mock-line" style="width: 80%;"></div>
+                    <div class="template-mock-line" style="width: 90%;"></div>
+                    <div class="template-mock-line" style="width: 70%;"></div>
+                  </div>
+                  <div class="template-card-info">
+                    <h4>Executive Slate</h4>
+                    <p>Navy headers, clean ATS hierarchy.</p>
+                  </div>
+                </div>
+
+                <div class="template-card" data-template="modern">
+                  <div class="template-preview-thumb">
+                    <div class="template-mock-line title" style="background: var(--violet);"></div>
+                    <div class="template-mock-line" style="width: 85%;"></div>
+                    <div class="template-mock-line" style="width: 75%;"></div>
+                    <div class="template-mock-line" style="width: 95%;"></div>
+                  </div>
+                  <div class="template-card-info">
+                    <h4>Modern Tech</h4>
+                    <p>Violet accents, compact typography.</p>
+                  </div>
+                </div>
+
+                <div class="template-card" data-template="minimal">
+                  <div class="template-preview-thumb">
+                    <div class="template-mock-line title" style="background: var(--gray-800);"></div>
+                    <div class="template-mock-line" style="width: 70%;"></div>
+                    <div class="template-mock-line" style="width: 60%;"></div>
+                    <div class="template-mock-line" style="width: 80%;"></div>
+                  </div>
+                  <div class="template-card-info">
+                    <h4>Clean Minimal</h4>
+                    <p>Classic serif & sans-serif contrast.</p>
+                  </div>
+                </div>
+
+                <div class="template-card" data-template="bold">
+                  <div class="template-preview-thumb">
+                    <div class="template-mock-line title" style="background: var(--emerald);"></div>
+                    <div class="template-mock-line" style="width: 90%;"></div>
+                    <div class="template-mock-line" style="width: 80%;"></div>
+                    <div class="template-mock-line" style="width: 65%;"></div>
+                  </div>
+                  <div class="template-card-info">
+                    <h4>Impact Emerald</h4>
+                    <p>Bold metrics and highlight callouts.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live Studio Editor & Preview -->
+              <div class="two-col-equal">
+                <div>
+                  <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Markdown / Bullet Content Editor</h3>
+                  <textarea id="studio-editor-text" class="form-textarea" style="min-height: 380px; font-family: var(--font-mono); font-size: 12.5px;">
+# Alex Morgan
+Senior Product Manager | San Francisco, CA | alex@morgan.io
+
+## Summary
+Results-driven Senior Product Manager with 7+ years directing high-scale B2B SaaS platforms. Proven track record of boosting active user engagement by 40% and driving $12M+ ARR growth.
+
+## Core Competencies
+- Product Strategy & Roadmapping
+- Data-Driven Decision Making (SQL, Amplitude)
+- Cross-Functional Agile Leadership
+- Enterprise Customer Discovery
+
+## Professional Experience
+### Lead Product Manager — Apex Cloud (2022 – Present)
+- Directed product roadmap for enterprise analytics suite serving 150K+ monthly active users.
+- Partnered with engineering to architect real-time event streaming pipeline, reducing query latency by 35%.
+- Implemented truth-first validation rubrics that elevated customer retention by 18%.
+                  </textarea>
+                </div>
+                <div>
+                  <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Real-Time Rendered Preview</h3>
+                  <div id="studio-live-preview" style="background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 24px; min-height: 380px; font-size: 13px; line-height: 1.6; box-shadow: var(--shadow-sm); overflow-y: auto; max-height: 480px;">
+                    <!-- Rendered HTML -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 5: COVER LETTER GENERATOR
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-cover-letter">
+          <div class="two-col-layout">
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-pen-nib" style="color: var(--blue-primary);"></i> Letter Parameters</h2>
+              </div>
+              <div class="section-body">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Target Company Name</label>
+                    <input type="text" id="cl-company-input" class="form-input" placeholder="e.g. Stripe, OpenAI, Google">
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Role Title</label>
+                    <input type="text" id="cl-role-input" class="form-input" placeholder="e.g. Principal Product Manager">
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Tone of Voice</label>
+                    <select id="cl-tone-select" class="form-input">
+                      <option value="executive">Executive & Authoritative</option>
+                      <option value="confident">Confident & Dynamic</option>
+                      <option value="storyteller">Narrative & Impact-Driven</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Key Highlight or Proof Point</label>
+                    <input type="text" id="cl-highlight-input" class="form-input" placeholder="e.g. Scaled revenue from $2M to $15M ARR">
+                  </div>
+                  <button type="button" class="btn-primary" id="btn-generate-cover-letter" style="margin-top: 8px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tailored Letter
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Output Letter Card -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-file-lines" style="color: var(--emerald);"></i> Generated Cover Letter</h2>
+                <button type="button" class="btn-secondary" id="btn-copy-cover-letter"><i class="fa-solid fa-copy"></i> Copy</button>
+              </div>
+              <div class="section-body">
+                <textarea id="cl-output-text" class="form-textarea" style="min-height: 380px; font-size: 13.5px; line-height: 1.6;" placeholder="Your tailored, evidence-backed cover letter will appear here..."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 6: RECRUITER OUTREACH & LINKEDIN
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-outreach">
+          <div class="two-col-layout">
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-paper-plane" style="color: var(--blue-primary);"></i> Outreach Parameters</h2>
+              </div>
+              <div class="section-body">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Hiring Manager / Recruiter Name</label>
+                    <input type="text" id="outreach-recipient" class="form-input" placeholder="e.g. Sarah Jenkins">
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Company & Role</label>
+                    <input type="text" id="outreach-company-role" class="form-input" placeholder="e.g. Figma — Director of Engineering">
+                  </div>
+                  <button type="button" class="btn-primary" id="btn-generate-outreach">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Message Variations
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Drafts Outputs -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-messages" style="color: var(--violet);"></i> Ready-to-Send Drafts</h2>
+              </div>
+              <div class="section-body" id="outreach-drafts-list">
+                <div class="bullet-card">
+                  <div class="bullet-card-header">
+                    <span class="bullet-tag">LinkedIn Connection Note (300 char)</span>
+                    <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); showToast('Copied LinkedIn note!', 'success');"><i class="fa-solid fa-copy"></i></button>
+                  </div>
+                  <div class="bullet-text">Hi Sarah, I've been following Figma's recent expansion in collaborative tools. With 7+ yrs leading SaaS product roadmaps and scaling ARR, I'd love to connect and share a few thoughts on the open PM role!</div>
+                </div>
+
+                <div class="bullet-card">
+                  <div class="bullet-card-header">
+                    <span class="bullet-tag">Cold Email / InMail Draft</span>
+                    <button class="btn-ghost" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); showToast('Copied InMail draft!', 'success');"><i class="fa-solid fa-copy"></i></button>
+                  </div>
+                  <div class="bullet-text">Subject: Quick note regarding Senior PM opening at Figma
+
+Hi Sarah,
+
+I noticed Figma is seeking a Senior Product Manager to spearhead enterprise expansion. In my current role at Apex Cloud, I scaled our core data analytics platform to 150K+ MAU and grew enterprise retention by 18%.
+
+I would welcome 10 minutes to discuss how my background in high-velocity agile delivery aligns with your quarterly hiring objectives.
+
+Best regards,
+Alex Morgan</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 7: STAR VOICE PRACTICE & COACHING
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-interview">
+          <div class="two-col-layout">
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-microphone-lines" style="color: var(--violet);"></i> Voice STAR Simulator</h2>
+                <span class="match-pill high" id="voice-sim-status">Ready</span>
+              </div>
+              <div class="section-body">
+                <div class="voice-simulator-wrap">
+                  <div class="voice-mic-orb" id="btn-voice-record-toggle">
+                    <i class="fa-solid fa-microphone"></i>
+                  </div>
+                  <div class="voice-timer" id="voice-timer-display">00:00</div>
+                  <p style="font-size: 13.5px; color: var(--gray-600); margin-bottom: 20px;" id="voice-recording-prompt">
+                    Click the orb to record your answer or generate custom STAR interview questions.
+                  </p>
+
+                  <div style="display: flex; justify-content: center; gap: 10px;">
+                    <button type="button" class="btn-secondary" id="btn-fetch-interview-questions">
+                      <i class="fa-solid fa-shuffle"></i> New Question
+                    </button>
+                    <button type="button" class="btn-primary" id="btn-analyze-voice-response">
+                      <i class="fa-solid fa-brain"></i> Evaluate Answer
+                    </button>
+                  </div>
+                </div>
+
+                <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px;">
+                  <h4 style="font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 4px;">Target Question:</h4>
+                  <p id="current-interview-question" style="font-size: 14px; font-weight: 500; color: var(--navy-900);">
+                    "Tell me about a time when you had to prioritize conflicting stakeholder demands under a tight deadline. How did you structure your decision?"
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- STAR Coaching Evaluation Report -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-chart-pie" style="color: var(--emerald);"></i> STAR Rubric Evaluation</h2>
+              </div>
+              <div class="section-body" id="voice-evaluation-report">
+                <div class="score-row">
+                  <span class="label">Situation / Context</span>
+                  <div class="bar"><div class="bar-fill" style="width: 85%; background: var(--emerald);"></div></div>
+                  <span class="pct">85%</span>
+                </div>
+                <div class="score-row">
+                  <span class="label">Task & Goal Clarity</span>
+                  <div class="bar"><div class="bar-fill" style="width: 90%; background: var(--emerald);"></div></div>
+                  <span class="pct">90%</span>
+                </div>
+                <div class="score-row">
+                  <span class="label">Action Specificity</span>
+                  <div class="bar"><div class="bar-fill" style="width: 78%; background: var(--blue-primary);"></div></div>
+                  <span class="pct">78%</span>
+                </div>
+                <div class="score-row">
+                  <span class="label">Result & Measurable ROI</span>
+                  <div class="bar"><div class="bar-fill" style="width: 88%; background: var(--violet);"></div></div>
+                  <span class="pct">88%</span>
+                </div>
+
+                <div style="margin-top: 20px; padding: 14px; background: rgba(37,99,235,0.05); border-left: 3px solid var(--blue-primary); border-radius: 0 6px 6px 0;">
+                  <h4 style="font-size: 13px; font-weight: 600; color: var(--blue-primary); margin-bottom: 4px;">AI Coach Advice</h4>
+                  <p style="font-size: 12.5px; color: var(--gray-700); line-height: 1.5;">
+                    Strong structured narrative! To elevate from good to executive, quantify the business trade-offs more explicitly when explaining which stakeholder request was deferred.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 8: SALARY STRATEGY & NEGOTIATION
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-salary">
+          <div class="two-col-layout">
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-hand-holding-dollar" style="color: var(--emerald);"></i> Compensation Parameters</h2>
+              </div>
+              <div class="section-body">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Role Title</label>
+                    <input type="text" id="salary-role-input" class="form-input" value="Senior Product Manager">
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Market Location / Tier</label>
+                    <input type="text" id="salary-loc-input" class="form-input" value="San Francisco Bay Area / Tier 1 Remote">
+                  </div>
+                  <div>
+                    <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Years of Verified Experience</label>
+                    <input type="number" id="salary-exp-input" class="form-input" value="7">
+                  </div>
+                  <button type="button" class="btn-primary" id="btn-generate-salary">
+                    <i class="fa-solid fa-calculator"></i> Calculate Market Strategy
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Strategy Report -->
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-chart-line" style="color: var(--blue-primary);"></i> Benchmarks & Leverage Scripts</h2>
+              </div>
+              <div class="section-body" id="salary-strategy-output">
+                <div style="display: flex; justify-content: space-around; margin-bottom: 20px; text-align: center;">
+                  <div>
+                    <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">25th Percentile</div>
+                    <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-700);">$165,000</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 11px; font-weight: 600; color: var(--blue-primary); text-transform: uppercase;">50th (Target)</div>
+                    <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--navy-900);">$190,000</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 11px; font-weight: 600; color: var(--emerald-dark); text-transform: uppercase;">75th (Top Tier)</div>
+                    <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--emerald);">$225,000</div>
+                  </div>
+                </div>
+
+                <div class="bullet-card">
+                  <div class="bullet-card-header">
+                    <span class="bullet-tag">Counter-Offer Leverage Script</span>
+                  </div>
+                  <div class="bullet-text">
+                    "Thank you for this offer; I'm genuinely excited about the team's roadmap. Based on market data for Senior PMs in Tier 1 with my proven track record of scaling $12M ARR platforms, I was anticipating a base salary closer to $195,000. If we can adjust the base to $195K or augment with additional equity, I'm ready to sign today."
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 9: CANDIDATE SETTINGS & SAVED REPORTS
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-settings">
+          <div class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-sliders" style="color: var(--blue-primary);"></i> Candidate Preferences & Account</h2>
+            </div>
+            <div class="section-body">
+              <div style="max-width: 600px; display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                  <label style="font-size: 13px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Default Candidate Full Name</label>
+                  <input type="text" id="settings-name-input" class="form-input" value="Alex Morgan">
+                </div>
+                <div>
+                  <label style="font-size: 13px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Registered Account Email</label>
+                  <input type="email" id="settings-email-input" class="form-input" value="alex.morgan@executive.io">
+                </div>
+                <div>
+                  <label style="font-size: 13px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Target Career Level</label>
+                  <select class="form-input">
+                    <option value="mid">Mid-Senior (4-7 Years)</option>
+                    <option value="lead" selected>Lead / Staff (7-10 Years)</option>
+                    <option value="executive">Director / VP (10+ Years)</option>
+                  </select>
+                </div>
+                <div style="padding-top: 10px; display: flex; gap: 12px;">
+                  <button type="button" class="btn-primary" onclick="showToast('Preferences saved successfully!', 'success');">Save Preferences</button>
+                  <button type="button" class="btn-secondary" onclick="localStorage.clear(); showToast('Local storage cache reset.', 'info');">Clear Local Cache</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 10: EMPLOYER DASHBOARD
+             ==================================================================== -->
+        <section class="view-page" id="view-emp-dashboard">
+          <!-- Employer Pipeline Overview (5 Stages) -->
+          <div class="pipeline-overview">
+            <div class="pipeline-stage sourced">
+              <div class="pipeline-count" id="emp-stat-sourced">128</div>
+              <div class="pipeline-label">Sourced</div>
+            </div>
+            <div class="pipeline-stage screening">
+              <div class="pipeline-count" id="emp-stat-screening">42</div>
+              <div class="pipeline-label">Screening</div>
+            </div>
+            <div class="pipeline-stage interview">
+              <div class="pipeline-count" id="emp-stat-interview">16</div>
+              <div class="pipeline-label">Interviewing</div>
+            </div>
+            <div class="pipeline-stage offer">
+              <div class="pipeline-count" id="emp-stat-offer">4</div>
+              <div class="pipeline-label">Offer Pending</div>
+            </div>
+            <div class="pipeline-stage hired">
+              <div class="pipeline-count" id="emp-stat-hired">9</div>
+              <div class="pipeline-label">Hired</div>
+            </div>
+          </div>
+
+          <!-- Active Vacancies Quick Matrix -->
+          <div class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-briefcase" style="color: var(--violet);"></i> Requisition Pipelines</h2>
+              <button type="button" class="btn-primary" data-nav="emp-bulk-screening"><i class="fa-solid fa-file-import"></i> Bulk Screen Resumes</button>
+            </div>
+            <div class="section-body" style="padding: 0;">
+              <table class="candidate-table">
+                <thead>
+                  <tr>
+                    <th>Job Requisition</th>
+                    <th>Applicants</th>
+                    <th>Qualified %</th>
+                    <th>Top Candidate</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="emp-vacancies-tbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 11: EMPLOYER BULK SCREENING (Up to 10 Resumes)
+             ==================================================================== -->
+        <section class="view-page" id="view-emp-bulk-screening">
+          <div class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-users-viewfinder" style="color: var(--violet);"></i> Bulk Resume Screening & Ranking</h2>
+              <button type="button" class="btn-primary" id="btn-run-bulk-screening"><i class="fa-solid fa-wand-magic-sparkles"></i> Benchmark Candidates</button>
+            </div>
+            <div class="section-body">
+              <div class="two-col-layout mb-3">
+                <div>
+                  <label style="font-size: 13px; font-weight: 600; color: var(--navy-900); display: block; margin-bottom: 6px;">Target Job Requisition</label>
+                  <textarea id="bulk-job-desc" class="form-textarea" style="min-height: 160px;" placeholder="Paste job requirements for bulk candidate benchmarking..."></textarea>
+                </div>
+                <div>
+                  <label style="font-size: 13px; font-weight: 600; color: var(--navy-900); display: block; margin-bottom: 6px;">Add Candidates (Up to 10)</label>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" id="bulk-cand-name" class="form-input" placeholder="Candidate Name (e.g. Jordan Lee)" style="width: 40%;">
+                      <input type="text" id="bulk-cand-skills" class="form-input" placeholder="Key Skills / Experience Summary" style="flex: 1;">
+                      <button type="button" class="btn-secondary" id="btn-add-bulk-candidate"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div id="bulk-candidates-list" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                      <span class="skill-chip matched" data-idx="0">Alex Morgan (7 yrs PM) <i class="fa-solid fa-xmark remove-chip"></i></span>
+                      <span class="skill-chip matched" data-idx="1">Taylor Swift (5 yrs Agile Lead) <i class="fa-solid fa-xmark remove-chip"></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Leaderboard Results Table -->
+              <div id="bulk-results-area" style="display: none; margin-top: 24px;">
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--navy-900); margin-bottom: 12px;">Candidate Leaderboard Ranking</h3>
+                <table class="candidate-table">
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Candidate Name</th>
+                      <th>Match Score</th>
+                      <th>Status</th>
+                      <th>Key Strengths</th>
+                      <th>Recommendation</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bulk-leaderboard-tbody">
+                    <!-- Populated via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 12: EMPLOYER CANDIDATE COMPARISON MATRIX
+             ==================================================================== -->
+        <section class="view-page" id="view-emp-candidate-comparison">
+          <div class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-code-compare" style="color: var(--violet);"></i> Side-by-Side Candidate Rubric Matrix</h2>
+            </div>
+            <div class="section-body" style="padding: 0;">
+              <table class="candidate-table">
+                <thead>
+                  <tr>
+                    <th>Evaluation Criteria</th>
+                    <th>Alex Morgan</th>
+                    <th>Jordan Smith</th>
+                    <th>Taylor Green</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Overall Match Score</strong></td>
+                    <td><span class="match-pill high">88%</span></td>
+                    <td><span class="match-pill high">82%</span></td>
+                    <td><span class="match-pill med">71%</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Years of Relevant Exp</strong></td>
+                    <td>7.5 Years</td>
+                    <td>6.0 Years</td>
+                    <td>4.5 Years</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mandatory Skills Fit</strong></td>
+                    <td>5 / 5 Matched</td>
+                    <td>4 / 5 Matched</td>
+                    <td>3 / 5 Matched</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Truth & Evidence Score</strong></td>
+                    <td>100% (Verified)</td>
+                    <td>90% (Verified)</td>
+                    <td>85% (Unverified Claims)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Action</strong></td>
+                    <td><button class="btn-primary" style="padding: 6px 12px; font-size: 12px;">Advance to Offer</button></td>
+                    <td><button class="btn-secondary" style="padding: 6px 12px; font-size: 12px;">Final Interview</button></td>
+                    <td><button class="btn-danger" style="padding: 6px 12px; font-size: 12px;">Hold / Reject</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 13: EMPLOYER EMAIL TEMPLATES
+             ==================================================================== -->
+        <section class="view-page" id="view-emp-email-templates">
+          <div class="two-col-layout">
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-envelopes-bulk" style="color: var(--violet);"></i> Communication Templates</h2>
+              </div>
+              <div class="section-body">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <button type="button" class="btn-secondary" style="justify-content: flex-start;" onclick="loadEmailTemplate('invite')">
+                    <i class="fa-solid fa-calendar-check" style="color: var(--emerald);"></i> Round 1 Interview Invitation
+                  </button>
+                  <button type="button" class="btn-secondary" style="justify-content: flex-start;" onclick="loadEmailTemplate('offer')">
+                    <i class="fa-solid fa-award" style="color: var(--amber);"></i> Formal Offer Letter Notice
+                  </button>
+                  <button type="button" class="btn-secondary" style="justify-content: flex-start;" onclick="loadEmailTemplate('reject')">
+                    <i class="fa-solid fa-heart" style="color: var(--rose);"></i> Constructive / Gentle Rejection
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-pen-to-square" style="color: var(--blue-primary);"></i> Template Content</h2>
+                <button type="button" class="btn-secondary" onclick="navigator.clipboard.writeText(document.getElementById('email-template-body').value); showToast('Copied email template!', 'success');"><i class="fa-solid fa-copy"></i> Copy</button>
+              </div>
+              <div class="section-body">
+                <textarea id="email-template-body" class="form-textarea" style="min-height: 320px;">
+Dear {{Candidate_Name}},
+
+Thank you for your interest in the {{Role_Title}} position at {{Company_Name}}. 
+
+Our team was thoroughly impressed by your background in product delivery and evidence-backed metrics. We would love to invite you to a 45-minute video conversation with our Lead Hiring Manager.
+
+Please select a time that works best using this link: {{Scheduling_Link}}
+
+Best regards,
+Talent Acquisition Team
+{{Company_Name}}
+                </textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             VIEW 14: EMPLOYER SCORING RUBRICS
+             ==================================================================== -->
+        <section class="view-page" id="view-emp-scoring-rubrics">
+          <div class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-list-check" style="color: var(--violet);"></i> Requisition Weighting Rubrics</h2>
+              <button type="button" class="btn-primary" onclick="showToast('Rubric weights updated!', 'success');"><i class="fa-solid fa-floppy-disk"></i> Save Weights</button>
+            </div>
+            <div class="section-body">
+              <div style="max-width: 600px; display: flex; flex-direction: column; gap: 16px;">
+                <div class="score-row">
+                  <span class="label">Mandatory Core Skills</span>
+                  <input type="range" min="10" max="60" value="40" class="form-input" style="flex: 1; margin: 0 16px;">
+                  <span class="pct">40%</span>
+                </div>
+                <div class="score-row">
+                  <span class="label">Relevant Experience Years</span>
+                  <input type="range" min="10" max="60" value="25" class="form-input" style="flex: 1; margin: 0 16px;">
+                  <span class="pct">25%</span>
+                </div>
+                <div class="score-row">
+                  <span class="label">Truth & Evidence Factor</span>
+                  <input type="range" min="10" max="60" value="20" class="form-input" style="flex: 1; margin: 0 16px;">
+                  <span class="pct">20%</span>
+                </div>
+                <div class="score-row">
+                  <span class="label">Preferred Nice-to-Haves</span>
+                  <input type="range" min="5" max="30" value="15" class="form-input" style="flex: 1; margin: 0 16px;">
+                  <span class="pct">15%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 15: Active Vacancies -->
+        <section class="view-page" id="view-emp-vacancies">
+          <div class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-briefcase" style="color: var(--violet);"></i> Requisitions & Job Postings</h2>
+              <button type="button" class="btn-primary" id="btn-create-vacancy"><i class="fa-solid fa-plus"></i> Post Vacancy</button>
+            </div>
+            <div class="section-body" style="padding: 0;">
+              <table class="candidate-table">
+                <thead>
+                  <tr>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Location</th>
+                    <th>Active Pipeline</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Senior Product Manager</strong></td>
+                    <td>Product</td>
+                    <td>San Francisco (Hybrid)</td>
+                    <td>42 Candidates</td>
+                    <td><span class="match-pill high">Active</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Staff Full-Stack Engineer</strong></td>
+                    <td>Engineering</td>
+                    <td>Remote (US)</td>
+                    <td>68 Candidates</td>
+                    <td><span class="match-pill high">Active</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Lead Product Designer</strong></td>
+                    <td>Design</td>
+                    <td>New York, NY</td>
+                    <td>19 Candidates</td>
+                    <td><span class="match-pill med">Interviewing</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       Mobile Bottom Navigation Bar (<1024px)
+       ========================================================================== -->
+  <nav class="mobile-bottom-nav" id="mobile-nav">
+    <button type="button" class="mobile-nav-item active" data-view="cand-dashboard">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </button>
+    <button type="button" class="mobile-nav-item" data-view="cand-resume-analysis">
+      <i class="fa-solid fa-file-waveform"></i>
+      <span>Analyze</span>
+    </button>
+    <button type="button" class="mobile-nav-item" data-view="cand-tracker">
+      <i class="fa-solid fa-table-columns"></i>
+      <span>Tracker</span>
+    </button>
+    <button type="button" class="mobile-nav-item" data-view="cand-interview">
+      <i class="fa-solid fa-microphone"></i>
+      <span>STAR</span>
+    </button>
+    <button type="button" class="mobile-nav-item" data-view="cand-settings">
+      <i class="fa-solid fa-user"></i>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- ==========================================================================
+       Modal: New Kanban Application
+       ========================================================================== -->
+  <div class="modal-overlay hidden" id="modal-new-application">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Job Application</h3>
+        <button type="button" class="modal-close-btn" id="btn-close-app-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-new-app">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Company Name</label>
+              <input type="text" id="modal-app-company" class="form-input" required placeholder="e.g. Stripe">
+            </div>
+            <div>
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Role Title</label>
+              <input type="text" id="modal-app-role" class="form-input" required placeholder="e.g. Senior Product Manager">
+            </div>
+            <div>
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Initial Stage</label>
+              <select id="modal-app-stage" class="form-input">
+                <option value="wishlist">Wishlist</option>
+                <option value="applied" selected>Applied</option>
+                <option value="interview">Interviewing</option>
+                <option value="offer">Offer Received</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="cl-profile">Candidate Experience / Profile (Paste or Upload)</label>
-              <textarea id="cl-profile" minlength="50" required placeholder="Paste resume text or profile..." class="glass-textarea short-textarea"></textarea>
+            <div>
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Estimated Match Score (%)</label>
+              <input type="number" id="modal-app-score" class="form-input" min="1" max="100" value="88">
             </div>
-          </div>
-
-          <div class="input-card">
-            <div class="form-group mb-3">
-              <label for="cl-job">Target Job Description (Paste, URL, or Upload)</label>
-              <textarea id="cl-job" minlength="50" required placeholder="Paste job description here..." class="glass-textarea"></textarea>
-            </div>
-            <div class="flex-gap mt-3">
-              <button type="submit" id="btn-generate-cl" class="cta-button full-width">
-                <span>Generate Tailored Cover Letter</span>
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-              </button>
-              <button type="button" id="btn-refresh-cl" class="glass-btn secondary-btn" title="Refresh & Regenerate fresh AI iteration"><i class="fa-solid fa-rotate"></i> Refresh</button>
-            </div>
-          </div>
-        </form>
-
-        <div id="cl-result-wrap" class="review-preview hidden mt-4">
-          <div class="flex-between mb-2">
-            <span class="preview-heading">Generated Cover Letter (Editable)</span>
-            <button type="button" id="btn-copy-cl" class="glass-btn secondary-btn"><i class="fa-solid fa-copy"></i> Copy Letter</button>
-          </div>
-          <textarea id="cl-output-text" class="glass-textarea" style="height:auto; min-height:280px;"></textarea>
-        </div>
-      </section>
-    </div>
-
-    <!-- TAB 5: Salary Negotiator -->
-    <div id="tab-salary-negotiator" class="tab-page">
-      <section class="glass-card workspace-card">
-        <div class="form-header">
-          <h3><i class="fa-solid fa-hand-holding-dollar"></i> AI Salary & Compensation Negotiator</h3>
-          <p>Estimate market compensation with real-time sources, review talking points, and draft counter-offer emails.</p>
-        </div>
-
-        <form id="salary-form" class="grid-2-col">
-          <div class="input-card">
-            <div class="grid-2-col mb-3">
-              <div>
-                <label for="sal-fn">First Name</label>
-                <input id="sal-fn" required placeholder="Alex" class="glass-input">
-              </div>
-              <div>
-                <label for="sal-ln">Last Name</label>
-                <input id="sal-ln" required placeholder="Morgan" class="glass-input">
-              </div>
-            </div>
-            <div class="form-group mb-3">
-              <label for="sal-title">Target Job Title</label>
-              <input id="sal-title" required placeholder="Senior Software Engineer" class="glass-input">
-            </div>
-            <div class="form-group mb-3">
-              <label for="sal-exp">Years of Relevant Experience</label>
-              <input id="sal-exp" type="number" min="0" max="50" value="6" class="glass-input">
-            </div>
-            <div class="form-group">
-              <label for="sal-offer">Current Offer Amount (Optional)</label>
-              <input id="sal-offer" placeholder="e.g. $165,000 + 10% bonus" class="glass-input">
-            </div>
-          </div>
-
-          <div class="input-card">
-            <div class="form-group mb-3">
-              <label for="sal-job">Job Description / Requirements Summary</label>
-              <textarea id="sal-job" minlength="50" required placeholder="Paste job description or requirements..." class="glass-textarea"></textarea>
-            </div>
-            <div class="flex-gap mt-3">
-              <button type="submit" id="btn-generate-sal" class="cta-button full-width">
-                <span>Generate Negotiation Strategy</span>
-                <i class="fa-solid fa-chart-line"></i>
-              </button>
-              <button type="button" id="btn-refresh-sal" class="glass-btn secondary-btn" title="Refresh & Regenerate fresh salary benchmark"><i class="fa-solid fa-rotate"></i> Refresh</button>
-            </div>
-          </div>
-        </form>
-
-        <div id="sal-result-wrap" class="hidden mt-4">
-          <div class="glass-card mb-3">
-            <div class="results-status-banner">
-              <div>
-                <span class="hero-tag">COMPENSATION ANALYSIS & REAL-TIME SOURCES</span>
-                <h2 id="sal-res-range">$175,000 – $210,000 Base</h2>
-                <p id="sal-res-summary" class="text-muted"></p>
-              </div>
-            </div>
-
-            <!-- Market Data Sources Breakdown -->
-            <div class="mt-3">
-              <h4><i class="fa-solid fa-database text-cyan"></i> Real-Time Market Benchmark Sources</h4>
-              <div id="sal-market-sources-list" class="gap-cards-grid mt-2">
-                <!-- Market sources inserted dynamically -->
-              </div>
-            </div>
-
-            <div class="mt-3">
-              <h4><i class="fa-solid fa-comments"></i> Strategic Talking Points</h4>
-              <ul id="sal-res-points" class="mt-2"></ul>
-            </div>
-
-            <div class="mt-3">
-              <h4><i class="fa-solid fa-file-contract"></i> Counter-Offer Script</h4>
-              <textarea id="sal-res-script" class="glass-textarea mt-1" style="height:auto; min-height:100px;"></textarea>
-            </div>
-
-            <div class="mt-3">
-              <h4><i class="fa-solid fa-paper-plane"></i> Negotiation Email Template</h4>
-              <textarea id="sal-res-email" class="glass-textarea mt-1" style="height:auto; min-height:120px;"></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- TAB 6: Recruiter Outreach Drafts -->
-    <div id="tab-recruiter-outreach" class="tab-page">
-      <section class="glass-card workspace-card">
-        <div class="form-header">
-          <h3><i class="fa-solid fa-paper-plane"></i> Recruiter & Hiring Manager Outreach Hub</h3>
-          <p>Generate tailored LinkedIn connection notes, cold recruiter emails, and mailto client links.</p>
-        </div>
-
-        <form id="outreach-form" class="grid-2-col">
-          <div class="input-card">
-            <div class="grid-2-col mb-3">
-              <div>
-                <label for="out-fn">First Name</label>
-                <input id="out-fn" required placeholder="Alex" class="glass-input">
-              </div>
-              <div>
-                <label for="out-ln">Last Name</label>
-                <input id="out-ln" required placeholder="Morgan" class="glass-input">
-              </div>
-            </div>
-            <div class="form-group mb-3">
-              <label for="out-company">Target Company</label>
-              <input id="out-company" required placeholder="Stripe / Google / OpenAI" class="glass-input">
-            </div>
-            <div class="form-group mb-3">
-              <label for="out-role">Target Role Title</label>
-              <input id="out-role" required placeholder="Staff AI Infrastructure Engineer" class="glass-input">
-            </div>
-            <div class="form-group">
-              <label for="out-mail-client">Send Via Email Client</label>
-              <select id="out-mail-client" class="glass-select full-width">
-                <option value="gmail">Gmail</option>
-                <option value="outlook">Outlook</option>
-                <option value="apple_mail">Apple Mail</option>
-                <option value="copy">Copy Text to Clipboard</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="input-card">
-            <div class="form-group mb-3">
-              <label for="out-highlights">Key Background Highlights (Optional)</label>
-              <textarea id="out-highlights" placeholder="e.g. 7 years experience in distributed Python services, reduced cloud infrastructure cost by 30%..." class="glass-textarea short-textarea"></textarea>
-            </div>
-            <div class="flex-gap mt-3">
-              <button type="submit" id="btn-generate-out" class="cta-button full-width">
-                <span>Generate Outreach Messages</span>
-                <i class="fa-solid fa-paper-plane"></i>
-              </button>
-              <button type="button" id="btn-refresh-out" class="glass-btn secondary-btn" title="Refresh & Regenerate fresh outreach draft"><i class="fa-solid fa-rotate"></i> Refresh</button>
-            </div>
-          </div>
-        </form>
-
-        <div id="out-result-wrap" class="hidden mt-4 grid-2-col">
-          <div class="glass-card">
-            <h4><i class="fa-brands fa-linkedin text-cyan"></i> LinkedIn Connection Note (<300 Chars)</h4>
-            <textarea id="out-res-linkedin" class="glass-textarea mt-2" style="height:auto; min-height:80px;"></textarea>
-          </div>
-          <div class="glass-card">
-            <h4><i class="fa-solid fa-envelope text-indigo"></i> Recruiter Cold Email</h4>
-            <textarea id="out-res-email" class="glass-textarea mt-2" style="height:auto; min-height:160px;"></textarea>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- TAB 7: Round Orbit AI Voice STAR Interviewer -->
-    <div id="tab-voice-interview" class="tab-page">
-      <section class="glass-card workspace-card">
-        <div class="form-header">
-          <h3><i class="fa-solid fa-microphone-lines"></i> Interactive Round Orbit AI Voice STAR Practice</h3>
-          <p>Intake your target job details, activate the Round Orbit UI on demand, and receive an honest AI review report.</p>
-        </div>
-
-        <!-- Pre-Interview Intake Form -->
-        <form id="voice-intake-form" class="grid-2-col mb-4">
-          <div class="input-card">
-            <div class="grid-2-col mb-3">
-              <div>
-                <label for="v-fn">First Name</label>
-                <input id="v-fn" required placeholder="Alex" class="glass-input">
-              </div>
-              <div>
-                <label for="v-ln">Last Name</label>
-                <input id="v-ln" required placeholder="Morgan" class="glass-input">
-              </div>
-            </div>
-            <div class="form-group mb-3">
-              <label for="v-role">Target Role Type / Title</label>
-              <input id="v-role" required placeholder="Senior AI Platform Engineer" class="glass-input">
-            </div>
-            <div class="form-group">
-              <label for="v-voice-select"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Voice Profile (Natural & Soft Speech)</label>
-              <select id="v-voice-select" class="glass-select full-width">
-                <option value="soft_executive">🎙️ Executive Coach (Soft & Professional)</option>
-                <option value="warm_recruiter">🎙️ Warm Recruiter (Friendly & Natural)</option>
-                <option value="hiring_manager">🎙️ Senior Hiring Manager (Clear & Articulate)</option>
-                <option value="british_accent">🎙️ British Accent (Polished)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="input-card">
-            <div class="grid-2-col mb-3">
-              <div>
-                <label for="v-timeline">How Soon is Interview?</label>
-                <select id="v-timeline" class="glass-select full-width">
-                  <option value="tomorrow">Tomorrow</option>
-                  <option value="this_week" selected>This Week</option>
-                  <option value="in_2_weeks">In 2 Weeks</option>
-                  <option value="exploring">Exploring Roles</option>
-                </select>
-              </div>
-              <div>
-                <label for="v-stage">Career Stage</label>
-                <select id="v-stage" class="glass-select full-width">
-                  <option value="early_career">Early Career (0-2 Yrs)</option>
-                  <option value="mid_level" selected>Mid-Level (3-6 Yrs)</option>
-                  <option value="senior">Senior (7-10 Yrs)</option>
-                  <option value="executive">Executive (10+ Yrs)</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group mb-3">
-              <label for="v-questions-count"><i class="fa-solid fa-list-ol"></i> Session Questions Count (Max 10)</label>
-              <select id="v-questions-count" class="glass-select full-width">
-                <option value="3">3 Questions (Quick Practice)</option>
-                <option value="5" selected>5 Questions (Standard Practice)</option>
-                <option value="7">7 Questions (In-Depth Practice)</option>
-                <option value="10">10 Questions (Full Mock Assessment)</option>
-              </select>
-            </div>
-            <button type="submit" id="btn-start-voice-session" class="cta-button full-width mt-3">
-              <span>Activate Round Orbit AI Interviewer</span>
-              <i class="fa-solid fa-circle-play"></i>
+            <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%; justify-content: center;">
+              Save Application
             </button>
           </div>
         </form>
-
-        <!-- Round Orbit Voice UI Stage (Activates on request) -->
-        <div id="voice-orbit-stage" class="voice-stage text-center hidden">
-          <!-- Live Mic Status Badge Pop-Up -->
-          <div id="orbit-mic-status-badge" class="mic-status-badge muted mb-3">
-            <i class="fa-solid fa-microphone-slash me-1"></i> Mic Muted (Click Orb to Speak)
-          </div>
-
-          <!-- Futuristic Round Orbit Container -->
-          <div class="orbit-container">
-            <div class="orbit-ring ring-1"></div>
-            <div class="orbit-ring ring-2"></div>
-            <div class="orbit-core" id="orbit-core-btn" title="Click to Speak / Mute Mic">
-              <i class="fa-solid fa-microphone-lines orbit-icon"></i>
-            </div>
-          </div>
-
-          <div class="star-question-card mt-3">
-            <span class="hero-tag" id="voice-q-focus">SITUATION & TASK FOCUS</span>
-            <h3 id="voice-question-text">"Tell me about a time you resolved a critical production system failure under intense pressure."</h3>
-            <p id="voice-question-hint" class="text-muted mt-2">Recommended Talking Point: Quantify the downtime saved and outline your incident response.</p>
-          </div>
-
-          <div class="voice-controls mt-4 flex-between" style="gap:10px; max-width:680px; margin:20px auto 0;">
-            <button type="button" id="btn-prev-question" class="glass-btn secondary-btn"><i class="fa-solid fa-backward"></i> Previous (Retake)</button>
-            <button type="button" id="btn-speak-question" class="glass-btn primary-btn"><i class="fa-solid fa-volume-high"></i> Speak Out Loud</button>
-            <button type="button" id="btn-skip-question" class="glass-btn secondary-btn"><i class="fa-solid fa-forward-step"></i> Skip Question</button>
-            <button type="button" id="btn-next-question" class="glass-btn secondary-btn"><i class="fa-solid fa-forward"></i> Next</button>
-            <button type="button" id="btn-complete-voice-session" class="glass-btn danger-btn"><i class="fa-solid fa-flag-checkered"></i> Finish</button>
-          </div>
-        </div>
-
-        <!-- Post-Interview Honest AI Review Report Card -->
-        <div id="voice-report-card" class="glass-card mt-4 hidden">
-          <div class="results-status-banner flex-between">
-            <div>
-              <span class="hero-tag">HONEST AI PERFORMANCE REVIEW</span>
-              <h2 id="v-rep-rating">Strong Hire — 88/100 Alignment</h2>
-            </div>
-            <button type="button" id="btn-download-voice-report" class="glass-btn primary-btn"><i class="fa-solid fa-download"></i> Download Assessment Report</button>
-          </div>
-
-          <div class="grid-2-col mt-3">
-            <div>
-              <h4><i class="fa-solid fa-circle-check text-emerald"></i> Strong Points</h4>
-              <ul id="v-rep-strong" class="mt-2"></ul>
-            </div>
-            <div>
-              <h4><i class="fa-solid fa-triangle-exclamation text-amber"></i> Weaknesses & Evidence Gaps</h4>
-              <ul id="v-rep-weak" class="mt-2"></ul>
-            </div>
-          </div>
-
-          <div class="mt-3">
-            <h4><i class="fa-solid fa-list-check text-indigo"></i> Priority Action Items & Review Topics</h4>
-            <ul id="v-rep-actions" class="mt-2"></ul>
-          </div>
-
-          <div class="mt-3">
-            <h4><i class="fa-solid fa-file-lines"></i> Executive Evaluation Summary</h4>
-            <div id="v-rep-summary" class="glass-textarea mt-1" style="height:auto; min-height:120px; white-space:pre-wrap;"></div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- TAB 8: Consolidated History Drawer / View -->
-    <div id="tab-history-view" class="tab-page">
-      <section class="glass-card workspace-card">
-        <div class="form-header flex-between">
-          <div>
-            <h3><i class="fa-solid fa-clock-rotate-left"></i> Consolidated Analysis & Benchmark History</h3>
-            <p>Segmented persistent history saved locally on your browser.</p>
-          </div>
-          <button id="btn-clear-history" class="glass-btn danger-btn"><i class="fa-solid fa-trash"></i> Clear All History</button>
-        </div>
-
-        <!-- Segmented History Tabs -->
-        <div class="auth-toggle-tabs mb-3" style="max-width:360px;">
-          <button type="button" class="auth-tab active" id="tab-hist-personal">👤 Personal Candidate Reports</button>
-          <button type="button" class="auth-tab" id="tab-hist-enterprise">🏢 Enterprise Benchmarks</button>
-        </div>
-
-        <div id="history-list" class="history-grid"></div>
-      </section>
-    </div>
-  </main>
-
-  <!-- Pro Theme Teaser Modal -->
-  <div id="pro-teaser-modal" class="modal-overlay hidden">
-    <div class="glass-card modal-card text-center">
-      <button type="button" class="modal-close" id="btn-close-pro-teaser">&times;</button>
-      <div class="error-icon" style="color:var(--accent-amber);"><i class="fa-solid fa-crown"></i></div>
-      <h3>Pro Theme Unlocked Preview</h3>
-      <p class="text-muted">You are previewing a Pro Theme (Stanford Gold / Harvard Classic / Cyber Neon). Upgrade to Executive Pro to export watermark-free PDFs!</p>
-      <div class="mt-3">
-        <button type="button" id="btn-unlock-pro-confirm" class="cta-button full-width"><span>Upgrade to Executive Pro</span></button>
       </div>
     </div>
   </div>
-            <p>Saved locally on your browser. Reload, export, or manage past reports anytime.</p>
-          </div>
-          <button id="btn-clear-history" class="glass-btn danger-btn"><i class="fa-solid fa-trash"></i> Clear All History</button>
-        </div>
-        <div id="history-list" class="history-grid"></div>
-      </section>
-    </div>
 
-    <!-- Loading State Overlay -->
-    <section id="loading" class="glass-card loading-card hidden">
-      <div class="loading-spinner-wrapper">
-        <div class="glow-spinner"></div>
-        <i class="fa-solid fa-brain-circuit spinner-center-icon"></i>
-      </div>
-      <h3 id="loading-title">Analyzing Application Match...</h3>
-      <p id="loading-desc">Calculating ATS scores, extracting required qualifications, and generating interview prep.</p>
-    </section>
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
 
-    <!-- Error State Overlay -->
-    <section id="error" class="glass-card error-card hidden" role="alert">
-      <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h2>Request Could Not Be Completed</h2>
-      <p id="error-message"></p>
-    </section>
-
-    <!-- Single Analysis Results Section -->
-    <section id="result" class="results-container hidden" aria-live="polite"></section>
-  </main>
-
-  <!-- Footer -->
-  <footer class="app-footer">
-    <p>RoleReady AI • Executive Career Intelligence Platform</p>
-    <p class="sub">Empowering candidate excellence with conservative, grounded AI matching.</p>
-  </footer>
-
-  <script src="/static/app.js" defer></script>
+  <!-- Application Controller Script -->
+  <script src="/static/app.js"></script>
 </body>
 </html>
