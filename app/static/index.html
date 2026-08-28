@@ -13,7 +13,7 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Design System Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="/static/styles.css?v=2.1.0">
+  <link rel="stylesheet" href="/static/styles.css?v=2.1.1">
   <style>
     /* Critical Base Reset */
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -196,9 +196,13 @@
 
         <div class="nav-section">
           <div class="nav-section-title">Account</div>
+          <button type="button" class="nav-item" data-view="cand-themes">
+            <span class="icon"><i class="fa-solid fa-palette"></i></span>
+            <span>Theme Gallery</span>
+          </button>
           <button type="button" class="nav-item" data-view="cand-settings">
             <span class="icon"><i class="fa-solid fa-sliders"></i></span>
-            <span>Settings & Themes</span>
+            <span>Settings &amp; Account</span>
           </button>
         </div>
       </nav>
@@ -1451,6 +1455,151 @@ Alex Morgan
         </section>
 
         <!-- ====================================================================
+             VIEW 13: THEME GALLERY (07-theme-gallery.html)
+             ==================================================================== -->
+        <section class="view-page" id="view-cand-themes">
+          <div class="section-card" style="margin-bottom: 24px;">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-palette" style="color: var(--blue-primary);"></i> Theme Gallery &amp; Design System</h2>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-secondary" onclick="applyTheme('theme_app_dark_navy', 'app');"><i class="fa-solid fa-rotate-left"></i> Reset App Skin</button>
+                <button type="button" class="btn-primary" onclick="openModal('modal-pricing-upgrade');"><i class="fa-solid fa-crown"></i> Unlock Pro Templates</button>
+              </div>
+            </div>
+            <div class="section-body">
+              <p style="font-size: 13.5px; color: var(--gray-600); margin-bottom: 16px;">
+                Customize how RoleReady looks (App UI Skins) or select ATS-optimized resume export layouts for your job applications.
+              </p>
+
+              <!-- Category Filter Chips -->
+              <div style="display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;" id="theme-category-filters">
+                <button type="button" class="btn-secondary active" style="padding: 6px 14px; font-size: 12.5px;">All Themes (7)</button>
+                <button type="button" class="btn-ghost" style="padding: 6px 14px; font-size: 12.5px;">Resume Templates (5)</button>
+                <button type="button" class="btn-ghost" style="padding: 6px 14px; font-size: 12.5px;">App UI Skins (2)</button>
+                <button type="button" class="btn-ghost" style="padding: 6px 14px; font-size: 12.5px;">Premium ($3.99 – $5.99)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Theme Gallery Grid -->
+          <div class="template-grid" style="grid-template-columns: repeat(3, 1fr);" id="theme-gallery-grid">
+            <!-- Theme Card 1: Executive Slate -->
+            <div class="template-card selected">
+              <div class="template-preview-thumb" style="background: #0A1628;">
+                <div class="template-mock-line title" style="background: #2563EB;"></div>
+                <div class="template-mock-line" style="width: 80%; background: #10B981;"></div>
+                <div class="template-mock-line" style="width: 90%; background: #94A3B8;"></div>
+              </div>
+              <div class="template-card-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h4>Executive Slate</h4>
+                  <span class="match-pill high" style="font-size: 10px;">Free</span>
+                </div>
+                <p>Deep navy headers, clean ATS hierarchy, authoritative typography.</p>
+                <button type="button" class="btn-primary" style="width: 100%; margin-top: 10px; padding: 6px; font-size: 12px;" onclick="applyTheme('theme_executive_slate', 'resume');">
+                  ✓ Apply Resume Template
+                </button>
+              </div>
+            </div>
+
+            <!-- Theme Card 2: Modern Tech -->
+            <div class="template-card">
+              <div class="template-preview-thumb" style="background: #FAFAFE;">
+                <div class="template-mock-line title" style="background: #8B5CF6;"></div>
+                <div class="template-mock-line" style="width: 85%; background: #7C3AED;"></div>
+                <div class="template-mock-line" style="width: 75%; background: #CBD5E1;"></div>
+              </div>
+              <div class="template-card-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h4>Modern Tech</h4>
+                  <span class="match-pill high" style="font-size: 10px;">Free</span>
+                </div>
+                <p>Violet accents, compact monospace typography, high-impact data tags.</p>
+                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px; padding: 6px; font-size: 12px;" onclick="applyTheme('theme_modern_tech', 'resume');">
+                  Apply Resume Template
+                </button>
+              </div>
+            </div>
+
+            <!-- Theme Card 3: Clean Minimal -->
+            <div class="template-card">
+              <div class="template-preview-thumb" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
+                <div class="template-mock-line title" style="background: #334155;"></div>
+                <div class="template-mock-line" style="width: 70%; background: #64748B;"></div>
+                <div class="template-mock-line" style="width: 60%; background: #E2E8F0;"></div>
+              </div>
+              <div class="template-card-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h4>Clean Minimal</h4>
+                  <span class="match-pill high" style="font-size: 10px;">Free</span>
+                </div>
+                <p>Classic serif headings with balanced whitespace for legal &amp; finance roles.</p>
+                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px; padding: 6px; font-size: 12px;" onclick="applyTheme('theme_clean_minimal', 'resume');">
+                  Apply Resume Template
+                </button>
+              </div>
+            </div>
+
+            <!-- Theme Card 4: Impact Emerald -->
+            <div class="template-card">
+              <div class="template-preview-thumb" style="background: #F0FDF4;">
+                <div class="template-mock-line title" style="background: #059669;"></div>
+                <div class="template-mock-line" style="width: 90%; background: #10B981;"></div>
+                <div class="template-mock-line" style="width: 80%; background: #A7F3D0;"></div>
+              </div>
+              <div class="template-card-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h4>Impact Emerald</h4>
+                  <span class="match-pill med" style="font-size: 10px; background: rgba(245,158,11,0.15); color: #D97706;">$4.99</span>
+                </div>
+                <p>Bold metric highlights, emerald badges, ideal for revenue &amp; growth leaders.</p>
+                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px; padding: 6px; font-size: 12px; border-color: var(--amber); color: var(--amber-dark);" onclick="applyTheme('theme_impact_emerald', 'resume');">
+                  Unlock &amp; Apply ($4.99)
+                </button>
+              </div>
+            </div>
+
+            <!-- Theme Card 5: Creative Ruby -->
+            <div class="template-card">
+              <div class="template-preview-thumb" style="background: #FFF1F2;">
+                <div class="template-mock-line title" style="background: #E11D48;"></div>
+                <div class="template-mock-line" style="width: 85%; background: #F43F5E;"></div>
+                <div class="template-mock-line" style="width: 70%; background: #FECDD3;"></div>
+              </div>
+              <div class="template-card-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h4>Creative Ruby</h4>
+                  <span class="match-pill med" style="font-size: 10px; background: rgba(245,158,11,0.15); color: #D97706;">$5.99</span>
+                </div>
+                <p>Vibrant rose accents &amp; two-column layout for design &amp; product leaders.</p>
+                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px; padding: 6px; font-size: 12px; border-color: var(--amber); color: var(--amber-dark);" onclick="applyTheme('theme_creative_ruby', 'resume');">
+                  Unlock &amp; Apply ($5.99)
+                </button>
+              </div>
+            </div>
+
+            <!-- Theme Card 6: Cyber Violet (App UI Skin) -->
+            <div class="template-card">
+              <div class="template-preview-thumb" style="background: #FAF5FF;">
+                <div class="template-mock-line title" style="background: #8B5CF6;"></div>
+                <div class="template-mock-line" style="width: 85%; background: #EC4899;"></div>
+                <div class="template-mock-line" style="width: 75%; background: #E9D5FF;"></div>
+              </div>
+              <div class="template-card-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h4>Cyber Violet (App Skin)</h4>
+                  <span class="match-pill med" style="font-size: 10px; background: rgba(139,92,246,0.15); color: #7C3AED;">App UI Skin</span>
+                </div>
+                <p>Vibrant violet accent skin for technical recruiter workspace.</p>
+                <button type="button" class="btn-primary" style="width: 100%; margin-top: 10px; padding: 6px; font-size: 12px; background: var(--violet); border-color: var(--violet);" onclick="applyTheme('theme_app_cyber_violet', 'app');">
+                  Apply App UI Skin
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
              VIEW 10: EMPLOYER DASHBOARD
              ==================================================================== -->
         <section class="view-page" id="view-emp-dashboard">
@@ -2106,6 +2255,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.1.0"></script>
+  <script src="/static/app.js?v=2.1.1"></script>
 </body>
 </html>

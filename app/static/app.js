@@ -429,6 +429,7 @@ const VIEW_META = {
   'cand-interview': { title: 'STAR Voice Practice & Coaching', sub: () => 'Simulate behavioral interviews. Get dynamic AI rubric scores after your answer.' },
   'cand-salary': { title: 'Salary Strategy & Negotiation', sub: () => 'Market benchmarks and proven negotiation scripts by role and location.' },
   'cand-settings': { title: 'Settings & Account', sub: () => 'Manage your profile, preferences, and data export.' },
+  'cand-themes': { title: 'Theme Gallery & Design System', sub: () => 'Customize how RoleReady looks (App UI Skins) or select ATS-optimized resume export layouts.' },
   'emp-dashboard': { title: 'Employer Hiring Dashboard', sub: () => `${state.user.company || 'Enterprise'} — Overview of open requisitions, pipeline metrics, and AI candidate screening.` },
   'emp-vacancies': { title: 'Active Vacancies', sub: () => 'Manage open requisitions and track screening funnels.' },
   'emp-bulk-screening': { title: 'Bulk Candidate Screening', sub: () => 'Benchmark and rank multiple candidate resumes against job criteria simultaneously.' },
