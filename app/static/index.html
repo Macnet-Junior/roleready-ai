@@ -12,8 +12,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Design System Stylesheet -->
-  <link rel="stylesheet" href="/static/styles.css">
+  <!-- Design System Stylesheet with Cache Buster -->
+  <link rel="stylesheet" href="/static/styles.css?v=2.0.2">
+  <style>
+    /* Critical Base Reset */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:#F8FAFC; color:#0F172A; margin:0; }
+    .app-layout { display:flex; min-height:100vh; }
+    .sidebar { width:260px; background:#0A1628; color:#fff; position:fixed; top:0; left:0; bottom:0; height:100vh; z-index:100; display:flex; flex-direction:column; }
+    .main-wrapper { flex:1; margin-left:260px; min-height:100vh; background:#F8FAFC; }
+    @media (max-width:1024px) { .sidebar { display:none; } .main-wrapper { margin-left:0; } }
+  </style>
 </head>
 <body>
   <div class="app-layout">
@@ -1318,6 +1327,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=2.0.2"></script>
 </body>
 </html>

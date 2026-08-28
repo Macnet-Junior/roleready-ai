@@ -52,7 +52,10 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 
 @app.get("/", include_in_schema=False)
 def home():
-    return FileResponse(ROOT / "static" / "index.html")
+    return FileResponse(
+        ROOT / "static" / "index.html",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache"}
+    )
 
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon():
