@@ -1323,10 +1323,111 @@ Talent Acquisition Team
     </div>
   </div>
 
+  <!-- Modal: User Profile -->
+  <div class="modal-overlay hidden" id="modal-user-profile">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>User Profile & Membership</h3>
+        <button type="button" class="modal-close-btn" id="btn-close-user-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div class="user-avatar" style="width: 56px; height: 56px; font-size: 20px; margin: 0 auto 10px;">AM</div>
+          <h3 style="font-family: var(--font-heading); font-size: 18px; color: var(--navy-900);">Alex Morgan</h3>
+          <span class="match-pill high" style="margin-top: 4px;">Executive Pro Member</span>
+          <p style="font-size: 13px; color: var(--gray-500); margin-top: 4px;">alex.morgan@executive.io</p>
+        </div>
+        <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+            <span style="color: var(--gray-600);">Monthly AI Optimizations:</span>
+            <strong>42 / Unlimited</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+            <span style="color: var(--gray-600);">Active Applications:</span>
+            <strong id="modal-user-app-count">6 Active</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px;">
+            <span style="color: var(--gray-600);">Truth Protection Status:</span>
+            <strong style="color: var(--emerald);"><i class="fa-solid fa-shield-check"></i> Enabled</strong>
+          </div>
+        </div>
+        <button type="button" class="btn-secondary" style="width: 100%; justify-content: center;" onclick="showToast('Signed out of demo session', 'info'); document.getElementById('modal-user-profile').classList.add('hidden');">
+          <i class="fa-solid fa-right-from-bracket"></i> Sign Out / Switch Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: History Reports -->
+  <div class="modal-overlay hidden" id="modal-history-reports">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>Saved Optimization Reports</h3>
+        <button type="button" class="modal-close-btn" id="btn-close-history-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 10px;" id="history-reports-list">
+          <div class="bullet-card" style="cursor: pointer;" onclick="loadHistoryItem(0)">
+            <div class="bullet-card-header">
+              <strong>Senior Product Manager — Stripe</strong>
+              <span class="match-pill high">92% Match</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--gray-500); margin-top: 2px;">Analyzed yesterday • 3 Tailored Bullets • Qualified</p>
+          </div>
+          <div class="bullet-card" style="cursor: pointer;" onclick="loadHistoryItem(1)">
+            <div class="bullet-card-header">
+              <strong>Staff Product Lead — OpenAI</strong>
+              <span class="match-pill high">88% Match</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--gray-500); margin-top: 2px;">Analyzed 3 days ago • 2 Gaps Identified • Qualified</p>
+          </div>
+          <div class="bullet-card" style="cursor: pointer;" onclick="loadHistoryItem(2)">
+            <div class="bullet-card-header">
+              <strong>Lead Product Manager — Figma</strong>
+              <span class="match-pill high">95% Match</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--gray-500); margin-top: 2px;">Analyzed last week • 4 Tailored Bullets • Qualified</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: New Vacancy -->
+  <div class="modal-overlay hidden" id="modal-new-vacancy">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create New Requisition</h3>
+        <button type="button" class="modal-close-btn" id="btn-close-vacancy-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-new-vacancy">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Job Title</label>
+              <input type="text" id="modal-vac-title" class="form-input" required placeholder="e.g. Lead AI Product Manager">
+            </div>
+            <div>
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Department</label>
+              <input type="text" id="modal-vac-dept" class="form-input" required placeholder="e.g. Product / AI Labs">
+            </div>
+            <div>
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px;">Location</label>
+              <input type="text" id="modal-vac-loc" class="form-input" required placeholder="e.g. San Francisco, CA (Hybrid)">
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%; justify-content: center;">
+              Publish Requisition
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.0.2"></script>
+  <script src="/static/app.js?v=2.0.3"></script>
 </body>
 </html>
