@@ -245,14 +245,10 @@ function syncAllUserUI() {
   updateNotifications(u.name || 'there');
 
   // User profile modal
-  const modalAvatar = document.querySelector('#modal-user-profile .user-avatar');
-  if (modalAvatar) modalAvatar.textContent = initials;
-  const modalName = document.querySelector('#modal-user-profile h3');
-  if (modalName) modalName.textContent = u.name || 'Guest';
-  const modalEmail = document.querySelector('#modal-user-profile p');
-  if (modalEmail) modalEmail.textContent = u.email || '';
-  const modalPlan = document.querySelector('#modal-user-profile .plan-badge');
-  if (modalPlan) modalPlan.textContent = u.plan || 'Free Candidate';
+  el('modal-profile-avatar', initials);
+  el('modal-profile-name', u.name || 'Guest');
+  el('modal-profile-email', u.email || '');
+  el('modal-profile-plan', u.plan || 'Free Candidate');
 }
 
 function getInitials(name) {
@@ -824,6 +820,35 @@ function renderKanban() {
 
   // Update dashboard table
   renderDashboardApps();
+  updateDashboardStats();
+}
+
+function updateDashboardStats() {
+  const active = state.kanbanApps.filter(a => a.stage !== 'closed');
+  const interviews = state.kanbanApps.filter(a => a.stage === 'interview' || a.stage === 'offer');
+  const avgMatch = active.length
+    ? Math.round(active.reduce((sum, a) => sum + (a.match || 0), 0) / active.length)
+    : 0;
+  const interviewRate = active.length
+    ? Math.round((interviews.length / active.length) * 100)
+    : 0;
+  // Readiness: proxy from avg match + interview conversion
+  const readiness = Math.min(99, Math.round((avgMatch * 0.65) + (interviewRate * 0.35)));
+
+  el('dash-stat-active', active.length.toString());
+  el('dash-stat-match', avgMatch ? `${avgMatch}%` : '—');
+  el('dash-stat-interviews', interviewRate ? `${interviewRate}%` : '—');
+  el('dash-stat-readiness', readiness || '—');
+
+  // Dashboard score ring — update to reflect avg match
+  const scoreNum = document.getElementById('dash-score-num');
+  const scoreCircle = document.getElementById('dash-score-circle');
+  if (scoreNum) scoreNum.textContent = avgMatch ? `${avgMatch}%` : '—';
+  if (scoreCircle && avgMatch) {
+    const circumference = 339;
+    scoreCircle.style.strokeDashoffset = circumference - (circumference * avgMatch / 100);
+    scoreCircle.style.stroke = avgMatch >= 80 ? 'var(--emerald)' : avgMatch >= 60 ? 'var(--amber)' : 'var(--rose)';
+  }
 }
 
 function openDetailPanel(app) {
@@ -1145,6 +1170,15 @@ function playUiSound(type = 'click') {
   } catch (e) {}
 }
 
+function handleUpgradePlan(planName, price) {
+  requireAuth(() => {
+    applyUser({ plan: planName });
+    closeModal('modal-pricing-upgrade');
+    playUiSound('success');
+    showToast(`🎉 Account upgraded to ${planName} (${price})! All features unlocked.`, 'success');
+  });
+}
+
 // ─── Global Helpers ───────────────────────────────────────────────────────────
 
 function attachGlobalHelpers() {
@@ -1155,6 +1189,7 @@ function attachGlobalHelpers() {
   window.signOut = signOut;
   window.speakText = speakText;
   window.playUiSound = playUiSound;
+  window.handleUpgradePlan = handleUpgradePlan;
 }
 
 // ─── Toast Notifications ──────────────────────────────────────────────────────

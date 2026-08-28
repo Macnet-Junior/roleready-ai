@@ -13,7 +13,7 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Design System Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="/static/styles.css?v=2.0.8">
+  <link rel="stylesheet" href="/static/styles.css?v=2.0.9">
   <style>
     /* Critical Base Reset */
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -1237,9 +1237,9 @@ Alex Morgan
               <div class="section-body">
                 <!-- Question Category Selector -->
                 <div style="display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
-                  <button type="button" class="btn-secondary active" style="padding: 4px 10px; font-size: 12px;" onclick="showToast('Category: Behavioral Stakeholder Alignment', 'info');">Behavioral</button>
-                  <button type="button" class="btn-ghost" style="padding: 4px 10px; font-size: 12px;" onclick="showToast('Category: Technical Scalability', 'info');">Technical Trade-offs</button>
-                  <button type="button" class="btn-ghost" style="padding: 4px 10px; font-size: 12px;" onclick="showToast('Category: Product Leadership', 'info');">Leadership & Conflict</button>
+                  <button type="button" class="btn-secondary active" style="padding: 4px 10px; font-size: 12px;" data-star-category="behavioral">Behavioral</button>
+                  <button type="button" class="btn-ghost" style="padding: 4px 10px; font-size: 12px;" data-star-category="technical">Technical Trade-offs</button>
+                  <button type="button" class="btn-ghost" style="padding: 4px 10px; font-size: 12px;" data-star-category="leadership">Leadership &amp; Conflict</button>
                 </div>
 
                 <div class="voice-simulator-wrap">
@@ -1283,35 +1283,11 @@ Alex Morgan
                 <h2><i class="fa-solid fa-chart-pie" style="color: var(--emerald);"></i> STAR Rubric Evaluation</h2>
               </div>
               <div class="section-body" id="voice-evaluation-report">
-                <div class="score-row">
-                  <span class="label">Situation / Context</span>
-                  <div class="bar"><div class="bar-fill" style="width: 85%; background: var(--emerald);"></div></div>
-                  <span class="pct">85%</span>
-                </div>
-                <div class="score-row">
-                  <span class="label">Task & Goal Clarity</span>
-                  <div class="bar"><div class="bar-fill" style="width: 90%; background: var(--emerald);"></div></div>
-                  <span class="pct">90%</span>
-                </div>
-                <div class="score-row">
-                  <span class="label">Action Specificity</span>
-                  <div class="bar"><div class="bar-fill" style="width: 78%; background: var(--blue-primary);"></div></div>
-                  <span class="pct">78%</span>
-                </div>
-                <div class="score-row">
-                  <span class="label">Result & Measurable ROI</span>
-                  <div class="bar"><div class="bar-fill" style="width: 88%; background: var(--violet);"></div></div>
-                  <span class="pct">88%</span>
-                </div>
-
-                <div style="margin-top: 20px; padding: 14px; background: rgba(37,99,235,0.05); border-left: 3px solid var(--blue-primary); border-radius: 0 6px 6px 0;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <h4 style="font-size: 13px; font-weight: 600; color: var(--blue-primary);">AI Coach Advice for Alex Morgan</h4>
-                    <button type="button" class="btn-ghost" style="font-size: 11.5px;" onclick="speakText('Strong STAR structure. Your quantified outcome provides credible evidence of impact. To reach 100 percent, consider adding the specific trade-off framework you used during stakeholder alignment.')"><i class="fa-solid fa-volume-high"></i> Listen to Advice</button>
-                  </div>
-                  <p style="font-size: 12.5px; color: var(--gray-700); line-height: 1.5;">
-                    Strong STAR structure. Your quantified outcome (query load reduced by 35% & contract closed) provides credible evidence of impact. To reach 100%, consider adding the specific trade-off framework you used during stakeholder alignment.
-                  </p>
+                <!-- JS renders rubric scores here ONLY after user clicks Evaluate Answer -->
+                <div style="text-align:center;padding:40px 20px;color:var(--gray-400);">
+                  <i class="fa-solid fa-microphone-lines" style="font-size:32px;color:var(--gray-300);display:block;margin-bottom:12px;"></i>
+                  <p style="font-size:13.5px;font-weight:500;color:var(--gray-500);margin-bottom:6px;">Your STAR rubric scores appear here after evaluation.</p>
+                  <p style="font-size:12px;">Type or record your answer, then click <strong>Evaluate Answer</strong>.</p>
                 </div>
               </div>
             </div>
@@ -1875,15 +1851,15 @@ Talent Acquisition Team
       </div>
       <div class="modal-body">
         <div style="text-align: center; margin-bottom: 20px;">
-          <div class="user-avatar" style="width: 56px; height: 56px; font-size: 20px; margin: 0 auto 10px;">AM</div>
-          <h3 style="font-family: var(--font-heading); font-size: 18px; color: var(--navy-900);">Alex Morgan</h3>
-          <span class="match-pill high" style="margin-top: 4px;">Executive Pro Member</span>
-          <p style="font-size: 13px; color: var(--gray-500); margin-top: 4px;">alex.morgan@executive.io</p>
+          <div class="user-avatar" id="modal-profile-avatar" style="width: 56px; height: 56px; font-size: 20px; margin: 0 auto 10px;">?</div>
+          <h3 id="modal-profile-name" style="font-family: var(--font-heading); font-size: 18px; color: var(--navy-900);">Guest</h3>
+          <span class="match-pill high" id="modal-profile-plan" style="margin-top: 4px;">Free Candidate</span>
+          <p id="modal-profile-email" style="font-size: 13px; color: var(--gray-500); margin-top: 4px;"></p>
         </div>
         <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 16px;">
           <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
             <span style="color: var(--gray-600);">Monthly AI Optimizations:</span>
-            <strong>42 / Unlimited</strong>
+            <strong>Unlimited</strong>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
             <span style="color: var(--gray-600);">Active Applications:</span>
@@ -1893,10 +1869,79 @@ Talent Acquisition Team
             <span style="color: var(--gray-600);">Truth Protection Status:</span>
             <strong style="color: var(--emerald);"><i class="fa-solid fa-shield-check"></i> Enabled</strong>
           </div>
+        </div>
         <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" class="btn-primary" style="width: 100%; justify-content: center;" onclick="closeModal('modal-user-profile'); openModal('modal-pricing-upgrade');">
+            <i class="fa-solid fa-crown"></i> View Plans &amp; Upgrade
+          </button>
           <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; color: var(--rose-dark); border-color: rgba(244,63,94,0.3);" onclick="signOut();">
             <i class="fa-solid fa-right-from-bracket" style="color: var(--rose);"></i> Sign Out
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Pricing & Upgrade Plans -->
+  <div class="modal-overlay hidden" id="modal-pricing-upgrade">
+    <div class="modal-content" style="max-width: 840px; width: 95%;">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--navy-900);">Choose Your Plan</h3>
+          <p style="font-size: 13px; color: var(--gray-500); margin-top: 2px;">Unlock executive career intelligence, zero-hallucination truth gating, and unlimited AI coaching.</p>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeModal('modal-pricing-upgrade');">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;" class="pricing-grid">
+          <!-- Free Tier -->
+          <div style="background: var(--white); border: 1px solid var(--gray-200); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <span class="match-pill" style="background: var(--gray-100); color: var(--gray-700); font-size: 11px;">Free Explorer</span>
+              <h4 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--navy-900); margin: 10px 0 4px;">$0 <span style="font-size: 13px; font-weight: 400; color: var(--gray-500);">/ forever</span></h4>
+              <p style="font-size: 12.5px; color: var(--gray-500); margin-bottom: 16px;">Test career tools and explore resume templates freely.</p>
+              <ul style="font-size: 12.5px; color: var(--gray-700); list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                <li><i class="fa-solid fa-check" style="color: var(--emerald); margin-right: 6px;"></i> 6 Executive Resume Themes</li>
+                <li><i class="fa-solid fa-check" style="color: var(--emerald); margin-right: 6px;"></i> Basic ATS Job Match Analysis</li>
+                <li><i class="fa-solid fa-check" style="color: var(--emerald); margin-right: 6px;"></i> STAR Voice Simulator</li>
+              </ul>
+            </div>
+            <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; margin-top: 20px;" onclick="closeModal('modal-pricing-upgrade'); showToast('Current plan: Free Explorer', 'info');">Current Plan</button>
+          </div>
+
+          <!-- Executive Pro Tier -->
+          <div style="background: var(--navy-900); border: 2px solid var(--blue-primary); border-radius: 14px; padding: 20px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: var(--shadow-lg);">
+            <div style="position: absolute; top: -12px; right: 20px; background: var(--blue-primary); color: #fff; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 99px; text-transform: uppercase;">Most Popular</div>
+            <div>
+              <span class="match-pill high" style="background: rgba(37,99,235,0.2); color: #60A5FA; font-size: 11px;">Candidate Pro</span>
+              <h4 style="font-family: var(--font-heading); font-size: 26px; font-weight: 700; color: #fff; margin: 10px 0 4px;">$19 <span style="font-size: 13px; font-weight: 400; color: var(--gray-400);">/ month</span></h4>
+              <p style="font-size: 12.5px; color: var(--gray-300); margin-bottom: 16px;">Optimize applications and land offer invitations fast.</p>
+              <ul style="font-size: 12.5px; color: var(--gray-200); list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                <li><i class="fa-solid fa-check" style="color: #60A5FA; margin-right: 6px;"></i> Unlimited Truth-Gated Analysis</li>
+                <li><i class="fa-solid fa-check" style="color: #60A5FA; margin-right: 6px;"></i> High-Density Keyphrase Extractor</li>
+                <li><i class="fa-solid fa-check" style="color: #60A5FA; margin-right: 6px;"></i> Unlimited STAR Voice Coaching</li>
+                <li><i class="fa-solid fa-check" style="color: #60A5FA; margin-right: 6px;"></i> 1-Click LinkedIn Sync &amp; Mailto</li>
+                <li><i class="fa-solid fa-check" style="color: #60A5FA; margin-right: 6px;"></i> Tailored Negotiation Scripts</li>
+              </ul>
+            </div>
+            <button type="button" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 20px; background: var(--blue-primary); border-color: var(--blue-primary);" onclick="handleUpgradePlan('Executive Pro', '$19/mo');">Upgrade to Pro &rarr;</button>
+          </div>
+
+          <!-- Enterprise Team Tier -->
+          <div style="background: var(--white); border: 1px solid var(--gray-200); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <span class="match-pill" style="background: rgba(139,92,246,0.1); color: var(--violet); font-size: 11px;">Enterprise Team</span>
+              <h4 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--navy-900); margin: 10px 0 4px;">$199 <span style="font-size: 13px; font-weight: 400; color: var(--gray-500);">/ seat / mo</span></h4>
+              <p style="font-size: 12.5px; color: var(--gray-500); margin-bottom: 16px;">Multi-candidate screening matrix &amp; automated sign-offs.</p>
+              <ul style="font-size: 12.5px; color: var(--gray-700); list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                <li><i class="fa-solid fa-check" style="color: var(--violet); margin-right: 6px;"></i> Bulk Resume Screening &amp; Ranking</li>
+                <li><i class="fa-solid fa-check" style="color: var(--violet); margin-right: 6px;"></i> Side-by-Side Candidate Matrix</li>
+                <li><i class="fa-solid fa-check" style="color: var(--violet); margin-right: 6px;"></i> Corporate Work Email Verification</li>
+                <li><i class="fa-solid fa-check" style="color: var(--violet); margin-right: 6px;"></i> Recruiter Decision Sign-Off Log</li>
+              </ul>
+            </div>
+            <button type="button" class="btn-secondary" style="width: 100%; justify-content: center; margin-top: 20px; color: var(--violet); border-color: var(--violet);" onclick="openModal('modal-enterprise-verification'); closeModal('modal-pricing-upgrade');">Verify Business &rarr;</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2061,6 +2106,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.0.8"></script>
+  <script src="/static/app.js?v=2.0.9"></script>
 </body>
 </html>
