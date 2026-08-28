@@ -13,7 +13,7 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Design System Stylesheet with Cache Buster -->
-  <link rel="stylesheet" href="/static/styles.css?v=2.1.7">
+  <link rel="stylesheet" href="/static/styles.css?v=2.1.8">
   <style>
     /* Critical Base Reset */
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -374,23 +374,23 @@
           <div class="stats-row">
             <div class="stat-card">
               <div class="stat-label">Applications Active</div>
-              <div class="stat-value" id="dash-stat-active">14</div>
-              <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> 3 new this week</div>
+              <div class="stat-value" id="dash-stat-active">0</div>
+              <div class="stat-change neutral" id="dash-stat-active-sub"><i class="fa-solid fa-info-circle"></i> No applications yet</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Average Match Score</div>
-              <div class="stat-value" id="dash-stat-match">86%</div>
-              <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +8% vs baseline</div>
+              <div class="stat-value" id="dash-stat-match">—</div>
+              <div class="stat-change neutral" id="dash-stat-match-sub"><i class="fa-solid fa-minus"></i> —</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Interview Rate</div>
-              <div class="stat-value" id="dash-stat-interviews">42%</div>
-              <div class="stat-change up"><i class="fa-solid fa-check"></i> 6 invitations</div>
+              <div class="stat-value" id="dash-stat-interviews">—</div>
+              <div class="stat-change neutral" id="dash-stat-interviews-sub"><i class="fa-solid fa-info-circle"></i> 0 invitations</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Readiness Index</div>
-              <div class="stat-value" id="dash-stat-readiness">92</div>
-              <div class="stat-change neutral"><i class="fa-solid fa-shield"></i> Truth-Verified</div>
+              <div class="stat-value" id="dash-stat-readiness">—</div>
+              <div class="stat-change neutral" id="dash-stat-readiness-sub"><i class="fa-solid fa-shield-halved"></i> Pending Execution</div>
             </div>
           </div>
 
@@ -406,7 +406,7 @@
                 <table class="candidate-table">
                   <thead>
                     <tr>
-                      <th>Company & Role</th>
+                      <th>Company &amp; Role</th>
                       <th>Match Score</th>
                       <th>Stage</th>
                       <th>Last Update</th>
@@ -423,16 +423,16 @@
             <div class="section-card">
               <div class="section-header">
                 <h2><i class="fa-solid fa-gauge-high" style="color: var(--emerald);"></i> Profile Readiness</h2>
-                <span class="match-pill high">Qualified</span>
+                <span class="match-pill" id="dash-readiness-badge" style="background: var(--gray-200); color: var(--gray-600);">Pending Execution</span>
               </div>
               <div class="score-ring-wrap">
                 <div class="score-ring">
                   <svg viewBox="0 0 120 120">
                     <circle class="bg-ring" cx="60" cy="60" r="54"></circle>
-                    <circle class="val-ring" id="dash-score-circle" cx="60" cy="60" r="54"></circle>
+                    <circle class="val-ring" id="dash-score-circle" cx="60" cy="60" r="54" style="stroke-dashoffset: 339; stroke: var(--gray-300);"></circle>
                   </svg>
                   <div class="value">
-                    <div class="num" id="dash-score-num">88%</div>
+                    <div class="num" id="dash-score-num">—</div>
                     <div class="lbl">Match Score</div>
                   </div>
                 </div>
@@ -440,23 +440,23 @@
               <div class="score-breakdown">
                 <div class="score-row">
                   <span class="label">Skills Alignment</span>
-                  <div class="bar"><div class="bar-fill" style="width: 90%; background: var(--emerald);"></div></div>
-                  <span class="pct">90%</span>
+                  <div class="bar"><div class="bar-fill" id="dash-breakdown-bar-1" style="width: 0%; background: var(--emerald);"></div></div>
+                  <span class="pct" id="dash-breakdown-pct-1">—</span>
                 </div>
                 <div class="score-row">
                   <span class="label">Experience Level</span>
-                  <div class="bar"><div class="bar-fill" style="width: 85%; background: var(--blue-primary);"></div></div>
-                  <span class="pct">85%</span>
+                  <div class="bar"><div class="bar-fill" id="dash-breakdown-bar-2" style="width: 0%; background: var(--blue-primary);"></div></div>
+                  <span class="pct" id="dash-breakdown-pct-2">—</span>
                 </div>
                 <div class="score-row">
                   <span class="label">ATS Keywords</span>
-                  <div class="bar"><div class="bar-fill" style="width: 92%; background: var(--violet);"></div></div>
-                  <span class="pct">92%</span>
+                  <div class="bar"><div class="bar-fill" id="dash-breakdown-bar-3" style="width: 0%; background: var(--violet);"></div></div>
+                  <span class="pct" id="dash-breakdown-pct-3">—</span>
                 </div>
                 <div class="score-row">
-                  <span class="label">Truth & Evidence</span>
-                  <div class="bar"><div class="bar-fill" style="width: 100%; background: var(--emerald);"></div></div>
-                  <span class="pct">100%</span>
+                  <span class="label">Truth &amp; Evidence</span>
+                  <div class="bar"><div class="bar-fill" id="dash-breakdown-bar-4" style="width: 0%; background: var(--emerald);"></div></div>
+                  <span class="pct" id="dash-breakdown-pct-4">—</span>
                 </div>
               </div>
             </div>
@@ -731,27 +731,27 @@
           <!-- Pipeline Stats Overview (6 stages) -->
           <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;">
             <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-total">
-              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--navy-900);">18</div>
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--navy-900);" id="stat-pipe-total-num">0</div>
               <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Total</div>
             </div>
             <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-wishlist">
-              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-600);">4</div>
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-600);" id="stat-pipe-wishlist-num">0</div>
               <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Wishlist</div>
             </div>
             <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-applied">
-              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--blue-primary);">6</div>
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--blue-primary);" id="stat-pipe-applied-num">0</div>
               <div style="font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase;">Applied</div>
             </div>
             <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer; border-color: var(--violet);" id="stat-pipe-interview">
-              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--violet);">3</div>
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--violet);" id="stat-pipe-interview-num">0</div>
               <div style="font-size: 11px; font-weight: 600; color: var(--violet); text-transform: uppercase;">Interview</div>
             </div>
             <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-offer">
-              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--emerald);">2</div>
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--emerald);" id="stat-pipe-offer-num">0</div>
               <div style="font-size: 11px; font-weight: 600; color: var(--emerald); text-transform: uppercase;">Offers</div>
             </div>
             <div class="stat-card" style="padding: 16px; text-align: center; cursor: pointer;" id="stat-pipe-closed">
-              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-400);">3</div>
+              <div style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gray-400);" id="stat-pipe-closed-num">0</div>
               <div style="font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase;">Closed</div>
             </div>
           </div>
@@ -763,9 +763,14 @@
               <button type="button" class="btn-ghost" style="padding: 6px 12px; font-size: 12.5px;" id="btn-filter-remote">Remote Only (3)</button>
               <button type="button" class="btn-ghost" style="padding: 6px 12px; font-size: 12.5px;" id="btn-filter-high-match">High Match &gt;90% (2)</button>
             </div>
-            <button type="button" class="btn-primary" id="btn-add-kanban-card">
-              <i class="fa-solid fa-plus"></i> New Application
-            </button>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12.5px;" onclick="state.kanbanApps = [...DEFAULT_KANBAN]; renderKanbanBoard(); showToast('Loaded sample applications into tracker.', 'success');">
+                <i class="fa-solid fa-folder-open"></i> Load Sample Data
+              </button>
+              <button type="button" class="btn-primary" id="btn-add-kanban-card">
+                <i class="fa-solid fa-plus"></i> New Application
+              </button>
+            </div>
           </div>
 
           <!-- Kanban Board (5 Stages) -->
@@ -2352,6 +2357,6 @@ Talent Acquisition Team
   <div id="toast-container"></div>
 
   <!-- Application Controller Script -->
-  <script src="/static/app.js?v=2.1.7"></script>
+  <script src="/static/app.js?v=2.1.8"></script>
 </body>
 </html>

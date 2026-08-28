@@ -90,7 +90,7 @@ const state = {
   recordingSeconds: 0,
   starEvaluated: false,
   currentStarQuestionIndex: 0,
-  kanbanApps: [...DEFAULT_KANBAN]
+  kanbanApps: []
 };
 
 // ─── Initialisation ───────────────────────────────────────────────────────────
@@ -785,6 +785,14 @@ function setKanbanFilter(filter) {
 }
 
 function renderKanban() {
+  // Update pipeline summary counts
+  el('stat-pipe-total-num', state.kanbanApps.length.toString());
+  el('stat-pipe-wishlist-num', state.kanbanApps.filter(a => a.stage === 'wishlist').length.toString());
+  el('stat-pipe-applied-num', state.kanbanApps.filter(a => a.stage === 'applied').length.toString());
+  el('stat-pipe-interview-num', state.kanbanApps.filter(a => a.stage === 'interview').length.toString());
+  el('stat-pipe-offer-num', state.kanbanApps.filter(a => a.stage === 'offer').length.toString());
+  el('stat-pipe-closed-num', state.kanbanApps.filter(a => a.stage === 'closed').length.toString());
+
   const stages = ['wishlist', 'applied', 'interview', 'offer', 'closed'];
   stages.forEach(stage => {
     const col = document.getElementById(`col-${stage}`);
@@ -835,23 +843,66 @@ function updateDashboardStats() {
   const interviewRate = active.length
     ? Math.round((interviews.length / active.length) * 100)
     : 0;
-  // Readiness: proxy from avg match + interview conversion
-  const readiness = Math.min(99, Math.round((avgMatch * 0.65) + (interviewRate * 0.35)));
+  const readiness = active.length > 0 ? Math.min(99, Math.round((avgMatch * 0.65) + (interviewRate * 0.35))) : 0;
 
   el('dash-stat-active', active.length.toString());
+  const activeSub = document.getElementById('dash-stat-active-sub');
+  if (activeSub) activeSub.innerHTML = active.length > 0 ? `<i class="fa-solid fa-arrow-trend-up"></i> ${active.length} active application${active.length === 1 ? '' : 's'}` : '<i class="fa-solid fa-info-circle"></i> No applications yet';
+
   el('dash-stat-match', avgMatch ? `${avgMatch}%` : '—');
-  el('dash-stat-interviews', interviewRate ? `${interviewRate}%` : '—');
-  el('dash-stat-readiness', readiness || '—');
+  const matchSub = document.getElementById('dash-stat-match-sub');
+  if (matchSub) matchSub.innerHTML = avgMatch ? `<i class="fa-solid fa-arrow-trend-up"></i> Baseline active` : '<i class="fa-solid fa-minus"></i> —';
+
+  el('dash-stat-interviews', active.length > 0 ? `${interviewRate}%` : '—');
+  const interviewsSub = document.getElementById('dash-stat-interviews-sub');
+  if (interviewsSub) interviewsSub.innerHTML = active.length > 0 ? `<i class="fa-solid fa-check"></i> ${interviews.length} invitation${interviews.length === 1 ? '' : 's'}` : '<i class="fa-solid fa-info-circle"></i> 0 invitations';
+
+  el('dash-stat-readiness', readiness > 0 ? readiness.toString() : '—');
+  const readinessSub = document.getElementById('dash-stat-readiness-sub');
+  if (readinessSub) readinessSub.innerHTML = readiness > 0 ? `<i class="fa-solid fa-shield"></i> Truth-Verified` : '<i class="fa-solid fa-shield-halved"></i> Pending Execution';
 
   // Dashboard score ring — update to reflect avg match
   const scoreNum = document.getElementById('dash-score-num');
   const scoreCircle = document.getElementById('dash-score-circle');
+  const readinessBadge = document.getElementById('dash-readiness-badge');
+
   if (scoreNum) scoreNum.textContent = avgMatch ? `${avgMatch}%` : '—';
-  if (scoreCircle && avgMatch) {
-    const circumference = 339;
-    scoreCircle.style.strokeDashoffset = circumference - (circumference * avgMatch / 100);
-    scoreCircle.style.stroke = avgMatch >= 80 ? 'var(--emerald)' : avgMatch >= 60 ? 'var(--amber)' : 'var(--rose)';
+  if (readinessBadge) {
+    if (avgMatch >= 80) { readinessBadge.textContent = 'Qualified'; readinessBadge.className = 'match-pill high'; readinessBadge.style.background = ''; readinessBadge.style.color = ''; }
+    else if (avgMatch >= 60) { readinessBadge.textContent = 'Partially Qualified'; readinessBadge.className = 'match-pill med'; readinessBadge.style.background = ''; readinessBadge.style.color = ''; }
+    else if (avgMatch > 0) { readinessBadge.textContent = 'Gaps Detected'; readinessBadge.className = 'match-pill low'; readinessBadge.style.background = ''; readinessBadge.style.color = ''; }
+    else { readinessBadge.textContent = 'Pending Execution'; readinessBadge.className = 'match-pill'; readinessBadge.style.background = 'var(--gray-200)'; readinessBadge.style.color = 'var(--gray-600)'; }
   }
+
+  if (scoreCircle) {
+    const circumference = 339;
+    if (avgMatch > 0) {
+      scoreCircle.style.strokeDashoffset = circumference - (circumference * avgMatch / 100);
+      scoreCircle.style.stroke = avgMatch >= 80 ? 'var(--emerald)' : avgMatch >= 60 ? 'var(--amber)' : 'var(--rose)';
+    } else {
+      scoreCircle.style.strokeDashoffset = circumference;
+      scoreCircle.style.stroke = 'var(--gray-300)';
+    }
+  }
+
+  // Update skills breakdown progress bars
+  const skillBar1 = document.getElementById('dash-breakdown-bar-1');
+  const skillPct1 = document.getElementById('dash-breakdown-pct-1');
+  const skillBar2 = document.getElementById('dash-breakdown-bar-2');
+  const skillPct2 = document.getElementById('dash-breakdown-pct-2');
+  const skillBar3 = document.getElementById('dash-breakdown-bar-3');
+  const skillPct3 = document.getElementById('dash-breakdown-pct-3');
+  const skillBar4 = document.getElementById('dash-breakdown-bar-4');
+  const skillPct4 = document.getElementById('dash-breakdown-pct-4');
+
+  if (skillBar1) skillBar1.style.width = avgMatch > 0 ? `${avgMatch}%` : '0%';
+  if (skillPct1) skillPct1.textContent = avgMatch > 0 ? `${avgMatch}%` : '—';
+  if (skillBar2) skillBar2.style.width = avgMatch > 0 ? `${Math.max(0, avgMatch - 8)}%` : '0%';
+  if (skillPct2) skillPct2.textContent = avgMatch > 0 ? `${Math.max(0, avgMatch - 8)}%` : '—';
+  if (skillBar3) skillBar3.style.width = avgMatch > 0 ? `${Math.max(0, avgMatch + 4)}%` : '0%';
+  if (skillPct3) skillPct3.textContent = avgMatch > 0 ? `${Math.max(0, avgMatch + 4)}%` : '—';
+  if (skillBar4) skillBar4.style.width = avgMatch > 0 ? '100%' : '0%';
+  if (skillPct4) skillPct4.textContent = avgMatch > 0 ? '100%' : '—';
 }
 
 function openDetailPanel(app) {
@@ -893,6 +944,10 @@ function renderDashboardApps() {
   if (!tbody) return;
   tbody.innerHTML = '';
   const recent = state.kanbanApps.filter(a => a.stage !== 'closed').slice(0, 5);
+  if (!recent.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px 16px;color:var(--gray-400);"><i class="fa-solid fa-inbox" style="font-size:24px;display:block;margin-bottom:8px;color:var(--gray-300);"></i>No active applications tracked yet.<br><span style="font-size:12px;color:var(--gray-500);">Run a Resume Analysis or click "Job Tracker" to add applications.</span></td></tr>`;
+    return;
+  }
   recent.forEach(app => {
     const row = document.createElement('tr');
     row.innerHTML = `
