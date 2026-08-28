@@ -152,17 +152,40 @@ function initGateway() {
   }
 
   // Candidate free exploration
-  document.getElementById('btn-gateway-explore-candidate')?.addEventListener('click', () => {
-    // Don't authenticate — let them explore. Auth gate triggers on AI actions.
+  document.getElementById('btn-gateway-explore-candidate')?.addEventListener('click', (e) => {
+    e.stopPropagation();
     state.user.role = 'candidate';
     gateway.classList.add('hidden');
     applyPortalMode('candidate', false);
-    showToast('Welcome! Explore freely — create an account when you\'re ready to generate results.', 'success');
+    showToast('Welcome! Exploring Candidate Platform.', 'success');
   });
 
-  // Enterprise verification trigger
-  document.getElementById('btn-gateway-verify-enterprise')?.addEventListener('click', () => {
-    openModal('modal-enterprise-verification');
+  document.getElementById('choice-path-candidate')?.addEventListener('click', (e) => {
+    if (e.target.closest('#btn-gateway-explore-candidate')) return;
+    state.user.role = 'candidate';
+    gateway.classList.add('hidden');
+    applyPortalMode('candidate', false);
+    showToast('Welcome! Exploring Candidate Platform.', 'success');
+  });
+
+  // Enterprise platform exploration
+  const enterEmployerPortal = () => {
+    state.user.role = 'employer';
+    if (!state.user.company) state.user.company = 'Enterprise Partner';
+    gateway.classList.add('hidden');
+    applyPortalMode('employer', false);
+    playUiSound('click');
+    showToast('Welcome to the Enterprise Talent Portal! Bulk candidate screening & evaluation tools active.', 'success');
+  };
+
+  document.getElementById('btn-gateway-verify-enterprise')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    enterEmployerPortal();
+  });
+
+  document.getElementById('choice-path-employer')?.addEventListener('click', (e) => {
+    if (e.target.closest('#btn-gateway-verify-enterprise')) return;
+    enterEmployerPortal();
   });
 
   // Quick sign-in from gateway
@@ -296,8 +319,14 @@ function applyPortalMode(role, isNewlyAuth) {
   if (candNav) candNav.style.display = isEmployer ? 'none' : 'block';
   if (empNav) empNav.style.display = isEmployer ? 'block' : 'none';
   if (badge) {
-    badge.textContent = isEmployer ? 'Enterprise Talent Portal' : 'Candidate Portal';
+    badge.textContent = isEmployer ? 'Enterprise Talent Portal ⇄' : 'Candidate Portal ⇄';
     badge.style.color = isEmployer ? '#C084FC' : 'var(--blue-light)';
+    badge.style.cursor = 'pointer';
+    badge.onclick = () => {
+      const nextRole = state.user.role === 'employer' ? 'candidate' : 'employer';
+      applyPortalMode(nextRole, false);
+      showToast(`Switched to ${nextRole === 'employer' ? 'Enterprise Talent' : 'Candidate'} Portal.`, 'info');
+    };
   }
 
   const topbarAction = document.getElementById('topbar-action-text');
